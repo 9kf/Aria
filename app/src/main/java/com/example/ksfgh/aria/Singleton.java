@@ -17,5 +17,5 @@ public class Singleton {
      return(INSTANCE);
     }
 
-    public String hello = "hello";
+
 }

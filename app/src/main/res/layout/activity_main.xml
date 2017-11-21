@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ksfgh.aria.activities.MainActivity">
+    tools:context=".View.activities.MainActivity"
+    android:orientation="vertical"
+    android:padding="16dp">
 
    <com.facebook.login.widget.LoginButton
        android:id="@+id/btnFbLogin"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:text="login with facebook"
-       android:layout_centerInParent="true"/>
+       android:layout_gravity="center"/>
 
 
-    <TextView
-        android:id="@+id/name"
+    <Button
+        android:id="@+id/btnGetBands"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Get bands"
+        android:layout_gravity="center"/>
 
-    <TextView
-        android:id="@+id/othertext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</RelativeLayout>
+
+</LinearLayout>
