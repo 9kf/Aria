@@ -23,5 +23,25 @@
         android:text="Get bands"
         android:layout_gravity="center"/>
 
+    <Button android:id="@+id/btnCreateUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="create user"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/btnCreateBand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Band"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/btnPickPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick Photo"
+        android:layout_gravity="center"/>
+
 
 </LinearLayout>

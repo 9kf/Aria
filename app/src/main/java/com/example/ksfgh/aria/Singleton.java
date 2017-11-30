@@ -18,4 +18,8 @@ public class Singleton {
     }
 
 
+    public static String PREFERENCE_NAME = "arial";
+
+    //constants
+    public static final int PICK_PHOTO = 123;
 }
