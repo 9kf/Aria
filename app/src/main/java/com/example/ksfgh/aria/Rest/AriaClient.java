@@ -39,4 +39,24 @@ public interface AriaClient {
             @Part MultipartBody.Part pic
     );
 
+    @Multipart
+    @POST("addAlbum")
+    Call<ResponseBody> addAlbum(
+            @Part("band_id") RequestBody bandId,
+            @Part("album_name") RequestBody albumName,
+            @Part("album_desc") RequestBody albumDesc,
+            @Part MultipartBody.Part albumImage
+    );
+
+    @Multipart
+    @POST("addSongs")
+    Call<ResponseBody> addSong(
+            @Part("album_id") RequestBody albumId,
+            @Part("song_title") RequestBody songTitle,
+            @Part("song_desc") RequestBody songDesc,
+            @Part("genre_id") RequestBody genreId,
+            @Part("band_id") RequestBody bandId,
+            @Part MultipartBody.Part song
+    );
+
 }

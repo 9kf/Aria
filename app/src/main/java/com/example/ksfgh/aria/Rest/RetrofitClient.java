@@ -14,7 +14,7 @@ public class RetrofitClient {
     public static AriaClient getClient(){
         if(retrofit == null){
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.254.108/Aria/public/api/")
+                    .baseUrl("http://192.168.254.109/Aria/public/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

@@ -1,12 +1,10 @@
 package com.example.ksfgh.aria.View.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,14 +35,11 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.utils.L;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -70,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnPickPhoto;
     @BindView(R.id.btnCreateBand)
     Button btnCreateBand;
+    @BindView(R.id.btnAddSong)
+    Button btnAddSong;
 
     private CallbackManager callbackManager;
     AccessToken accessToken;
@@ -123,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 try {
 
-                                    Log.d("fb",response.toString());
-                                    Log.d("fb",object.toString());
+                                    Log.d("fb", response.toString());
+                                    Log.d("fb", object.toString());
                                     FacebookUserModel user = new FacebookUserModel(
                                             profile.getId(),
                                             profile.getFirstName(),
@@ -175,19 +172,30 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == Singleton.PICK_PHOTO && resultCode == Activity.RESULT_OK && data != null) {
             try {
                 Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
 
-                uploadPhoto(selectedImage, picturePath);
+                //uploadPhoto(selectedImage, picturePath);
+                addAlbum(selectedImage, picturePath);
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d("pick photo error", e.getMessage());
             }
+        } else if (requestCode == Singleton.PICK_AUDIO && resultCode == Activity.RESULT_OK && data != null) {
+            Uri audioFileUrl = data.getData();
+            String[] audioPathColumn = {MediaStore.Audio.Media.DATA};
+            Cursor audioCursor = getContentResolver().query(audioFileUrl, audioPathColumn, null, null, null);
+            audioCursor.moveToFirst();
+            int audioColumnIndex = audioCursor.getColumnIndex(audioPathColumn[0]);
+            String audioPath = audioCursor.getString(audioColumnIndex);
+            Log.d("pick audio", audioPath);
+
+            uploadSong(audioFileUrl, audioPath);
         }
     }
 
@@ -195,39 +203,15 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode){
+        switch (requestCode) {
             case 200:
                 boolean writeAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
                 startActivityForResult(intent, Singleton.PICK_PHOTO);
                 break;
         }
     }
-
-    private void uploadPhoto(Uri selectedImage, String imagePath) {
-
-        RequestBody description = RequestBody.create(MultipartBody.FORM, "6");
-        File originalFile = new File(imagePath);
-        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
-        MultipartBody.Part file = MultipartBody.Part.createFormData("bandPic", originalFile.getName(), filePart);
-
-        Call<ResponseBody> call = RetrofitClient.getClient().editBandPic(description, file);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                Log.d("photo", response.message());
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-
-    }
-
 
     @OnClick(R.id.btnGetBands)
     public void getBands() {
@@ -285,13 +269,12 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnPickPhoto)
     public void pickPhoto() {
 
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
             int permsRequestCode = 200;
             requestPermissions(perms, permsRequestCode);
-        }
-        else {
-            Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setType("image/*");
             startActivityForResult(intent, Singleton.PICK_PHOTO);
         }
@@ -325,4 +308,87 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @OnClick(R.id.btnAddSong)
+    public void addSong() {
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        startActivityForResult(intent, Singleton.PICK_AUDIO);
+    }
+
+    private void uploadSong(Uri song, String songPath){
+
+        RequestBody albumId = RequestBody.create(MultipartBody.FORM, "1");
+        RequestBody songTitle = RequestBody.create(MultipartBody.FORM, "first song");
+        RequestBody songDesc = RequestBody.create(MultipartBody.FORM, "this is a song for the lit shit");
+        RequestBody genreId = RequestBody.create(MultipartBody.FORM, "1");
+        RequestBody bandId = RequestBody.create(MultipartBody.FORM, "1");
+
+        File originalFile = new File(songPath);
+        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(song)), originalFile);
+        MultipartBody.Part file = MultipartBody.Part.createFormData("song_audio", originalFile.getName(), filePart);
+
+        Call<ResponseBody> call = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d("song", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("song error", t.getMessage());
+            }
+        });
+
+
+    }
+
+    public void addAlbum(Uri selectedImage, String imagePath){
+
+        RequestBody bandId = RequestBody.create(MultipartBody.FORM, "1");
+        RequestBody albumName = RequestBody.create(MultipartBody.FORM, "first album");
+        RequestBody albumDesc = RequestBody.create(MultipartBody.FORM, "first album release");
+
+        File originalFile = new File(imagePath);
+        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
+        MultipartBody.Part file = MultipartBody.Part.createFormData("album_pic", originalFile.getName(), filePart);
+
+        Call<ResponseBody> call = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d("album", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("album error", t.getMessage());
+            }
+        });
+    }
+
+    private void uploadPhoto(Uri selectedImage, String imagePath) {
+
+        RequestBody description = RequestBody.create(MultipartBody.FORM, "6");
+        File originalFile = new File(imagePath);
+        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
+        MultipartBody.Part file = MultipartBody.Part.createFormData("bandPic", originalFile.getName(), filePart);
+
+        Call<ResponseBody> call = RetrofitClient.getClient().editBandPic(description, file);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                Log.d("photo", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
+    }
 }

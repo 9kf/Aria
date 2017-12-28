@@ -43,5 +43,12 @@
         android:text="Pick Photo"
         android:layout_gravity="center"/>
 
+    <Button
+        android:id="@+id/btnAddSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="add song"/>
+
 
 </LinearLayout>

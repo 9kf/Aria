@@ -22,4 +22,5 @@ public class Singleton {
 
     //constants
     public static final int PICK_PHOTO = 123;
+    public static final int PICK_AUDIO = 124;
 }
