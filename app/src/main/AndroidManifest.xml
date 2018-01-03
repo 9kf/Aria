@@ -34,7 +34,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.activities.HomeScreen"></activity>
+        <activity android:name=".View.activities.HomeScreen"
+            android:theme="@style/StartScreenTheme"></activity>
     </application>
 
 </manifest>

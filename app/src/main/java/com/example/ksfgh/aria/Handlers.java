@@ -35,7 +35,6 @@ import static android.content.Context.MODE_PRIVATE;
 public class Handlers {
 
     AccessToken accessToken;
-    FacebookCallback facebookCallback;
     AccessTokenTracker accessTokenTracker;
     ProfileTracker profileTracker;
 
@@ -87,14 +86,12 @@ public class Handlers {
                                     editor.putString("user", new Gson().toJson(user));
                                     editor.apply();
 
-                                    Log.d("user", profile.getFirstName());
                                     Intent intent = new Intent(activity, HomeScreen.class);
                                     activity.startActivity(intent);
                                     activity.finish();
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    Log.d("fb error", e.getMessage());
                                 }
                             }
                         });
@@ -112,7 +109,7 @@ public class Handlers {
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(activity, "fb error cuz" + error.toString(), Toast.LENGTH_SHORT).show();
+
             }
         });
 
