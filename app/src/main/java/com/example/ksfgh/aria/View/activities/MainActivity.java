@@ -18,6 +18,7 @@ import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
@@ -40,6 +41,7 @@ import com.nostra13.universalimageloader.utils.L;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -329,15 +331,15 @@ public class MainActivity extends AppCompatActivity {
         RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(song)), originalFile);
         MultipartBody.Part file = MultipartBody.Part.createFormData("song_audio", originalFile.getName(), filePart);
 
-        Call<ResponseBody> call = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file);
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<SongModel> call = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file);
+        call.enqueue(new Callback<SongModel>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d("song", response.message());
+            public void onResponse(Call<SongModel> call, Response<SongModel> response) {
+                Log.d("song", response.body().songAudio);
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<SongModel> call, Throwable t) {
                 Log.d("song error", t.getMessage());
             }
         });

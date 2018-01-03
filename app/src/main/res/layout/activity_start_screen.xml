@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ActivityStartScreenBinding">
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="activity"
+            type="com.example.ksfgh.aria.View.activities.StartScreen"/>
+
+        <variable
+            name="handlers"
+            type="com.example.ksfgh.aria.Handlers"/>
+
+    </data>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.ksfgh.aria.View.activities.StartScreen"
+        android:background="@color/startScreenBg">
+
+        <TextView
+            android:id="@+id/tvAria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/aria"
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:textSize="60sp"
+            android:fontFamily="@font/montserratbold"
+            android:textStyle="bold"
+            android:layout_marginTop="-60dp"/>
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserratbold"
+            android:textColor="@color/white"
+            android:layout_below="@+id/tvAria"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/appDescription"/>
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            android:layout_above="@id/tvAria"
+            android:layout_centerHorizontal="true"
+            android:scaleX=".7"
+            android:scaleY=".7"/>
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/btnFbLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="login with facebook"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/tvDescription"
+            android:layout_marginTop="40dp"
+            android:onClick="@{()->handlers.facebookLogin(activity, activity.callbackManager)}"/>
+
+
+    </RelativeLayout>
+
+</layout>
+

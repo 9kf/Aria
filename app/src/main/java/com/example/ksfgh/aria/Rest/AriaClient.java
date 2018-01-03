@@ -4,6 +4,7 @@ import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.SongModel;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public interface AriaClient {
 
     @Multipart
     @POST("addSongs")
-    Call<ResponseBody> addSong(
+    Call<SongModel> addSong(
             @Part("album_id") RequestBody albumId,
             @Part("song_title") RequestBody songTitle,
             @Part("song_desc") RequestBody songDesc,
