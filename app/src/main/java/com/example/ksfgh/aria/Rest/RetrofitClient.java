@@ -1,5 +1,9 @@
 package com.example.ksfgh.aria.Rest;
 
+import com.example.ksfgh.aria.Model.BandModel;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+
+import io.reactivex.Observable;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -14,8 +18,9 @@ public class RetrofitClient {
     public static AriaClient getClient(){
         if(retrofit == null){
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.254.109/Aria/public/api/")
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
+                    .baseUrl("http://192.168.254.109/Aria/public/api/")
                     .build();
         }
 
@@ -25,4 +30,5 @@ public class RetrofitClient {
 
         return client;
     }
+
 }

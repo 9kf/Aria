@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import com.nostra13.universalimageloader.utils.L;
 
 import org.json.JSONObject;
+import org.reactivestreams.Subscription;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,12 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -76,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
     private boolean writeAccepted = false;
+    private Subscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,27 +226,28 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnGetBands)
     public void getBands() {
 
-        Call<BandModel[]> call = RetrofitClient.getClient().getAllBands();
-        call.enqueue(new Callback<BandModel[]>() {
-            @Override
-            public void onResponse(Call<BandModel[]> call, Response<BandModel[]> response) {
 
-                try {
-                    for (BandModel band : response.body()) {
-                        Log.d("bands", "band is: " + band.getBandName());
+        Disposable disposable = RetrofitClient.getClient().getbands()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<BandModel[]>() {
+                    @Override
+                    public void onNext(BandModel[] bandModels) {
+                        for (BandModel band: bandModels){
+                            Log.d("bands", band.getBandName());
+                        }
                     }
-                } catch (Exception e) {
-                    Log.d("band error", e.getMessage());
-                }
 
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onFailure(Call<BandModel[]> call, Throwable t) {
-                Log.d("band error", t.getMessage());
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        Log.d("bands", "Yay Completed!");
+                    }
+                });
 
     }
 
@@ -288,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
 
-        BandCreationModel newBand = new BandCreationModel(model.user_id.toString(), "Drummer", "generation g", 1, 3, "this is a band");
+        BandCreationModel newBand = new BandCreationModel(model.user_id.toString(), "Drummer", "generation f", 1, 3, "this is a band");
 
         Call<BandMemberModel> call = RetrofitClient.getClient().createBand(newBand);
 
