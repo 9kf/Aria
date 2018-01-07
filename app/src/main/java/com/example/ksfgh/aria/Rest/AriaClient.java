@@ -34,14 +34,14 @@ public interface AriaClient {
 
     @Multipart
     @POST("editbandPic")
-    Call<ResponseBody> editBandPic(
+    Observable<ResponseBody> editBandPic(
             @Part("bandId") RequestBody bandId,
             @Part MultipartBody.Part pic
     );
 
     @Multipart
     @POST("addAlbum")
-    Call<ResponseBody> addAlbum(
+    Observable<ResponseBody> addAlbum(
             @Part("band_id") RequestBody bandId,
             @Part("album_name") RequestBody albumName,
             @Part("album_desc") RequestBody albumDesc,
@@ -50,7 +50,7 @@ public interface AriaClient {
 
     @Multipart
     @POST("addSongs")
-    Call<SongModel> addSong(
+    Observable<SongModel> addSong(
             @Part("album_id") RequestBody albumId,
             @Part("song_title") RequestBody songTitle,
             @Part("song_desc") RequestBody songDesc,

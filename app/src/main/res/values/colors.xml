@@ -6,5 +6,8 @@
     <color name="black">#000000</color>
     <color name="startScreenBg">#232323</color>
     <color name="white">#FFFFFF</color>
+    <color name="drawerBackground">#232323</color>
+    <color name="searchBarOutlineColor">#D9D9D9</color>
+    <color name="searchBartextColor">#7F8E95</color>
 
 </resources>

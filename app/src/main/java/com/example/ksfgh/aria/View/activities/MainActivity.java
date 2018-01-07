@@ -50,7 +50,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
     private boolean writeAccepted = false;
-    private Subscription subscription;
+    private CompositeDisposable compositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void InitComponents() {
+
+        compositeDisposable = new CompositeDisposable();
+
         callbackManager = CallbackManager.Factory.create();
 
         accessTokenTracker = new AccessTokenTracker() {
@@ -110,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
     }
 
     @OnClick(R.id.btnFbLogin)
@@ -189,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
 
-                //uploadPhoto(selectedImage, picturePath);
-                addAlbum(selectedImage, picturePath);
+                uploadPhoto(selectedImage, picturePath);
+                //addAlbum(selectedImage, picturePath);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -249,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        compositeDisposable.add(disposable);
     }
 
     @OnClick(R.id.btnCreateUser)
@@ -340,18 +352,39 @@ public class MainActivity extends AppCompatActivity {
         RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(song)), originalFile);
         MultipartBody.Part file = MultipartBody.Part.createFormData("song_audio", originalFile.getName(), filePart);
 
-        Call<SongModel> call = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file);
-        call.enqueue(new Callback<SongModel>() {
-            @Override
-            public void onResponse(Call<SongModel> call, Response<SongModel> response) {
-                Log.d("song", response.body().songAudio);
-            }
+        Disposable disposable = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<SongModel>() {
+                    @Override
+                    public void onNext(SongModel songModel) {
+                        Log.d("song", songModel.songAudio);
+                    }
 
-            @Override
-            public void onFailure(Call<SongModel> call, Throwable t) {
-                Log.d("song error", t.getMessage());
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("song error", e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        compositeDisposable.add(disposable);
+//        Call<SongModel> call = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file);
+//        call.enqueue(new Callback<SongModel>() {
+//            @Override
+//            public void onResponse(Call<SongModel> call, Response<SongModel> response) {
+//                Log.d("song", response.body().songAudio);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<SongModel> call, Throwable t) {
+//                Log.d("song error", t.getMessage());
+//            }
+//        });
 
 
     }
@@ -366,40 +399,77 @@ public class MainActivity extends AppCompatActivity {
         RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
         MultipartBody.Part file = MultipartBody.Part.createFormData("album_pic", originalFile.getName(), filePart);
 
-        Call<ResponseBody> call = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d("album", response.message());
-            }
+        Disposable disposable = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ResponseBody>() {
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            Log.d("album", responseBody.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d("album error", t.getMessage());
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("album error", e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        compositeDisposable.add(disposable);
+
+//        Call<ResponseBody> call = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file);
+//        call.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                Log.d("album", response.message());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                Log.d("album error", t.getMessage());
+//            }
+//        });
     }
 
     private void uploadPhoto(Uri selectedImage, String imagePath) {
 
-        RequestBody description = RequestBody.create(MultipartBody.FORM, "6");
+        RequestBody description = RequestBody.create(MultipartBody.FORM, "1");
         File originalFile = new File(imagePath);
         RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
         MultipartBody.Part file = MultipartBody.Part.createFormData("bandPic", originalFile.getName(), filePart);
 
-        Call<ResponseBody> call = RetrofitClient.getClient().editBandPic(description, file);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        Disposable disposable = RetrofitClient.getClient().editBandPic(description, file)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ResponseBody>() {
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            Log.d("photo", responseBody.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                Log.d("photo", response.message());
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("photo", e.getMessage());
+                    }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
 
+        compositeDisposable.add(disposable);
     }
 }
