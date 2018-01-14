@@ -82,7 +82,7 @@ public class Handlers {
                                             profile.getProfilePictureUri(500, 500).toString()
                                     );
 
-                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).edit();
+                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).edit();
                                     editor.putString("user", new Gson().toJson(user));
                                     editor.apply();
 

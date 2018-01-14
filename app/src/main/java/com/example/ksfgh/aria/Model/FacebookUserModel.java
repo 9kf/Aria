@@ -1,10 +1,12 @@
 package com.example.ksfgh.aria.Model;
 
+import android.databinding.BaseObservable;
+
 /**
  * Created by ksfgh on 27/11/2017.
  */
 
-public class FacebookUserModel {
+public class FacebookUserModel extends BaseObservable{
 
 
     public String user_id;

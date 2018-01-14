@@ -9,5 +9,7 @@
     <color name="drawerBackground">#232323</color>
     <color name="searchBarOutlineColor">#D9D9D9</color>
     <color name="searchBartextColor">#7F8E95</color>
+    <color name="drawerItemColor">#FAFAFA</color>
+    <color name="civBorderColor">#757575</color>
 
 </resources>

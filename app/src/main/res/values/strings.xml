@@ -4,6 +4,18 @@
     <string name="aria">ARIA</string>
     <string name="appDescription">A MULTI-PLATFORM APPLICATION FOR AUDIO AND VIDEO BAND PROMOTION</string>
 
+
+    <string name="search">Search</string>
+    <string name="drawerHome">HOME</string>
+    <string name="drawerFeed">FEED</string>
+    <string name="drawerTopCharts">TOP CHARTS</string>
+    <string name="notifications">NOTIFICATIONS</string>
+    <string name="my_bands">MY BANDS</string>
+    <string name="find_friends">FIND FRIENDS</string>
+    <string name="log_out">LOG OUT</string>
+    <string name="settings">SETTINGS</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

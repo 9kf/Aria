@@ -22,6 +22,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class StartScreen extends AppCompatActivity {
 
@@ -36,12 +38,16 @@ public class StartScreen extends AppCompatActivity {
         //initialize fb sdk to avoid error on the facebook button
         FacebookSdk.sdkInitialize(getApplicationContext());
 
+        //initialize universal image loader
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this).build();
+        ImageLoader.getInstance().init(configuration);
+
         //setting content view
         activityStartScreenBinding = DataBindingUtil.setContentView(this, R.layout.activity_start_screen);
-        activityStartScreenBinding.setHandlers(Singleton.handlers);
+        activityStartScreenBinding.setHandlers(Singleton.getInstance().handlers);
         activityStartScreenBinding.setActivity(this);
 
-        if(getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).contains("user")){
+        if(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).contains("user")){
             Intent intent = new Intent(this, HomeScreen.class);
             startActivity(intent);
             finish();

@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                                             profile.getProfilePictureUri(500, 500).toString()
                                     );
 
-                                    SharedPreferences.Editor editor = getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).edit();
+                                    SharedPreferences.Editor editor = getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).edit();
                                     editor.putString("user", new Gson().toJson(user));
                                     editor.apply();
                                 } catch (Exception e) {
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Singleton.PICK_PHOTO && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == Singleton.getInstance().PICK_PHOTO && resultCode == Activity.RESULT_OK && data != null) {
             try {
                 Uri selectedImage = data.getData();
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 Log.d("pick photo error", e.getMessage());
             }
-        } else if (requestCode == Singleton.PICK_AUDIO && resultCode == Activity.RESULT_OK && data != null) {
+        } else if (requestCode == Singleton.getInstance().PICK_AUDIO && resultCode == Activity.RESULT_OK && data != null) {
             Uri audioFileUrl = data.getData();
             String[] audioPathColumn = {MediaStore.Audio.Media.DATA};
             Cursor audioCursor = getContentResolver().query(audioFileUrl, audioPathColumn, null, null, null);
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean writeAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
-                startActivityForResult(intent, Singleton.PICK_PHOTO);
+                startActivityForResult(intent, Singleton.getInstance().PICK_PHOTO);
                 break;
         }
     }
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnCreateUser)
     public void createUser() {
 
-        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
+        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
 
         Call<FacebookUserModel> call = RetrofitClient.getClient().createAccount(model);
@@ -299,14 +299,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setType("image/*");
-            startActivityForResult(intent, Singleton.PICK_PHOTO);
+            startActivityForResult(intent, Singleton.getInstance().PICK_PHOTO);
         }
     }
 
     @OnClick(R.id.btnCreateBand)
     public void createBand() {
 
-        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
+        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
 
         BandCreationModel newBand = new BandCreationModel(model.user_id.toString(), "Drummer", "generation f", 1, 3, "this is a band");
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("audio/*");
-        startActivityForResult(intent, Singleton.PICK_AUDIO);
+        startActivityForResult(intent, Singleton.getInstance().PICK_AUDIO);
     }
 
     private void uploadSong(Uri song, String songPath){
