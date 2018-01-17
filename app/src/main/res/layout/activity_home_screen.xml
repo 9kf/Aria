@@ -399,13 +399,20 @@
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
                     android:theme="@style/ToolBarStyle"
-                    app:popupTheme="@style/ToolBarStyle"/>
+                    app:popupTheme="@style/ToolBarStyle"
+                    app:title="@{viewModel.toolbarTitle}"/>
             </android.support.design.widget.AppBarLayout>
+
             <FrameLayout
                 android:id="@+id/layoutContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+                android:layout_height="match_parent" />
+
+                <com.claudiodegio.msv.MaterialSearchView
+                    android:id="@+id/svSearchBar"
+                    android:elevation="7dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
             </RelativeLayout>
 

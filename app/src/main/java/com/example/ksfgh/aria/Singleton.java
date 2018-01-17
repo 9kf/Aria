@@ -24,7 +24,6 @@ public class Singleton {
 
     public  String PREFERENCE_NAME = "arial";
     public  Handlers handlers = new Handlers();
-    //public static String VIDEO_URL = "192.168.254.109/Aria/public/assets/videos/Linkin%20Park-Talking%20To%20Myself.mp4";
 
     //constants
     public  final int PICK_PHOTO = 123;

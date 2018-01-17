@@ -269,23 +269,23 @@ public class MainActivity extends AppCompatActivity {
         FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
 
-        Call<FacebookUserModel> call = RetrofitClient.getClient().createAccount(model);
-
-        call.enqueue(new Callback<FacebookUserModel>() {
-            @Override
-            public void onResponse(Call<FacebookUserModel> call, Response<FacebookUserModel> response) {
-                try {
-                    Log.d("user", response.message());
-                } catch (Exception e) {
-                    Log.d("user error", e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<FacebookUserModel> call, Throwable t) {
-                Log.d("user error", t.getMessage());
-            }
-        });
+//        Call<FacebookUserModel> call = RetrofitClient.getClient().createAccount(model);
+//
+//        call.enqueue(new Callback<FacebookUserModel>() {
+//            @Override
+//            public void onResponse(Call<FacebookUserModel> call, Response<FacebookUserModel> response) {
+//                try {
+//                    Log.d("user", response.message());
+//                } catch (Exception e) {
+//                    Log.d("user error", e.getMessage());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<FacebookUserModel> call, Throwable t) {
+//                Log.d("user error", t.getMessage());
+//            }
+//        });
     }
 
 

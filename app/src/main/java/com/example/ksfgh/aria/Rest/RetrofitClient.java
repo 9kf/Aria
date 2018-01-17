@@ -20,7 +20,7 @@ public class RetrofitClient {
             retrofit = new Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.254.109/Aria/public/api/")
+                    .baseUrl("http://192.168.254.110/Aria/public/api/")
                     .build();
         }
 

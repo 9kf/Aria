@@ -38,6 +38,7 @@ public class HomeScreenViewModel {
     private HomeScreen homeScreen;
     public ObservableField<String> userName = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
+    public ObservableField<String> toolbarTitle = new ObservableField<>();
 
     private View currentView;
     private DuoDrawerLayout duoDrawerLayout;
@@ -48,6 +49,7 @@ public class HomeScreenViewModel {
         this.duoDrawerLayout = duoDrawerLayout;
         userName.set(userModel.fname + " " + userModel.lname);
         url.set(userModel.pic);
+        toolbarTitle.set("Home");
         onDrawerItemClick(homeScreen.findViewById(R.id.llHome));
     }
 
@@ -60,13 +62,13 @@ public class HomeScreenViewModel {
 
         switch (view.getId()){
             case R.id.llHome:
-                homeScreen.getSupportActionBar().setTitle("Home");
-                EventBus.getDefault().post(new HomeFragment(), "drawer");
+                toolbarTitle.set("Home");
+                EventBus.getDefault().post(new HomeFragment(), "switchFragment");
                 break;
 
             case R.id.llFeed:
-                homeScreen.getSupportActionBar().setTitle("Feed");
-                EventBus.getDefault().post(new FeedFragment(), "drawer");
+                toolbarTitle.set("Feed");
+                EventBus.getDefault().post(new FeedFragment(), "switchFragment");
                 break;
 
             case R.id.llTopCharts:

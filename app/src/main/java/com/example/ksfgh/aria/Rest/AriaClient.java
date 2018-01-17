@@ -26,8 +26,11 @@ public interface AriaClient {
     @GET("bands")
     Observable<BandModel[]> getbands();
 
+    @GET("getusers")
+    Observable<FacebookUserModel[]> getUsers();
+
     @POST("saveUser")
-    Call<FacebookUserModel> createAccount(@Body FacebookUserModel facebookUserModel);
+    Observable<FacebookUserModel> createAccount(@Body FacebookUserModel facebookUserModel);
 
     @POST("createBand")
     Call<BandMemberModel> createBand(@Body BandCreationModel bandCreationModel);

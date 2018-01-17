@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.MediaController;
@@ -25,11 +26,18 @@ import com.facebook.ProfileTracker;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
+import org.simple.eventbus.ThreadMode;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
 public class StartScreen extends AppCompatActivity {
 
     private ActivityStartScreenBinding activityStartScreenBinding;
-
     public CallbackManager callbackManager;
+    private CompositeDisposable compositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +50,18 @@ public class StartScreen extends AppCompatActivity {
         ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(configuration);
 
+        //initialize variables
+        compositeDisposable = new CompositeDisposable();
+
+        //Subscribing to event bus
+        EventBus.getDefault().register(this);
+
         //setting content view
         activityStartScreenBinding = DataBindingUtil.setContentView(this, R.layout.activity_start_screen);
         activityStartScreenBinding.setHandlers(Singleton.getInstance().handlers);
         activityStartScreenBinding.setActivity(this);
 
+        //check if the user has already logged in
         if(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).contains("user")){
             Intent intent = new Intent(this, HomeScreen.class);
             startActivity(intent);
@@ -57,9 +72,25 @@ public class StartScreen extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
     }
 
+    //add the http calls so that when the activity is destroyed, http calls wont continue to produce memory leak
+    @Subscriber(tag = "addDisposables", mode = ThreadMode.ASYNC)
+    private void addDisposables(Disposable disposable){
+        compositeDisposable.add(disposable);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //dispose all the http calls to avoid memory leak
+        compositeDisposable.dispose();
+
+        //unregister from event bus
+        EventBus.getDefault().unregister(this);
     }
 }
