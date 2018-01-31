@@ -1,9 +1,12 @@
 package com.example.ksfgh.aria.Rest;
 
+import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.Model.PlistModel;
 import com.example.ksfgh.aria.Model.SongModel;
 
 import io.reactivex.Observable;
@@ -12,10 +15,13 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by ksfgh on 16/11/2017.
@@ -61,5 +67,25 @@ public interface AriaClient {
             @Part("band_id") RequestBody bandId,
             @Part MultipartBody.Part song
     );
+
+
+    @POST("addSongToPlaylist")
+    @FormUrlEncoded
+    Observable<ResponseBody> addSongToPlaylist(@Field("genre_id") String genre,
+                                               @Field("song_id") String songId,
+                                               @Field("pl_id") String playlistId);
+
+    @GET("getAllPlaylist")
+    Observable<PlaylistModel[]> getPlaylists();
+
+    @POST("getPlistById")
+    @FormUrlEncoded
+    Observable<PlistModel[]> getPlaylistSongsByPlaylistId(@Field("pl_id") String playlistId);
+
+    @GET("songs")
+    Observable<SongModel[]> getAllSongs();
+
+    @GET("AllAlbums")
+    Observable<AlbumModel[]> getAllAlbums();
 
 }

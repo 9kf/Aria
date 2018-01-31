@@ -14,18 +14,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.R;
+import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.activities.StartScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.facebook.login.LoginManager;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.simple.eventbus.EventBus;
 
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import nl.psdcompany.duonavigationdrawer.views.DuoDrawerLayout;
 
 /**
@@ -51,11 +55,37 @@ public class HomeScreenViewModel {
         url.set(userModel.pic);
         toolbarTitle.set("Home");
         onDrawerItemClick(homeScreen.findViewById(R.id.llHome));
+        getUsers();
+    }
+
+    private void getUsers() {
+        if(Singleton.getInstance().facebookUserModels.size() == 0){
+            Disposable disposable = RetrofitClient.getClient().getUsers()
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeWith(new DisposableObserver<FacebookUserModel[]>() {
+                        @Override
+                        public void onNext(FacebookUserModel[] facebookUserModels) {
+                            for (FacebookUserModel model:facebookUserModels){
+                                Singleton.getInstance().facebookUserModels.add(model);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                        }
+
+                        @Override
+                        public void onComplete() {
+                        }
+                    });
+
+            EventBus.getDefault().post(disposable,"homeDisposables");
+        }
     }
 
     @BindingAdapter({"bind:url"})
     public static void setUserPic(ImageView view, String url){
-        ImageLoader.getInstance().displayImage(url, view);
+        Glide.with(view.getContext()).load(url).into(view);
     }
 
     public void onDrawerItemClick(View view){
@@ -63,27 +93,36 @@ public class HomeScreenViewModel {
         switch (view.getId()){
             case R.id.llHome:
                 toolbarTitle.set("Home");
-                EventBus.getDefault().post(new HomeFragment(), "switchFragment");
+                EventBus.getDefault().post(Singleton.getInstance().homeFragment, "switchFragment");
                 break;
 
             case R.id.llFeed:
                 toolbarTitle.set("Feed");
-                EventBus.getDefault().post(new FeedFragment(), "switchFragment");
+                EventBus.getDefault().post(Singleton.getInstance().feedFragment, "switchFragment");
                 break;
 
             case R.id.llTopCharts:
+                toolbarTitle.set("Top Charts");
+                break;
+
+            case R.id.llSearch:
+                toolbarTitle.set("Search");
                 break;
 
             case R.id.llNotifications:
+                toolbarTitle.set("Notifications");
                 break;
 
             case R.id.llMyBands:
+                toolbarTitle.set("My Bands");
                 break;
 
             case R.id.llFindFriends:
+                toolbarTitle.set("Find Friends");
                 break;
 
             case R.id.llSettings:
+                toolbarTitle.set("Settings");
                 break;
 
             case R.id.llLogout:

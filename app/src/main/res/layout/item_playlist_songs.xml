@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="PlaylistSongsBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.CustomSongModelForPlaylist"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.PlaylistActivityViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/rvWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="@android:color/transparent"
+        bind:alreadyPlaying="@{model}"
+        android:onClick="@{(v) -> viewmodel.onClickSong(v,model)}">
+
+        <ImageView
+            android:id="@+id/ivAlbumImage"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            bind:imgUrl="@{model.getAlbum().getAlbumPic()}"/>
+
+        <TextView
+            android:id="@+id/tvSongTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{model.getSong().songTitle}"
+            android:textColor="@color/white"
+            android:fontFamily="@font/bebasnue"
+            android:textSize="20sp"
+            android:layout_toRightOf="@+id/ivAlbumImage"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{model.getBand().bandName + " | " + model.getAlbum().getAlbumName()}'
+            android:textColor="@color/white"
+            android:fontFamily="@font/bebasnue"
+            android:textSize="14sp"
+            android:layout_toRightOf="@+id/ivAlbumImage"
+            android:layout_below="@+id/tvSongTitle"
+            android:layout_marginLeft="12dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_ellipsis"
+            android:layout_alignParentRight="true"
+            android:tint="@color/white"
+            android:layout_centerVertical="true"
+            android:onClick="@{() -> viewmodel.onOptionsClick(model)}"/>
+
+    </RelativeLayout>
+
+</layout>

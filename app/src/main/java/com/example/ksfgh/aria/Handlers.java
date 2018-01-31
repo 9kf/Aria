@@ -77,6 +77,7 @@ public class Handlers {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.d("fbUser", object.toString());
                                 try {
                                     final FacebookUserModel user = new FacebookUserModel(
                                             profile.getId(),
@@ -103,7 +104,7 @@ public class Handlers {
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,link,email,gender,installed,friends{id,name,picture}");
+                parameters.putString("fields", "id,name,link,email,gender,installed,friends");
                 request.setParameters(parameters);
                 request.executeAsync();
             }

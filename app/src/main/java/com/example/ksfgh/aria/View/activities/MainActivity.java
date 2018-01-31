@@ -36,7 +36,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.utils.L;
 
 import org.json.JSONObject;
 import org.reactivestreams.Subscription;

@@ -23,8 +23,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
@@ -45,10 +44,6 @@ public class StartScreen extends AppCompatActivity {
 
         //initialize fb sdk to avoid error on the facebook button
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-        //initialize universal image loader
-        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this).build();
-        ImageLoader.getInstance().init(configuration);
 
         //initialize variables
         compositeDisposable = new CompositeDisposable();

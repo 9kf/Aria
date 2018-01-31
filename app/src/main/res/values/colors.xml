@@ -11,5 +11,7 @@
     <color name="searchBartextColor">#7F8E95</color>
     <color name="drawerItemColor">#FAFAFA</color>
     <color name="civBorderColor">#757575</color>
+    <color name="toolbarColor">#161616</color>
+    <color name="highLightColor">#E57C1F</color>
 
 </resources>

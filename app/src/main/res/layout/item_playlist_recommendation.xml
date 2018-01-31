@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="PlaylistBinding">
+
+        <import type="java.lang.String"/>
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.PlaylistModel"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.HomeViewModel"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:onClick="@{() -> viewmodel.playlistClicked(model)}">
+
+            <ImageView
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginBottom="4dp"
+                bind:imgUrl="@{model.image}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bebasnue"
+                android:text="@{model.plTitle}"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bebasnue"
+                android:text='@{String.valueOf(model.followers) + " followers"}'
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center"/>
+
+    </LinearLayout>
+</layout>

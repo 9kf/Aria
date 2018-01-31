@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="java.lang.String"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.PlaylistActivityViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.ksfgh.aria.View.activities.PlaylistActivity"
+        android:background="@color/toolbarColor">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/abl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/toolbarColor"
+                android:theme="@style/ToolBarStyle"
+                app:popupTheme="@style/ToolBarStyle"
+                app:title="@{viewmodel.playlistModel.plTitle}" />
+        </android.support.design.widget.AppBarLayout>
+
+        <ImageView
+            android:id="@+id/ivPlaylistImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/abl"
+            android:layout_marginTop="20dp"
+            bind:imgUrl="@{viewmodel.playlistModel.image}"/>
+
+        <TextView
+            android:id="@+id/tvPlaylistCreator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivPlaylistImage"
+            android:layout_centerHorizontal="true"
+            android:text='@{"by: " + viewmodel.creatorName}'
+            android:fontFamily="@font/bebasnue"
+            android:textSize="12sp"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/tvPlaylistFollowers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvPlaylistCreator"
+            android:layout_centerHorizontal="true"
+            android:text='@{String.valueOf(viewmodel.playlistModel.followers) + " followers"}'
+            android:fontFamily="@font/bebasnue"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvPlaylistSongs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:layout_below="@+id/tvPlaylistFollowers"
+            android:layout_marginTop="12dp"></android.support.v7.widget.RecyclerView>
+
+
+    </RelativeLayout>
+
+</layout>
