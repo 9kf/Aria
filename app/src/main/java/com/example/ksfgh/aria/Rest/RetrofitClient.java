@@ -1,6 +1,7 @@
 package com.example.ksfgh.aria.Rest;
 
 import com.example.ksfgh.aria.Model.BandModel;
+import com.example.ksfgh.aria.Singleton;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import io.reactivex.Observable;
@@ -20,7 +21,7 @@ public class RetrofitClient {
             retrofit = new Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.254.101/Aria/public/api/")
+                    .baseUrl(Singleton.getInstance().BASE + "/Aria/public/api/")
                     .build();
         }
 

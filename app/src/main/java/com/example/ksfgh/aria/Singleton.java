@@ -1,6 +1,7 @@
 package com.example.ksfgh.aria;
 
 import android.app.Activity;
+import android.databinding.ObservableBoolean;
 
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
@@ -33,7 +34,7 @@ public class Singleton {
     //constants
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
-    public final String BASE = "http://192.168.254.101";
+    public final String BASE = "http://192.168.254.108";
 
     //static fragments
     public static HomeFragment homeFragment = new HomeFragment();
@@ -45,9 +46,16 @@ public class Singleton {
     //used to identify the user
     public ArrayList<FacebookUserModel> facebookUserModels = new ArrayList<>();
 
-    //used to identify what playlist is clicked
+    //used to identify what playlist is clicked and if the user clicked the same playlist
     public PlaylistModel currentPlaylistId;
+    public PlaylistModel playedPlist;
 
     //used to identify what song is currently playing
     public CustomSongModelForPlaylist song;
+
+    //used to identify if the player is playing a song
+    public boolean isPlayerPlaying;
+
+    //used to identify if there is already a song prepared for the player
+    public boolean isPlayerPrepared;
 }

@@ -65,6 +65,7 @@ public class PlaylistSongsAdapter extends RecyclerView.Adapter<PlaylistSongsAdap
         CustomSongModelForPlaylist song = songs.get(position);
         holder.binding.setModel(song);
         holder.binding.setViewmodel(playlistActivityViewModel);
+        playlistActivityViewModel.addViews(holder.binding.rvWrapper);
     }
 
     @Override

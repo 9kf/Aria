@@ -33,6 +33,7 @@ public class HomeViewModel {
     public HomeViewModel(HomeScreen homeScreen) {
         this.playlistModels = new ObservableArrayList<>();
         this.homeScreen = homeScreen;
+        EventBus.getDefault().register(this);
         getPlaylist();
     }
 
@@ -42,6 +43,14 @@ public class HomeViewModel {
     }
 
     public void playlistClicked(PlaylistModel model){
+//        if(Singleton.getInstance().currentPlaylistId != null){
+//            if(Singleton.getInstance().currentPlaylistId.equals(model))
+//                Singleton.getInstance().isTheSamePlaylist = true;
+//            else {
+//                Singleton.getInstance().isTheSamePlaylist = false
+//            }
+//        }
+        EventBus.getDefault().post(model, "setPlist");
         Singleton.getInstance().currentPlaylistId = model;
         Intent intent = new Intent(homeScreen, PlaylistActivity.class);
         homeScreen.startActivity(intent);

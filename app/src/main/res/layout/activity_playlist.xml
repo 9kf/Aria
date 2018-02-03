@@ -11,67 +11,137 @@
             type="com.example.ksfgh.aria.ViewModel.PlaylistActivityViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.ksfgh.aria.View.activities.PlaylistActivity"
-        android:background="@color/toolbarColor">
+        android:background="@android:color/transparent">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/abl"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/toolbarColor"
+            android:elevation="7dp">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/toolbarColor"
-                android:theme="@style/ToolBarStyle"
-                app:popupTheme="@style/ToolBarStyle"
-                app:title="@{viewmodel.playlistModel.plTitle}" />
-        </android.support.design.widget.AppBarLayout>
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/white"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{()->viewmodel.destroyActivity()}"/>
 
-        <ImageView
-            android:id="@+id/ivPlaylistImage"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/abl"
-            android:layout_marginTop="20dp"
-            bind:imgUrl="@{viewmodel.playlistModel.image}"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{viewmodel.playlistModel.plTitle}"
+                android:layout_centerInParent="true"/>
 
-        <TextView
-            android:id="@+id/tvPlaylistCreator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ivPlaylistImage"
-            android:layout_centerHorizontal="true"
-            android:text='@{"by: " + viewmodel.creatorName}'
-            android:fontFamily="@font/bebasnue"
-            android:textSize="12sp"
-            android:textColor="@color/white"/>
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tvPlaylistFollowers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvPlaylistCreator"
-            android:layout_centerHorizontal="true"
-            android:text='@{String.valueOf(viewmodel.playlistModel.followers) + " followers"}'
-            android:fontFamily="@font/bebasnue"
-            android:textSize="16sp"
-            android:textColor="@color/white"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvPlaylistSongs"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:layout_below="@+id/tvPlaylistFollowers"
-            android:layout_marginTop="12dp"></android.support.v7.widget.RecyclerView>
+            android:orientation="vertical"
+            android:weightSum="2"
+            android:padding="0dp"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="?attr/actionBarSize">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/toolbarColor"
+                android:layout_weight="1">
 
 
-    </RelativeLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    bind:imgUrlBlur="@{viewmodel.playlistModel.image}"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/black"
+                    android:alpha=".55"/>
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/civPlaylistImage"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_centerInParent="true"
+                    bind:imgUrl="@{viewmodel.playlistModel.image}" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/playOrPause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="7dp"
+                    app:backgroundTint="@color/highLightColor"
+                    android:layout_centerInParent="true"
+                    android:src="@{viewmodel.isPlayerPlaying() ? @drawable/exo_controls_pause : @drawable/exo_controls_play}"
+                    android:onClick="@{()->viewmodel.playSelectedPlaylist()}"/>
+
+
+                <TextView
+                    android:id="@+id/tvPlaylistCreator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/civPlaylistImage"
+                    android:layout_centerHorizontal="true"
+                    android:text='@{"by: " + viewmodel.creatorName + " | " + String.valueOf(viewmodel.playlistModel.followers) + " followers"}'
+                    android:fontFamily="@font/bebasnue"
+                    android:textSize="16sp"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/white"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/toolbarColor">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/black"
+                    android:alpha=".55"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--bottomsheet part -->
+        <LinearLayout
+            android:id="@+id/llBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="@color/toolbarColor"
+            android:orientation="vertical"
+            android:elevation="7dp"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="320dp"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvPlaylistSongs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none"></android.support.v7.widget.RecyclerView>
+
+
+        </LinearLayout>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>

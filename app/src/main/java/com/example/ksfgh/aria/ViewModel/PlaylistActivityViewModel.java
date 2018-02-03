@@ -1,17 +1,17 @@
 package com.example.ksfgh.aria.ViewModel;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.ksfgh.aria.Adapters.PlaylistSongsAdapter;
 import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandModel;
@@ -19,30 +19,14 @@ import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
 import com.example.ksfgh.aria.Model.SongModel;
+import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.DynamicConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 
 import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
-
-import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -52,6 +36,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function3;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /**
  * Created by ksfgh on 29/01/2018.
@@ -64,24 +49,34 @@ public class PlaylistActivityViewModel {
     public PlaylistActivity playlistActivity;
     private ObservableArrayList<CustomSongModelForPlaylist> playlistSongs;
     private PlaylistSongsAdapter adapter;
+    private ArrayList<View> viewList;
+    private boolean isPlaying;
 
 
     public PlaylistActivityViewModel(PlaylistActivity playlistActivity) {
         this.playlistActivity = playlistActivity;
         this.playlistModel = Singleton.getInstance().currentPlaylistId;
         creatorName.set(Singleton.getInstance().utilities.findUserById(playlistModel.getPlCreator()));
-
+        viewList = new ArrayList<>();
         playlistSongs = new ObservableArrayList<>();
-
+        EventBus.getDefault().register(this);
         adapter = new PlaylistSongsAdapter(playlistSongs, this);
         EventBus.getDefault().post(adapter, "setRecyclerView");
-        getPlists();
+        isPlaying = Singleton.getInstance().isPlayerPlaying;
 
+        getPlists();
     }
 
     @BindingAdapter("bind:imgUrl")
     public static void setImage(ImageView view, String image){
         Glide.with(view.getContext()).load(image).into(view);
+    }
+
+    @BindingAdapter("bind:imgUrlBlur")
+    public static void blurImage(ImageView view, String image){
+        Glide.with(view.getContext()).load(image)
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(70)))
+                .into(view);
     }
 
     //used to store the identifiers on what songs are inside the playlist
@@ -101,7 +96,6 @@ public class PlaylistActivityViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-
                     }
 
                     @Override
@@ -145,7 +139,6 @@ public class PlaylistActivityViewModel {
                     }
                 });
 
-
         Disposable disposable = observable
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -161,7 +154,10 @@ public class PlaylistActivityViewModel {
 
                     @Override
                     public void onComplete() {
-                        EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
+                        if(!Singleton.getInstance().isPlayerPrepared)
+                            EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
+
+                        higlightPlayedSong("");
                     }
                 });
 
@@ -169,40 +165,97 @@ public class PlaylistActivityViewModel {
 
     }
 
-    public void dummyFunction(View view, CustomSongModelForPlaylist model){
+    public void playSelectedPlaylist(){
+        if(!playlistSongs.isEmpty()){
+            if(isPlaying == false){
+                EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
+                EventBus.getDefault().post(true, "playOrPause");
+                isPlaying = true;
+                playlistActivity.setFabSrc(true);
+            }
+            else {
+                if(!Singleton.getInstance().currentPlaylistId.equals(Singleton.getInstance().playedPlist)){
+                    EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
+                    EventBus.getDefault().post(true, "playOrPause");
+                    isPlaying = true;
+                    playlistActivity.setFabSrc(true);
+                }
+                else {
+                    EventBus.getDefault().post(false, "playOrPause");
+                    isPlaying = false;
+                    playlistActivity.setFabSrc(false);
+                }
 
-    }
-
-    static View currentSong;
-    @BindingAdapter("bind:alreadyPlaying")
-    public static void isAlreadyPlaying(View view, CustomSongModelForPlaylist model){
-        if(Singleton.getInstance().song != null){
-            if(model.getSong().songId == Singleton.getInstance().song.getSong().songId){
-                currentSong = view;
-                currentSong.setBackgroundColor(Color.parseColor("#E57C1F"));
             }
         }
     }
 
-    @SuppressLint("ResourceAsColor")
-    public void onClickSong(View view, CustomSongModelForPlaylist item){
 
-        EventBus.getDefault().post(item, "skipSong");
-
-        if(currentSong == null){
-            currentSong = view;
-            currentSong.setBackgroundColor(Color.parseColor("#E57C1F"));
+    public boolean isPlayerPlaying(){
+        if(Singleton.getInstance().currentPlaylistId.equals(Singleton.getInstance().playedPlist)){
+            return isPlaying;
         }
-        else {
-            currentSong.setBackgroundColor(android.R.color.transparent);
-            currentSong = view;
-            currentSong.setBackgroundColor(Color.parseColor("#E57C1F"));
+        else
+            return false;
+
+    }
+
+    public void addViews(View view){
+        viewList.add(view);
+    }
+
+    View currentView;
+    @Subscriber(tag = "highlightPlayedSong")
+    @SuppressLint("ResourceAsColor")
+    public void higlightPlayedSong(String empty){
+
+        if(empty.equals("final")){
+            currentView.setBackgroundColor(android.R.color.transparent);
+            currentView = null;
+        }
+        else{
+            if(Singleton.getInstance().song != null){
+
+                for(int i = 0; i < playlistSongs.size(); i++){
+                    if(Singleton.getInstance().song.getSong().songId == playlistSongs.get(i).getSong().songId){
+                        if(currentView == null){
+                            if(!viewList.isEmpty()){
+                                currentView = viewList.get(i);
+                                currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
+                            }
+                        }
+                        else {
+                            currentView.setBackgroundColor(android.R.color.transparent);
+                            currentView = viewList.get(i);
+                            currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
+                        }
+                    }
+                }
+
+            }
         }
 
     }
 
+
+    public void onClickSong(View view, CustomSongModelForPlaylist item){
+
+        EventBus.getDefault().post(item, "skipSong");
+        isPlaying = true;
+        playlistActivity.setFabSrc(true);
+    }
+
+    @Subscriber(tag = "setFabSrc")
+    public void setFabSrc(boolean playOrPause){
+        playlistActivity.setFabSrc(playOrPause);
+    }
+
     public void onOptionsClick(CustomSongModelForPlaylist item){
 
+    }
+
+    public void destroyActivity(){
+        playlistActivity.finish();
     }
 
 //    public void addSongToAlbum(){
@@ -211,13 +264,13 @@ public class PlaylistActivityViewModel {
 //        intent.setType("audio/*");
 //        playlistActivity.startActivityForResult(intent, Singleton.getInstance().PICK_AUDIO);
 //    }
-
+//
 //    public void uploadSongToAlbum(Uri audioFileUrl, String audioPath){
 //
 //        RequestBody albumId = RequestBody.create(MultipartBody.FORM, "2");
-//        RequestBody songTitle = RequestBody.create(MultipartBody.FORM, "first song yeah");
+//        RequestBody songTitle = RequestBody.create(MultipartBody.FORM, "Song #6");
 //        RequestBody songDesc = RequestBody.create(MultipartBody.FORM, "this is a song for the lit shit");
-//        RequestBody genreId = RequestBody.create(MultipartBody.FORM, "3");
+//        RequestBody genreId = RequestBody.create(MultipartBody.FORM, "2");
 //        RequestBody bandId = RequestBody.create(MultipartBody.FORM, "1");
 //
 //        File originalFile = new File(audioPath);
@@ -243,10 +296,10 @@ public class PlaylistActivityViewModel {
 //                    }
 //                });
 //    }
-
+//
 //    public void addSongToPlaylist(){
 //
-//        Disposable disposable = RetrofitClient.getClient().addSongToPlaylist("3", "6", "2")
+//        Disposable disposable = RetrofitClient.getClient().addSongToPlaylist("3", "7", "2")
 //                .subscribeOn(Schedulers.newThread())
 //                .subscribeWith(new DisposableObserver<ResponseBody>() {
 //                    @Override

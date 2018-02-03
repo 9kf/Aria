@@ -73,5 +73,9 @@ public class HomeFragment extends Fragment {
         return  fragmentHomeBinding.getRoot();
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(homeViewModel);
+    }
 }

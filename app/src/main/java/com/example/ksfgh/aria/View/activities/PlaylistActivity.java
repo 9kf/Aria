@@ -3,8 +3,10 @@ package com.example.ksfgh.aria.View.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.generated.callback.OnClickListener;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +32,10 @@ public class PlaylistActivity extends AppCompatActivity {
     private ActivityPlaylistBinding playlistBinding;
     private PlaylistActivityViewModel playlistActivityViewModel;
     private CompositeDisposable compositeDisposable;
+    private BottomSheetBehavior bottomSheetBehavior;
+
+    //unecessary shit
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,20 +45,25 @@ public class PlaylistActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         compositeDisposable = new CompositeDisposable();
 
-        Toolbar toolbar = playlistBinding.toolbar;
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        bottomSheetBehavior = BottomSheetBehavior.from(playlistBinding.llBottomSheet);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onClick(View view) {
-                finish();
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if(newState == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.setPeekHeight(520);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
             }
         });
 
-
         playlistActivityViewModel = new PlaylistActivityViewModel(this);
         playlistBinding.setViewmodel(playlistActivityViewModel);
+
+        //Unecessary shits and I dont know why is this happening fml
+        fab = findViewById(R.id.playOrPause);
     }
 
     @Subscriber(tag = "playlistDisposables")
@@ -62,9 +73,19 @@ public class PlaylistActivity extends AppCompatActivity {
 
     @Subscriber(tag = "setRecyclerView")
     private void setRecyclerView(PlaylistSongsAdapter adapter){
-        playlistBinding.rvPlaylistSongs.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        playlistBinding.rvPlaylistSongs.setLayoutManager(linearLayoutManager);
         playlistBinding.rvPlaylistSongs.setAdapter(adapter);
+    }
+
+
+    public void setFabSrc(boolean playOrPause){
+        if(playOrPause){
+            fab.setImageResource(R.drawable.exo_controls_pause);
+        }
+        else {
+            fab.setImageResource(R.drawable.exo_controls_play);
+        }
     }
 
 //    @Override
@@ -82,6 +103,7 @@ public class PlaylistActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(playlistActivityViewModel);
         compositeDisposable.dispose();
     }
 }

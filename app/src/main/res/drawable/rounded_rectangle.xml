@@ -3,13 +3,13 @@
     android:shape="rectangle" >
 
     <stroke
-        android:color="@color/searchBarOutlineColor"
+        android:color="@color/highLightColor"
         android:width="3px"/>
 
     <corners
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"
-        android:topLeftRadius="8dp"
-        android:topRightRadius="8dp" />
+        android:bottomLeftRadius="45dp"
+        android:bottomRightRadius="45dp"
+        android:topLeftRadius="45dp"
+        android:topRightRadius="45dp" />
 
 </shape>

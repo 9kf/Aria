@@ -2,6 +2,8 @@ package com.example.ksfgh.aria.View.activities;
 
 import android.app.Activity;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.util.Log;
 
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.ViewModel.HomeScreenViewModel;
@@ -64,6 +67,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource;
     private ArrayList<CustomSongModelForPlaylist> songList;
     private boolean isPlaying;
+    private PlaylistModel plist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +164,20 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Subscriber(tag = "addSongsInPlaylist")
     private void addSongsInPlaylist(ArrayList<CustomSongModelForPlaylist> songs){
 
-        dynamicConcatenatingMediaSource.releaseSource();
+        boolean resetPosition = false;
+        if(songList.size() != songs.size()){
+            resetPosition = true;
+        }
+        else {
+            for(int i = 0; i < songList.size(); i++){
+                if(songList.get(i).getSong().songId != songs.get(i).getSong().songId){
+                    resetPosition = true;
+                    break;
+                }
+            }
+        }
+
+        //dynamicConcatenatingMediaSource.releaseSource();
         dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
         songList.clear();
 
@@ -175,7 +192,9 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
             songList.add(song);
         }
-        exoPlayer.prepare(dynamicConcatenatingMediaSource, true, true);
+
+        exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, false);
+        Singleton.getInstance().isPlayerPrepared = true;
     }
 
     int windowIndex = -1;
@@ -195,9 +214,13 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         else {
             exoPlayer.seekTo(windowIndex, 180000);
             exoPlayer.setPlayWhenReady(true);
+            Singleton.getInstance().isPlayerPlaying = true;
             Singleton.getInstance().song = song;
             isPlaying = true;
         }
+
+        Singleton.getInstance().playedPlist = plist;
+        EventBus.getDefault().post("","highlightPlayedSong");
     }
 
     @Subscriber(tag = "playSongDirectly")
@@ -216,16 +239,50 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         );
         songList.add(song);
 
-        exoPlayer.prepare(dynamicConcatenatingMediaSource, true, true);
+        exoPlayer.prepare(dynamicConcatenatingMediaSource, true, false);
         exoPlayer.setPlayWhenReady(true);
+        isPlaying = true;
         Singleton.getInstance().song = song;
     }
 
     @Subscriber(tag = "playOrPause")
     private void playOrPause(boolean play){
-        exoPlayer.setPlayWhenReady(play);
+
+        if(Singleton.getInstance().song == null || Singleton.getInstance().playedPlist != plist){
+            Singleton.getInstance().song = songList.get(0);
+            EventBus.getDefault().post("","highlightPlayedSong");
+        }
+
+        if(exoPlayer.getPlaybackState() == Player.STATE_ENDED){
+            Singleton.getInstance().song = songList.get(0);
+            exoPlayer.seekToDefaultPosition();
+        }
+
+
+        //play == false means that the user has requested the player to pause
+        //play == true means that the user has requested the player to play
+        if(play == false){
+            exoPlayer.setPlayWhenReady(false);
+            isPlaying = false;
+            Singleton.getInstance().isPlayerPlaying = false;
+        }
+        else {
+            exoPlayer.setPlayWhenReady(play);
+            isPlaying = true;
+            Singleton.getInstance().isPlayerPlaying = true;
+            Singleton.getInstance().playedPlist = plist;
+        }
     }
 
+    @Subscriber(tag = "isPlayerPlaying")
+    private void isPlayerPlaying(boolean playing){
+        playing = exoPlayer.getPlayWhenReady();
+    }
+
+    @Subscriber(tag = "setPlist")
+    private void setPlist(PlaylistModel plist){
+        this.plist = plist;
+    }
 
     //
     //Exoplayer Listener
@@ -249,6 +306,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         Log.d("exooplayer", "player state changed to " + String.valueOf(playbackState));
+        if(playbackState == Player.STATE_ENDED){
+            EventBus.getDefault().post("final", "highlightPlayedSong");
+            EventBus.getDefault().post(false, "setFabSrc");
+            Singleton.getInstance().song = null;
+        }
+
     }
 
     @Override
@@ -271,13 +334,20 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         Log.d("exooplayer", "position disconuity: " + String.valueOf(reason));
         if(reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION){
             Log.d("exooplayer", String.valueOf(exoPlayer.getDuration()/1000));
-            if(windowIndex >= songList.size())
-                Singleton.getInstance().song = songList.get(windowIndex++);
+            if(windowIndex+1 < songList.size()){
+                windowIndex = windowIndex +1;
+                Singleton.getInstance().song = songList.get(windowIndex);
+            }
+
         }
         else if(reason == Player.DISCONTINUITY_REASON_SEEK){
-            if(windowIndex >= songList.size())
+            if(windowIndex <= songList.size()){
                 Singleton.getInstance().song = songList.get(windowIndex);
+            }
         }
+
+        EventBus.getDefault().post("", "highlightPlayedSong");
+
     }
 
     @Override

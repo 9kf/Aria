@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:background="@android:color/transparent"
-        bind:alreadyPlaying="@{model}"
         android:onClick="@{(v) -> viewmodel.onClickSong(v,model)}">
 
         <ImageView
