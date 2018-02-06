@@ -41,8 +41,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 /**
  * Created by ksfgh on 29/01/2018.
  */
-
-public class PlaylistActivityViewModel {
+public class PlaylistActivityViewModel{
 
     public PlaylistModel playlistModel;
     public ObservableField<String> creatorName = new ObservableField<>();
@@ -70,6 +69,7 @@ public class PlaylistActivityViewModel {
     @BindingAdapter("bind:imgUrl")
     public static void setImage(ImageView view, String image){
         Glide.with(view.getContext()).load(image).into(view);
+
     }
 
     @BindingAdapter("bind:imgUrlBlur")
@@ -248,6 +248,10 @@ public class PlaylistActivityViewModel {
     @Subscriber(tag = "setFabSrc")
     public void setFabSrc(boolean playOrPause){
         playlistActivity.setFabSrc(playOrPause);
+    }
+
+    public void openPlayer(){
+        EventBus.getDefault().post(playlistActivity, "openPlayer");
     }
 
     public void onOptionsClick(CustomSongModelForPlaylist item){

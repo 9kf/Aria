@@ -1,0 +1,198 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="PlayerFragmentBinding">
+        <import type="android.view.View"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.PlayerActivityViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.ksfgh.aria.View.fragments.PlayerFragment"
+        android:background="@android:color/transparent">
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:imgBlur="@{viewmodel.song.album.albumPic}"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:alpha=".5"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civCD"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="90dp"
+            bind:imgUrl="@{viewmodel.song.album.albumPic}"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/shape_circle"
+            android:alpha=".9"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="170dp"
+            android:elevation="7dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@{viewmodel.isPlayerPlaying() ? @drawable/exo_controls_pause : @drawable/exo_controls_play}"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="205dp"
+            android:elevation="7dp"
+            android:onClick="@{(v)->viewmodel.pauseOrPlay(v)}"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/exo_controls_previous"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="205dp"
+            android:onClick="@{() -> viewmodel.previousSong()}"
+            android:visibility="@{viewmodel.previousVisibility ? View.VISIBLE : View.GONE}"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/exo_controls_next"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="205dp"
+            android:onClick="@{()->viewmodel.nextSong()}"
+            android:visibility="@{viewmodel.nextVisibility ? View.VISIBLE : View.GONE}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/civCD"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="44dp"
+            android:text="@{viewmodel.currentTime}"
+            android:textColor="@color/white"/>
+
+        <SeekBar
+            android:id="@+id/sbSeek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:thumbTint="@color/highLightColor"
+            android:progressTint="@color/highLightColor"
+            android:layout_below="@id/civCD"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="40dp"
+            android:max="@{viewmodel.seekBarMax}"
+            android:progress="@{viewmodel.seekBarProgress}"
+            android:onProgressChanged="@{viewmodel.onProgressChanged}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/civCD"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="44dp"
+            android:text="@{viewmodel.songDuration}"
+            android:textColor="@color/white"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sbSeek"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/ivRepeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/exo_controls_repeat_all"
+                android:layout_centerInParent="true"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/ivRepeat"
+                android:src="@drawable/exo_controls_shuffle"
+                android:layout_marginRight="20dp"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_ellipsis"
+                android:rotation="90"
+                android:tint="@color/white"
+                android:layout_toRightOf="@id/ivRepeat"
+                android:layout_marginLeft="20dp"/>
+
+        </RelativeLayout>
+
+        <!--toolbar-->
+        <RelativeLayout
+            android:id="@+id/rlToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="@color/white"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{()->viewmodel.destroyActivity()}"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text='@{viewmodel.song.song.songTitle}'
+                    android:layout_gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:text='@{viewmodel.song.album.albumName}'
+                    android:layout_gravity="center_horizontal"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_queue_music"
+                android:tint="@color/white"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:onClick="@{}"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</layout>

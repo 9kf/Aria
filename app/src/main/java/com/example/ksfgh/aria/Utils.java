@@ -21,6 +21,8 @@ import org.simple.eventbus.Subscriber;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Formatter;
+import java.util.Locale;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
@@ -71,5 +73,28 @@ public class Utils {
 
     public MediaSource createMediaSource(String song, DataSource.Factory dataSourceFactory, ExtractorsFactory extractorsFactory){
         return new ExtractorMediaSource(Uri.parse(song), dataSourceFactory, extractorsFactory, null, null);
+    }
+
+    public String timeToString(int time){
+
+        StringBuilder formatBuilder;
+        Formatter formatter;
+
+        formatBuilder = new StringBuilder();
+        formatter = new Formatter(formatBuilder, Locale.getDefault());
+        int totalSeconds = time / 1000;
+
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours = totalSeconds / 3600;
+
+        formatBuilder.setLength(0);
+        if(hours > 0){
+            return formatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        }
+        else{
+            return formatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+
     }
 }

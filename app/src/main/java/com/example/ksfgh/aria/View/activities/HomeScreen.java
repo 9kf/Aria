@@ -1,6 +1,7 @@
 package com.example.ksfgh.aria.View.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.media.session.PlaybackState;
@@ -61,11 +62,11 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private DuoDrawerToggle duoDrawerToggle;
 
     //Exoplayer or Music and Video Player
-    private SimpleExoPlayer exoPlayer;
+    public SimpleExoPlayer exoPlayer;
     private DataSource.Factory dataSourceFactory;
     private ExtractorsFactory extractorsFactory;
     private DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource;
-    private ArrayList<CustomSongModelForPlaylist> songList;
+    public ArrayList<CustomSongModelForPlaylist> songList;
     private boolean isPlaying;
     private PlaylistModel plist;
 
@@ -84,6 +85,9 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         //register to event bus
         EventBus.getDefault().register(this);
+
+        //assign this to the singleton for the reference of other activities
+        Singleton.homeScreen = this;
 
         //initialize exoplayer
         TrackSelector trackSelector = new DefaultTrackSelector();
@@ -197,7 +201,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         Singleton.getInstance().isPlayerPrepared = true;
     }
 
-    int windowIndex = -1;
+    public int windowIndex = -1;
     @Subscriber(tag = "skipSong")
     private void skipSong(CustomSongModelForPlaylist song){
 
@@ -208,11 +212,11 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             }
         }
         if(isPlaying == true){
-            exoPlayer.seekTo(windowIndex, 180000);
+            exoPlayer.seekTo(windowIndex, 0);
             Singleton.getInstance().song = song;
         }
         else {
-            exoPlayer.seekTo(windowIndex, 180000);
+            exoPlayer.seekTo(windowIndex, 0);
             exoPlayer.setPlayWhenReady(true);
             Singleton.getInstance().isPlayerPlaying = true;
             Singleton.getInstance().song = song;
@@ -221,6 +225,30 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         Singleton.getInstance().playedPlist = plist;
         EventBus.getDefault().post("","highlightPlayedSong");
+    }
+
+    @Subscriber(tag = "seekSongTo")
+    private void seekSongTo(int time){
+        exoPlayer.seekTo(windowIndex,time*1000);
+        EventBus.getDefault().post("", "songTimer");
+    }
+
+    @Subscriber(tag = "nextSong")
+    private void nextSong(String empty){
+        if(windowIndex+1 < songList.size()){
+            windowIndex = windowIndex +1;
+            Singleton.getInstance().song = songList.get(windowIndex);
+            exoPlayer.seekTo(windowIndex,0);
+        }
+    }
+
+    @Subscriber(tag = "previousSong")
+    private void previousSong(String empty){
+        if(windowIndex-1 >= 0){
+            windowIndex = windowIndex -1;
+            Singleton.getInstance().song = songList.get(windowIndex);
+            exoPlayer.seekTo(windowIndex,0);
+        }
     }
 
     @Subscriber(tag = "playSongDirectly")
@@ -284,6 +312,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         this.plist = plist;
     }
 
+    @Subscriber(tag = "openPlayer")
+    private void openPlayer(Activity activity){
+        Intent intent = new Intent(activity, PlayerActivity.class);
+        startActivity(intent);
+    }
+
     //
     //Exoplayer Listener
     //
@@ -309,8 +343,16 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         if(playbackState == Player.STATE_ENDED){
             EventBus.getDefault().post("final", "highlightPlayedSong");
             EventBus.getDefault().post(false, "setFabSrc");
+            EventBus.getDefault().post("","playerEndOfQueue");
             Singleton.getInstance().song = null;
+            Singleton.getInstance().isPlayerPlaying = false;
         }
+        else if(playbackState == Player.STATE_READY){
+            EventBus.getDefault().post("","onNextSong");
+        }
+
+        Log.d("exooplayer", "playback State of player: " + exoPlayer.getPlaybackState());
+        Log.d("exooplayer", "player State when ready: " + exoPlayer.getPlayWhenReady());
 
     }
 
@@ -333,16 +375,20 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     public void onPositionDiscontinuity(int reason) {
         Log.d("exooplayer", "position disconuity: " + String.valueOf(reason));
         if(reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION){
-            Log.d("exooplayer", String.valueOf(exoPlayer.getDuration()/1000));
             if(windowIndex+1 < songList.size()){
                 windowIndex = windowIndex +1;
                 Singleton.getInstance().song = songList.get(windowIndex);
+                EventBus.getDefault().post("","onNextSong");
+                EventBus.getDefault().post("", "isThereAPrevious");
+                EventBus.getDefault().post("", "isThereANext");
             }
 
         }
         else if(reason == Player.DISCONTINUITY_REASON_SEEK){
             if(windowIndex <= songList.size()){
                 Singleton.getInstance().song = songList.get(windowIndex);
+                EventBus.getDefault().post("", "isThereAPrevious");
+                EventBus.getDefault().post("", "isThereANext");
             }
         }
 

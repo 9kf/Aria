@@ -6,6 +6,7 @@ import android.databinding.ObservableBoolean;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 
@@ -34,7 +35,10 @@ public class Singleton {
     //constants
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
-    public final String BASE = "http://192.168.254.108";
+    public final String BASE = "http://192.168.254.105";
+
+    //home screen
+    public static HomeScreen homeScreen;
 
     //static fragments
     public static HomeFragment homeFragment = new HomeFragment();
