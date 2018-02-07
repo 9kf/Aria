@@ -31,6 +31,7 @@ import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 import org.simple.eventbus.ThreadMode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -41,6 +42,7 @@ import io.reactivex.functions.Function3;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import okhttp3.ResponseBody;
 
 /**
  * Created by ksfgh on 29/01/2018.
@@ -80,6 +82,7 @@ public class PlaylistActivityViewModel{
     public static void blurImage(ImageView view, String image){
         Glide.with(view.getContext()).load(image)
                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(70)))
+                .apply(RequestOptions.overrideOf(500,500))
                 .into(view);
     }
 
@@ -313,7 +316,7 @@ public class PlaylistActivityViewModel{
 //
 //    public void addSongToPlaylist(){
 //
-//        Disposable disposable = RetrofitClient.getClient().addSongToPlaylist("3", "7", "2")
+//        Disposable disposable = RetrofitClient.getClient().addSongToPlaylist("1", "1", "1")
 //                .subscribeOn(Schedulers.newThread())
 //                .subscribeWith(new DisposableObserver<ResponseBody>() {
 //                    @Override
