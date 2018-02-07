@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.BindingAdapter;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
@@ -30,6 +33,7 @@ import org.simple.eventbus.EventBus;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import nl.psdcompany.duonavigationdrawer.views.DuoDrawerLayout;
 
 /**
@@ -43,6 +47,9 @@ public class HomeScreenViewModel {
     public ObservableField<String> userName = new ObservableField<>();
     public ObservableField<String> url = new ObservableField<>();
     public ObservableField<String> toolbarTitle = new ObservableField<>();
+    public ObservableField<CustomSongModelForPlaylist> persistentBarSong = new ObservableField<>();
+    public ObservableBoolean isPlayerPlaying = new ObservableBoolean();
+    public ObservableBoolean isBottomsheetUp = new ObservableBoolean();
 
     private View currentView;
     private DuoDrawerLayout duoDrawerLayout;
@@ -54,6 +61,8 @@ public class HomeScreenViewModel {
         userName.set(userModel.fname + " " + userModel.lname);
         url.set(userModel.pic);
         toolbarTitle.set("Home");
+        isPlayerPlaying.set(homeScreen.isPlaying);
+        isBottomsheetUp.set(false);
         onDrawerItemClick(homeScreen.findViewById(R.id.llHome));
         getUsers();
     }
@@ -86,6 +95,15 @@ public class HomeScreenViewModel {
     @BindingAdapter({"bind:url"})
     public static void setUserPic(ImageView view, String url){
         Glide.with(view.getContext()).load(url).into(view);
+    }
+
+    @BindingAdapter("bind:persistentBarBlur")
+    public static void persistentBarBlur(ImageView view, String url){
+        Glide.with(view.getContext()).load(url)
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(50)))
+                .apply(RequestOptions.overrideOf(400,70))
+                .apply(RequestOptions.centerInsideTransform())
+                .into(view);
     }
 
     public void onDrawerItemClick(View view){
@@ -168,5 +186,20 @@ public class HomeScreenViewModel {
             duoDrawerLayout.closeDrawer();
         }
 
+    }
+
+    public void playOrPause(){
+        if(homeScreen.isPlaying){
+            EventBus.getDefault().post(false, "playOrPause");
+            isPlayerPlaying.set(false);
+        }
+        else {
+            EventBus.getDefault().post(true, "playOrPause");
+            isPlayerPlaying.set(true);
+        }
+    }
+
+    public void openPlayer(){
+        EventBus.getDefault().post(homeScreen, "openPlayer");
     }
 }

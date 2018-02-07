@@ -7,10 +7,13 @@ import android.databinding.ObservableBoolean;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
@@ -33,6 +36,7 @@ import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.DynamicConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
@@ -47,6 +51,7 @@ import org.simple.eventbus.Subscriber;
 import org.simple.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -60,6 +65,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
     private DuoDrawerLayout duoDrawerLayout;
     private DuoDrawerToggle duoDrawerToggle;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private HomeScreenViewModel viewModel;
 
     //Exoplayer or Music and Video Player
     public SimpleExoPlayer exoPlayer;
@@ -67,7 +74,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private ExtractorsFactory extractorsFactory;
     private DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource;
     public ArrayList<CustomSongModelForPlaylist> songList;
-    private boolean isPlaying;
+    public boolean isPlaying;
     private PlaylistModel plist;
 
     @Override
@@ -88,6 +95,20 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         //assign this to the singleton for the reference of other activities
         Singleton.homeScreen = this;
+
+        bottomSheetBehavior = BottomSheetBehavior.from(activityHomeScreenBinding.llPersistentBar);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         //initialize exoplayer
         TrackSelector trackSelector = new DefaultTrackSelector();
@@ -113,7 +134,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         //set the viewmodel
         FacebookUserModel user = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
-        HomeScreenViewModel viewModel = new HomeScreenViewModel(user, this, duoDrawerLayout);
+        viewModel = new HomeScreenViewModel(user, this, duoDrawerLayout);
         activityHomeScreenBinding.setViewModel(viewModel);
     }
 
@@ -198,7 +219,6 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             songList.add(song);
         }
 
-        Log.d("playlist", "done adding with reset position: " + resetPosition);
         exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, true);
         Singleton.getInstance().isPlayerPrepared = true;
     }
@@ -234,6 +254,14 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
             Singleton.getInstance().playedPlist = plist;
             EventBus.getDefault().post("","highlightPlayedSong");
+
+            if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                viewModel.isBottomsheetUp.set(true);
+                bottomSheetBehavior.setHideable(false);
+            }
+            viewModel.persistentBarSong.set(Singleton.getInstance().song);
+            viewModel.isPlayerPlaying.set(true);
         }
     }
 
@@ -303,14 +331,23 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         if(play == false){
             exoPlayer.setPlayWhenReady(false);
             isPlaying = false;
+            viewModel.isPlayerPlaying.set(false);
             Singleton.getInstance().isPlayerPlaying = false;
         }
         else {
             exoPlayer.setPlayWhenReady(play);
             isPlaying = true;
             Singleton.getInstance().isPlayerPlaying = true;
+            viewModel.isPlayerPlaying.set(true);
             Singleton.getInstance().playedPlist = plist;
         }
+
+        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            bottomSheetBehavior.setHideable(false);
+            viewModel.isBottomsheetUp.set(true);
+        }
+        viewModel.persistentBarSong.set(Singleton.getInstance().song);
     }
 
     @Subscriber(tag = "isPlayerPlaying")
@@ -327,6 +364,18 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private void openPlayer(Activity activity){
         Intent intent = new Intent(activity, PlayerActivity.class);
         startActivity(intent);
+    }
+
+    @Subscriber(tag = "shufflePlaylist")
+    private void shufflePlaylist(String empty){
+        Collections.shuffle(songList);
+        addSongsInPlaylist(songList);
+        playOrPause(true);
+    }
+
+    @Subscriber(tag = "repeatPlaylist")
+    private void repeatPlaylist(int mode){
+        exoPlayer.setRepeatMode(mode);
     }
 
     //
@@ -355,8 +404,9 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             EventBus.getDefault().post("final", "highlightPlayedSong");
             EventBus.getDefault().post(false, "setFabSrc");
             EventBus.getDefault().post("","playerEndOfQueue");
-            Singleton.getInstance().song = null;
+            Singleton.getInstance().song = songList.get(0);
             Singleton.getInstance().isPlayerPlaying = false;
+            viewModel.isPlayerPlaying.set(false);
         }
         else if(playbackState == Player.STATE_READY){
             EventBus.getDefault().post("","onNextSong");
@@ -392,14 +442,23 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                 EventBus.getDefault().post("","onNextSong");
                 EventBus.getDefault().post("", "isThereAPrevious");
                 EventBus.getDefault().post("", "isThereANext");
+                viewModel.persistentBarSong.set(songList.get(windowIndex));
             }
-
+            else if(exoPlayer.getRepeatMode() == 2){
+                windowIndex = 0;
+                Singleton.getInstance().song = songList.get(windowIndex);
+                EventBus.getDefault().post("","onNextSong");
+                EventBus.getDefault().post("", "isThereAPrevious");
+                EventBus.getDefault().post("", "isThereANext");
+                viewModel.persistentBarSong.set(songList.get(windowIndex));
+            }
         }
         else if(reason == Player.DISCONTINUITY_REASON_SEEK){
             if(windowIndex <= songList.size()){
                 Singleton.getInstance().song = songList.get(windowIndex);
                 EventBus.getDefault().post("", "isThereAPrevious");
                 EventBus.getDefault().post("", "isThereANext");
+                viewModel.persistentBarSong.set(songList.get(windowIndex));
             }
         }
 

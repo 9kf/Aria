@@ -47,16 +47,22 @@ public class PlayerActivityViewModel {
     private Disposable disposable;
     public ObservableBoolean nextVisibility;
     public ObservableBoolean previousVisibility;
+    public ObservableBoolean isShuffled;
+    public ObservableBoolean isRepeated;
 
     public PlayerActivityViewModel(PlayerActivity playerActivity) {
         this.playerActivity = playerActivity;
         song = new ObservableField<>();
         nextVisibility = new ObservableBoolean();
         previousVisibility = new ObservableBoolean();
+        isShuffled = new ObservableBoolean();
+        isRepeated = new ObservableBoolean();
         isThereANext("");
         isThereAPrevious("");
         EventBus.getDefault().register(this);
         onNextSong("");
+        isPlayerShuffled();
+        isPlayerRepeated();
     }
 
     @BindingAdapter("bind:imgBlur")
@@ -167,6 +173,45 @@ public class PlayerActivityViewModel {
             nextVisibility.set(true);
         else
             nextVisibility.set(false);
+    }
+
+    public void isPlayerShuffled(){
+        if(Singleton.homeScreen.exoPlayer.getShuffleModeEnabled())
+            isShuffled.set(true);
+        else
+            isShuffled.set(false);
+    }
+
+    public void shufflePlayer(){
+        if(Singleton.homeScreen.exoPlayer.getShuffleModeEnabled()){
+            //Singleton.homeScreen.exoPlayer.setShuffleModeEnabled(false);
+            EventBus.getDefault().post("", "shufflePlaylist");
+            isShuffled.set(false);
+        }
+        else{
+            EventBus.getDefault().post("", "shufflePlaylist");
+            //Singleton.homeScreen.exoPlayer.setShuffleModeEnabled(true);
+            isShuffled.set(true);
+        }
+    }
+
+    public void isPlayerRepeated(){
+        if(Singleton.homeScreen.exoPlayer.getRepeatMode() == 0)
+            isRepeated.set(false);
+        else
+            isRepeated.set(true);
+    }
+
+    public void repeatPlayer(){
+        if(Singleton.homeScreen.exoPlayer.getRepeatMode() == 0){
+            EventBus.getDefault().post(2, "repeatPlaylist");
+            isRepeated.set(true);
+        }
+        else {
+            EventBus.getDefault().post(0,"repeatPlaylist");
+            isRepeated.set(false);
+        }
+
     }
 
     @Subscriber(tag = "playerEndOfQueue")
