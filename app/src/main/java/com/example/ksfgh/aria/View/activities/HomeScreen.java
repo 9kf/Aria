@@ -166,8 +166,9 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     }
 
     @Subscriber(tag = "addSongsInPlaylist")
-    private void addSongsInPlaylist(ArrayList<CustomSongModelForPlaylist> songs){
+    public void addSongsInPlaylist(ArrayList<CustomSongModelForPlaylist> songs){
 
+        Log.d("playlist", "adding songs");
         boolean resetPosition = false;
         if(songList.size() != songs.size()){
             resetPosition = true;
@@ -181,7 +182,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             }
         }
 
-        //dynamicConcatenatingMediaSource.releaseSource();
+        dynamicConcatenatingMediaSource.releaseSource();
         dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
         songList.clear();
 
@@ -197,7 +198,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             songList.add(song);
         }
 
-        exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, false);
+        Log.d("playlist", "done adding with reset position: " + resetPosition);
+        exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, true);
         Singleton.getInstance().isPlayerPrepared = true;
     }
 
@@ -205,26 +207,34 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Subscriber(tag = "skipSong")
     private void skipSong(CustomSongModelForPlaylist song){
 
-        for(int i = 0; i < songList.size(); i++){
-            if(songList.get(i).getSong().songId == song.getSong().songId){
-                windowIndex = i;
-                break;
-            }
-        }
-        if(isPlaying == true){
-            exoPlayer.seekTo(windowIndex, 0);
-            Singleton.getInstance().song = song;
+        if(plist != Singleton.getInstance().playedPlist && Singleton.getInstance().playedPlist != null){
+            EventBus.getDefault().post(song,"getSongs");
+            Singleton.getInstance().playedPlist = plist;
         }
         else {
-            exoPlayer.seekTo(windowIndex, 0);
-            exoPlayer.setPlayWhenReady(true);
-            Singleton.getInstance().isPlayerPlaying = true;
-            Singleton.getInstance().song = song;
-            isPlaying = true;
-        }
 
-        Singleton.getInstance().playedPlist = plist;
-        EventBus.getDefault().post("","highlightPlayedSong");
+            for(int i = 0; i < songList.size(); i++){
+                if(songList.get(i).getSong().songId == song.getSong().songId){
+                    windowIndex = i;
+                    break;
+                }
+            }
+
+            if(isPlaying == true){
+                exoPlayer.seekTo(windowIndex, 0);
+                Singleton.getInstance().song = song;
+            }
+            else {
+                exoPlayer.seekTo(windowIndex, 0);
+                exoPlayer.setPlayWhenReady(true);
+                Singleton.getInstance().isPlayerPlaying = true;
+                Singleton.getInstance().song = song;
+                isPlaying = true;
+            }
+
+            Singleton.getInstance().playedPlist = plist;
+            EventBus.getDefault().post("","highlightPlayedSong");
+        }
     }
 
     @Subscriber(tag = "seekSongTo")
@@ -283,7 +293,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         if(exoPlayer.getPlaybackState() == Player.STATE_ENDED){
             Singleton.getInstance().song = songList.get(0);
-            exoPlayer.seekToDefaultPosition();
+            exoPlayer.seekToDefaultPosition(0);
+            windowIndex = 0;
         }
 
 

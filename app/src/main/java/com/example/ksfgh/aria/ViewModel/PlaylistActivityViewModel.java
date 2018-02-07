@@ -7,6 +7,7 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.graphics.Color;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,9 +24,12 @@ import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
+import com.google.android.exoplayer2.source.DynamicConcatenatingMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
+import org.simple.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -188,6 +192,12 @@ public class PlaylistActivityViewModel{
 
             }
         }
+    }
+
+    @Subscriber(tag = "getSongs")
+    public void getSongs(CustomSongModelForPlaylist song){
+        EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
+        EventBus.getDefault().post(song, "skipSong");
     }
 
 
