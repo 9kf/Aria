@@ -10,6 +10,7 @@ import android.util.Log;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
+import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -44,6 +45,25 @@ public class Utils {
             }
         }
         return name;
+    }
+
+    public String getImageAbsolutePath(Uri data, HomeScreen activity){
+
+        String absolutePath = "";
+
+        Uri selectedImage = data;
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        Cursor cursor = activity.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        absolutePath = cursor.getString(columnIndex);
+        cursor.close();
+
+        return absolutePath;
+    }
+
+    public String getURLForResource(int resourceId){
+        return Uri.parse("android.resource://" + R.class.getPackage().getName()+"/" + resourceId).toString();
     }
 
     public String getAudioAbsolutePath(Uri audioFileUrl, PlaylistActivity playlistActivity){

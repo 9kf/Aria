@@ -36,12 +36,15 @@
         </activity>
         <activity
             android:name=".View.activities.HomeScreen"
-            android:theme="@style/StartScreenTheme" />
+            android:theme="@style/StartScreenTheme"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".View.activities.PlaylistActivity"
             android:theme="@style/StartScreenTheme" />
-        <activity android:name=".View.activities.PlayerActivity"
-            android:theme="@style/StartScreenTheme"></activity>
+        <activity
+            android:name=".View.activities.PlayerActivity"
+            android:theme="@style/StartScreenTheme" />
+        <activity android:name=".View.activities.BandActivity"></activity>
     </application>
 
 </manifest>

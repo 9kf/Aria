@@ -36,7 +36,7 @@ public class Singleton {
     //constants
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
-    public final String BASE = "http://192.168.254.103";
+    public final String BASE = "http://192.168.1.29";
 
     //home screen
     public static HomeScreen homeScreen;

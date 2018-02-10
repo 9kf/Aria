@@ -17,5 +17,41 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="band_name">Band Name</string>
+    <string name="band_description">Band Description</string>
+    <string name="band_role">Select Your Role</string>
+    <string name="primary_band_genre">Primary Band Genre</string>
+    <string name="secondary_band_genre">Secondary Band Genre</string>
+    <string name="band_pic">Band Picture</string>
+
+    <string-array name="roles">
+        <item>Vocalist</item>
+        <item>Lead Guitar</item>
+        <item>Rhythm Guitar</item>
+        <item>Keyboardist</item>
+        <item>Drummer</item>
+        <item>Bassist</item>
+    </string-array>
+
+    <string-array name="genres">
+        <item>Alternative</item>
+        <item>Blues</item>
+        <item>Classical</item>
+        <item>Country</item>
+        <item>Dance</item>
+        <item>Electronic</item>
+        <item>Hiphop</item>
+        <item>Inspirational</item>
+        <item>Jazz</item>
+        <item>Opera</item>
+        <item>Pop</item>
+        <item>Punk</item>
+        <item>R&amp;B</item>
+        <item>Rap</item>
+        <item>Reggae</item>
+        <item>Rock</item>
+        <item>Romance</item>
+        <item>Soul</item>
+    </string-array>
 
 </resources>

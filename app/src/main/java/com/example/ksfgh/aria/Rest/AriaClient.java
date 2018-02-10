@@ -4,6 +4,7 @@ import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
+import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
@@ -41,7 +42,7 @@ public interface AriaClient {
     Observable<FacebookUserModel> createAccount(@Body FacebookUserModel facebookUserModel);
 
     @POST("createBand")
-    Call<BandMemberModel> createBand(@Body BandCreationModel bandCreationModel);
+    Observable<BandMemberModel> createBand(@Body BandCreationModel bandCreationModel);
 
     @Multipart
     @POST("editbandPic")
@@ -99,4 +100,7 @@ public interface AriaClient {
 
     @GET("members")
     Observable<MemberModel[]> getBandMembers();
+
+    @GET("getEvents")
+    Observable<EventModel[]> getEvents();
 }

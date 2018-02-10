@@ -302,33 +302,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.btnCreateBand)
-    public void createBand() {
-
-        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
-                FacebookUserModel.class);
-
-        BandCreationModel newBand = new BandCreationModel(model.user_id.toString(), "Drummer", "generation f", 1, 3, "this is a band");
-
-        Call<BandMemberModel> call = RetrofitClient.getClient().createBand(newBand);
-
-        call.enqueue(new Callback<BandMemberModel>() {
-            @Override
-            public void onResponse(Call<BandMemberModel> call, Response<BandMemberModel> response) {
-                try {
-                    Log.d("create band", response.body().band.bandName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d("create band error", e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BandMemberModel> call, Throwable t) {
-                Log.d("create band error", t.getMessage());
-            }
-        });
-    }
+//    @OnClick(R.id.btnCreateBand)
+//    public void createBand() {
+//
+//        FacebookUserModel model = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
+//                FacebookUserModel.class);
+//
+//        BandCreationModel newBand = new BandCreationModel(model.user_id.toString(), "Drummer", "generation f", 1, 3, "this is a band");
+//
+//        Call<BandMemberModel> call = RetrofitClient.getClient().createBand(newBand);
+//
+//        call.enqueue(new Callback<BandMemberModel>() {
+//            @Override
+//            public void onResponse(Call<BandMemberModel> call, Response<BandMemberModel> response) {
+//                try {
+//                    Log.d("create band", response.body().band.bandName);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    Log.d("create band error", e.getMessage());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<BandMemberModel> call, Throwable t) {
+//                Log.d("create band error", t.getMessage());
+//            }
+//        });
+//    }
 
     @OnClick(R.id.btnAddSong)
     public void addSong() {

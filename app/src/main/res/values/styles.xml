@@ -15,6 +15,16 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/toolbarColor</item>
+        <item name="android:spinnerItemStyle">@style/StartScreenSpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerItemDropdown</item>
+    </style>
+    
+    <style name="StartScreenSpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="SpinnerItemDropdown" parent="@android:style/Widget.DropDownItem.Spinner">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <!--Toolbar Theme-->
@@ -24,5 +34,27 @@
         <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
+    <!--AutoCompleteTextView Custom Theme-->
+    <style name="CustomAutoCompleteTextViewStyle" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+
+
+    </style>
+
+    <style name="TextStyle" parent="TextAppearance.AppCompat">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+    
+    <!--Spinner Custom Theme-->
+    <style name="CustomSpinnerStyle" parent="Base.TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    
+    <!--AlertDialog Custom Theme-->
+    <style name="BlackAlertDialog" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:background">@color/toolbarColor</item>
+        <item name="colorAccent">@color/highLightColor</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:minWidth">400dp </item>
+    </style>
 
 </resources>

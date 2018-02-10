@@ -13,6 +13,12 @@ import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.ViewModel.MyBandsViewModel;
 import com.example.ksfgh.aria.databinding.MyBandsBinding;
 
+import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -25,14 +31,31 @@ public class MyBandsFragment extends Fragment {
 
 
     private MyBandsBinding binding;
+    private CompositeDisposable compositeDisposable;
+    private MyBandsViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_bands, container, false);
-        binding.setViewmodel(new MyBandsViewModel((HomeScreen) getActivity()));
+        viewModel = new MyBandsViewModel((HomeScreen) getActivity());
+        binding.setViewmodel(viewModel);
+        compositeDisposable = new CompositeDisposable();
+        EventBus.getDefault().register(this);
         return binding.getRoot();
     }
 
+    @Subscriber(tag = "myBandDisposables")
+    private void addDisposable(Disposable disposable){
+        compositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        compositeDisposable.dispose();
+        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(viewModel);
+    }
 }

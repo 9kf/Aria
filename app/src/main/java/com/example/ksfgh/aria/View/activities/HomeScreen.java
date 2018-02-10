@@ -2,11 +2,14 @@ package com.example.ksfgh.aria.View.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
@@ -489,6 +492,46 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     //
     //Lifecycler Callbacks
     //
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 200:
+                boolean writeAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setType("image/*");
+                startActivityForResult(intent, Singleton.getInstance().PICK_PHOTO);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Singleton.getInstance().PICK_PHOTO && resultCode == Activity.RESULT_OK && data != null) {
+            try {
+//                Uri selectedImage = data.getData();
+//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//                cursor.moveToFirst();
+//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                String picturePath = cursor.getString(columnIndex);
+//                cursor.close();
+                EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
+                EventBus.getDefault().post(data.getData(),"setSelectedImage");
+
+                //uploadPhoto(selectedImage, picturePath);
+                //addAlbum(selectedImage, picturePath);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("pick photo error", e.getMessage());
+            }
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
