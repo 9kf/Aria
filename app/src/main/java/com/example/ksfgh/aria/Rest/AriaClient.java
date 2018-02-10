@@ -5,9 +5,11 @@ import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
 import com.example.ksfgh.aria.Model.SongModel;
+import com.example.ksfgh.aria.Model.VideoModel;
 
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
@@ -88,4 +90,13 @@ public interface AriaClient {
     @GET("AllAlbums")
     Observable<AlbumModel[]> getAllAlbums();
 
+    @GET("videos")
+    Observable<VideoModel[]> getAllVideos();
+
+    @POST("bandvideos")
+    @FormUrlEncoded
+    Observable<VideoModel[]> getBandVideos(@Field("band_id") String bandId);
+
+    @GET("members")
+    Observable<MemberModel[]> getBandMembers();
 }

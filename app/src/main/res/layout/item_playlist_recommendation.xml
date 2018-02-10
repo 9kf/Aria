@@ -26,8 +26,11 @@
             <ImageView
                 android:layout_width="130dp"
                 android:layout_height="130dp"
+                android:padding="10dp"
                 android:layout_marginBottom="4dp"
-                bind:imgUrl="@{model.image}"/>
+                bind:imgUrl="@{model.image}"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"/>
 
             <TextView
                 android:layout_width="wrap_content"

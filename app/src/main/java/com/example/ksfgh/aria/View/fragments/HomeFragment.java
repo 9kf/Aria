@@ -8,6 +8,7 @@ import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ksfgh.aria.Adapters.HomeGenreCatalogsAdapter;
 import com.example.ksfgh.aria.Adapters.HomePlaylistAdapter;
+import com.example.ksfgh.aria.Adapters.HomeWeekTopBandAdapter;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
@@ -46,6 +49,8 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding fragmentHomeBinding;
     private HomePlaylistAdapter adapter;
+    private HomeWeekTopBandAdapter adapter2;
+    private HomeGenreCatalogsAdapter adapter3;
     private HomeViewModel homeViewModel;
 
     @Override
@@ -55,6 +60,8 @@ public class HomeFragment extends Fragment {
         EventBus.getDefault().register(this);
         homeViewModel = new HomeViewModel((HomeScreen) this.getActivity());
         adapter = new HomePlaylistAdapter(homeViewModel);
+        adapter2 = new HomeWeekTopBandAdapter(homeViewModel);
+        adapter3 = new HomeGenreCatalogsAdapter(homeViewModel);
 
     }
 
@@ -68,7 +75,22 @@ public class HomeFragment extends Fragment {
                     new LinearLayoutManager(fragmentHomeBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false)
             );
 
+            fragmentHomeBinding.recyclerView2.setLayoutManager(
+                    new LinearLayoutManager(fragmentHomeBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false)
+            );
+
+            fragmentHomeBinding.recyclerView3.setLayoutManager(
+                    new GridLayoutManager(fragmentHomeBinding.getRoot().getContext(), 2, GridLayoutManager.VERTICAL, false){
+                        @Override
+                        public boolean canScrollVertically() {
+                            return false;
+                        }
+                    }
+            );
+
             fragmentHomeBinding.recyclerView.setAdapter(adapter);
+            fragmentHomeBinding.recyclerView2.setAdapter(adapter2);
+            fragmentHomeBinding.recyclerView3.setAdapter(adapter3);
 
         return  fragmentHomeBinding.getRoot();
     }

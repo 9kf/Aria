@@ -9,6 +9,7 @@ import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
+import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class Singleton {
     //constants
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
-    public final String BASE = "http://192.168.254.101";
+    public final String BASE = "http://192.168.254.103";
 
     //home screen
     public static HomeScreen homeScreen;
@@ -43,6 +44,7 @@ public class Singleton {
     //static fragments
     public static HomeFragment homeFragment = new HomeFragment();
     public static FeedFragment feedFragment = new FeedFragment();
+    public static MyBandsFragment myBandsFragment = new MyBandsFragment();
 
     //static classes
     public Utils utilities = new Utils();

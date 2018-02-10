@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="GenreCatalogBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.GenreModel"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.HomeViewModel"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp">
+
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            bind:imgUrl="@{model.genreImage}"/>
+
+        <View
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:background="@color/black"
+            android:alpha=".6"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/bebasnue"
+            android:text="@{model.genreText}"/>
+
+    </RelativeLayout>
+
+</layout>

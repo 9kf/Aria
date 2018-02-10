@@ -8,20 +8,76 @@
             type="com.example.ksfgh.aria.ViewModel.HomeViewModel"/>
     </data>
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.example.ksfgh.aria.View.fragments.HomeFragment"
+        android:scrollbars="none"
         android:background="@color/toolbarColor">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="com.example.ksfgh.aria.View.fragments.HomeFragment"
+            >
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Here are some playlists by Aria"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:fontFamily="@font/bebasnue"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="This week's top bands"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:fontFamily="@font/bebasnue"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Find out what suits you"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:fontFamily="@font/bebasnue"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="8dp">
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+    </ScrollView>
 
 </layout>
 

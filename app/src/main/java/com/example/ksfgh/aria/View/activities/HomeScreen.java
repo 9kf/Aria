@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
@@ -62,6 +63,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
     private ActivityHomeScreenBinding activityHomeScreenBinding;
     private CompositeDisposable compositeDisposable;
+    public FacebookUserModel user;
 
     private DuoDrawerLayout duoDrawerLayout;
     private DuoDrawerToggle duoDrawerToggle;
@@ -132,7 +134,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         duoDrawerToggle.syncState();
 
         //set the viewmodel
-        FacebookUserModel user = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
+        user = new Gson().fromJson(getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, MODE_PRIVATE).getString("user", null),
                 FacebookUserModel.class);
         viewModel = new HomeScreenViewModel(user, this, duoDrawerLayout);
         activityHomeScreenBinding.setViewModel(viewModel);
@@ -259,6 +261,10 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 viewModel.isBottomsheetUp.set(true);
                 bottomSheetBehavior.setHideable(false);
+
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) activityHomeScreenBinding.layoutContainer.getLayoutParams();
+                params.bottomMargin = 100;
+                activityHomeScreenBinding.layoutContainer.requestLayout();
             }
             viewModel.persistentBarSong.set(Singleton.getInstance().song);
             viewModel.isPlayerPlaying.set(true);
@@ -346,6 +352,10 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             bottomSheetBehavior.setHideable(false);
             viewModel.isBottomsheetUp.set(true);
+
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) activityHomeScreenBinding.layoutContainer.getLayoutParams();
+            params.bottomMargin = 100;
+            activityHomeScreenBinding.layoutContainer.requestLayout();
         }
         viewModel.persistentBarSong.set(Singleton.getInstance().song);
     }

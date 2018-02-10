@@ -133,6 +133,7 @@ public class HomeScreenViewModel {
 
             case R.id.llMyBands:
                 toolbarTitle.set("My Bands");
+                EventBus.getDefault().post(Singleton.getInstance().myBandsFragment, "switchFragment");
                 break;
 
             case R.id.llFindFriends:
