@@ -4,36 +4,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class="MyBandsBinding">
+
         <variable
             name="viewmodel"
             type="com.example.ksfgh.aria.ViewModel.MyBandsViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/toolbarColor"
         tools:context="com.example.ksfgh.aria.View.fragments.MyBandsFragment">
 
-        <android.support.v7.widget.RecyclerView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            bind:list="@{viewmodel}"/>
+            android:background="@color/toolbarColor">
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabSize="normal"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add"
-            app:backgroundTint="@color/highLightColor"
-            android:tint="@color/white"
-            android:onClick="@{()->viewmodel.checkNumberOfBands()}"/>
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                bind:list="@{viewmodel}"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fabSize="normal"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_add"
+                app:backgroundTint="@color/highLightColor"
+                android:tint="@color/white"
+                android:onClick="@{()->viewmodel.checkNumberOfBands()}"/>
 
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
 
 
 </layout>

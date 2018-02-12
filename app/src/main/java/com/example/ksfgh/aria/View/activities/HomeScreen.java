@@ -512,23 +512,26 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         if (requestCode == Singleton.getInstance().PICK_PHOTO && resultCode == Activity.RESULT_OK && data != null) {
             try {
-//                Uri selectedImage = data.getData();
-//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-//                cursor.moveToFirst();
-//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                String picturePath = cursor.getString(columnIndex);
-//                cursor.close();
-                EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
-                EventBus.getDefault().post(data.getData(),"setSelectedImage");
 
-                //uploadPhoto(selectedImage, picturePath);
-                //addAlbum(selectedImage, picturePath);
+                if(Singleton.getInstance().CHANGE_OR_ADD == 0){
+                    EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
+                    EventBus.getDefault().post(data.getData(),"setSelectedImage");
+                }
+                else {
+                    EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
+                    EventBus.getDefault().post(data.getData(),"setSelectedImage");
+                    EventBus.getDefault().post("", "addBandCoverPhoto");
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d("pick photo error", e.getMessage());
             }
+        }
+        else if(requestCode == Singleton.getInstance().PICK_VIDEO && resultCode == Activity.RESULT_OK && data != null){
+
+            EventBus.getDefault().post(data.getData(), "setSelectedVideo");
+            EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this), "addVideo");
         }
     }
 

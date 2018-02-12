@@ -53,7 +53,7 @@ public interface AriaClient {
 
     @Multipart
     @POST("addAlbum")
-    Observable<ResponseBody> addAlbum(
+    Observable<AlbumModel> addAlbum(
             @Part("band_id") RequestBody bandId,
             @Part("album_name") RequestBody albumName,
             @Part("album_desc") RequestBody albumDesc,
@@ -77,6 +77,15 @@ public interface AriaClient {
     Observable<ResponseBody> addSongToPlaylist(@Field("genre_id") String genre,
                                                @Field("song_id") String songId,
                                                @Field("pl_id") String playlistId);
+
+    @Multipart
+    @POST("addVideo")
+    Observable<VideoModel> addVideo(
+            @Part("band_id") RequestBody bandId,
+            @Part("video_title") RequestBody vidTitle,
+            @Part("video_desc") RequestBody vidDesc,
+            @Part MultipartBody.Part video
+    );
 
     @GET("getAllPlaylist")
     Observable<PlaylistModel[]> getPlaylists();
@@ -103,4 +112,9 @@ public interface AriaClient {
 
     @GET("getEvents")
     Observable<EventModel[]> getEvents();
+
+    @Multipart
+    @POST("addBandCoverPhoto")
+    Observable<ResponseBody> addBandCoverPhoto(@Part("bandId") RequestBody bandId,
+                                               @Part MultipartBody.Part pic);
 }

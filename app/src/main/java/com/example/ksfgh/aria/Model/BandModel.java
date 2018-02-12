@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class BandModel {
-
     @SerializedName("band_id")
     public int bandId;
     @SerializedName("band_name")
@@ -20,24 +19,27 @@ public class BandModel {
     public int visitCounts;
     @SerializedName("band_pic")
     public String bandPic;
+    @SerializedName("band_coverpic")
+    public String bandCoverpic;
     @SerializedName("created_at")
     public String createdAt;
     @SerializedName("updated_at")
     public String updatedAt;
     @SerializedName("weekly_score")
-    public double weeklyScore;
+    public int weeklyScore;
     @SerializedName("band_score")
-    public String bandScore;
+    public int bandScore;
     @SerializedName("scored_updated_date")
     public String scoredUpdatedDate;
 
-    public BandModel(int bandId, String bandName, String bandDesc, int numFollowers, int visitCounts, String bandPic, String createdAt, String updatedAt, double weeklyScore, String bandScore, String scoredUpdatedDate) {
+    public BandModel(int bandId, String bandName, String bandDesc, int numFollowers, int visitCounts, String bandPic, String bandCoverpic, String createdAt, String updatedAt, int weeklyScore, int bandScore, String scoredUpdatedDate) {
         this.bandId = bandId;
         this.bandName = bandName;
         this.bandDesc = bandDesc;
         this.numFollowers = numFollowers;
         this.visitCounts = visitCounts;
         this.bandPic = bandPic;
+        this.bandCoverpic = bandCoverpic;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.weeklyScore = weeklyScore;
@@ -93,6 +95,14 @@ public class BandModel {
         this.bandPic = bandPic;
     }
 
+    public String getBandCoverpic() {
+        return bandCoverpic;
+    }
+
+    public void setBandCoverpic(String bandCoverpic) {
+        this.bandCoverpic = bandCoverpic;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
@@ -109,19 +119,19 @@ public class BandModel {
         this.updatedAt = updatedAt;
     }
 
-    public double getWeeklyScore() {
+    public int getWeeklyScore() {
         return weeklyScore;
     }
 
-    public void setWeeklyScore(double weeklyScore) {
+    public void setWeeklyScore(int weeklyScore) {
         this.weeklyScore = weeklyScore;
     }
 
-    public String getBandScore() {
+    public int getBandScore() {
         return bandScore;
     }
 
-    public void setBandScore(String bandScore) {
+    public void setBandScore(int bandScore) {
         this.bandScore = bandScore;
     }
 
@@ -132,4 +142,5 @@ public class BandModel {
     public void setScoredUpdatedDate(String scoredUpdatedDate) {
         this.scoredUpdatedDate = scoredUpdatedDate;
     }
+
 }

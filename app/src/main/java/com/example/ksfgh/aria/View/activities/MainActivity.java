@@ -398,31 +398,31 @@ public class MainActivity extends AppCompatActivity {
         RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(selectedImage)), originalFile);
         MultipartBody.Part file = MultipartBody.Part.createFormData("album_pic", originalFile.getName(), filePart);
 
-        Disposable disposable = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<ResponseBody>() {
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        try {
-                            Log.d("album", responseBody.string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//        Disposable disposable = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeWith(new DisposableObserver<ResponseBody>() {
+//                    @Override
+//                    public void onNext(ResponseBody responseBody) {
+//                        try {
+//                            Log.d("album", responseBody.string());
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        Log.d("album error", e.getMessage());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("album error", e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-        compositeDisposable.add(disposable);
+//        compositeDisposable.add(disposable);
 
 //        Call<ResponseBody> call = RetrofitClient.getClient().addAlbum(bandId, albumName, albumDesc, file);
 //        call.enqueue(new Callback<ResponseBody>() {

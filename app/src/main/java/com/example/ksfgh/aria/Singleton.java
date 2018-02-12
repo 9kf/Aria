@@ -3,6 +3,7 @@ package com.example.ksfgh.aria;
 import android.app.Activity;
 import android.databinding.ObservableBoolean;
 
+import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
@@ -36,7 +37,8 @@ public class Singleton {
     //constants
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
-    public final String BASE = "http://192.168.1.29";
+    public final int PICK_VIDEO = 125;
+    public final String BASE = "http://192.168.254.109";
 
     //home screen
     public static HomeScreen homeScreen;
@@ -64,4 +66,11 @@ public class Singleton {
 
     //used to identify if there is already a song prepared for the player
     public boolean isPlayerPrepared;
+
+    //used to identify what band the user is currently in
+    public CustomModelForBandPage currentBand;
+
+    //used to indicate if the user is changing the image details of the band or just adding a band
+    public int CHANGE_OR_ADD = 0;
+
 }

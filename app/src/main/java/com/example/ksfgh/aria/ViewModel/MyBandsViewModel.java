@@ -9,7 +9,6 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -35,13 +35,16 @@ import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
+import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
+import com.example.ksfgh.aria.databinding.CreateAlbumBinding;
 import com.example.ksfgh.aria.databinding.CreateBandBinding;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -71,6 +74,7 @@ public class MyBandsViewModel {
     public ObservableField<String> bandImage;
     private ArrayList<BandMemberModel> memberModel;
     public Uri selectedImage = null;
+    public Uri selectedVideo = null;
     private HomeScreen activity;
 
     public MyBandsViewModel(HomeScreen activity) {
@@ -173,6 +177,12 @@ public class MyBandsViewModel {
                                     band.setVideos(videoList);
                                 }
                             })
+                            .doOnError(new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    Log.d("mybands", throwable.getMessage());
+                                }
+                            })
                             .doOnComplete(new Action() {
                                 @Override
                                 public void run() throws Exception {
@@ -206,6 +216,15 @@ public class MyBandsViewModel {
                 .into(view);
     }
 
+    @BindingAdapter("bind:bandImage")
+    public static void myBandImage(ImageView view, String url){
+
+        Glide.with(view.getContext()).load(url)
+                .apply(RequestOptions.overrideOf(200,200))
+                .apply(RequestOptions.centerCropTransform())
+                .into(view);
+    }
+
     @BindingAdapter("bind:acAdapter")
     public static void bindAutoCompleteTextView(AutoCompleteTextView view, ArrayList<String> list){
         view.setAdapter(new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, list));
@@ -218,7 +237,8 @@ public class MyBandsViewModel {
     }
 
     public void itemClick(CustomModelForBandPage model){
-
+        Singleton.getInstance().currentBand = model;
+        EventBus.getDefault().post(model,"bandClicked");
     }
 
     @Subscriber(tag = "setSelectedImage")
@@ -226,7 +246,15 @@ public class MyBandsViewModel {
         selectedImage = image;
     }
 
-    public void pickPhoto(){
+    @Subscriber(tag = "setSelectedVideo")
+    public void setSelectedVideo(Uri video){
+        selectedVideo = video;
+    }
+
+    public void pickPhoto(int identifier){
+
+        Singleton.getInstance().CHANGE_OR_ADD = identifier;
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
             int permsRequestCode = 200;
@@ -238,10 +266,23 @@ public class MyBandsViewModel {
         }
     }
 
+    public void pickVideo(){
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
+            int permsRequestCode = 200;
+            activity.requestPermissions(perms, permsRequestCode);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("video/*");
+            activity.startActivityForResult(intent, Singleton.getInstance().PICK_VIDEO);
+        }
+
+    }
+
     @Subscriber(tag="changeBandPic")
     public void setBandPic(String image){
         bandImage.set(image);
-        Log.d("imageshit", "here");
     }
 
 
@@ -312,6 +353,7 @@ public class MyBandsViewModel {
                                                             public void run() throws Exception {
                                                                 bandModels.clear();
                                                                 getBands();
+                                                                bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
                                                                 dialog.dismiss();
                                                             }
                                                         })
@@ -328,6 +370,7 @@ public class MyBandsViewModel {
                         }
                     }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
+                            bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
                             dialog.dismiss();
                      }
             });
@@ -338,7 +381,7 @@ public class MyBandsViewModel {
         }
         else {
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog2);
             alertDialogBuilder.setMessage("You have reached the maximum number of joined bands")
             .setNegativeButton("Close", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -407,4 +450,140 @@ public class MyBandsViewModel {
 
         EventBus.getDefault().post(disposable, "myBandDisposables");
     }
+
+    public void viewBandPage(){
+        Intent intent = new Intent(activity, BandActivity.class);
+        activity.startActivity(intent);
+        EventBus.getDefault().post("","closeBottomSheet");
+    }
+
+    @Subscriber(tag = "addBandCoverPhoto")
+    public void addBandCoverPhoto(String empty){
+
+        RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
+        File originalFile = new File(bandImage.get().toString());
+        RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedImage)), originalFile);
+        MultipartBody.Part file = MultipartBody.Part.createFormData("bandPic", originalFile.getName(), filePart);
+
+
+        Disposable disposable = RetrofitClient.getClient().addBandCoverPhoto(bandId, file)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ResponseBody>() {
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        Toast.makeText(activity, "Successfully changed the cover photo of your band", Toast.LENGTH_SHORT).show();
+                        EventBus.getDefault().post("","closeBottomSheet");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(activity, "There was an error changing the cover photo of your band", Toast.LENGTH_SHORT).show();
+                        Log.d("mybands", e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
+                    }
+                });
+
+        EventBus.getDefault().post(disposable, "myBandDisposables");
+    }
+
+    public void addAlbum(CustomModelForBandPage model){
+
+        LayoutInflater inflater = activity.getLayoutInflater();
+        CreateAlbumBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_create_album, null, false);
+        binding.setViewmodel(this);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
+        alertDialogBuilder
+                .setView(binding.getRoot())
+                .setCancelable(false)
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(model.band.bandId));
+                RequestBody albumName = RequestBody.create(MultipartBody.FORM, binding.etAlbumName.getText().toString());
+                RequestBody albumDesc = RequestBody.create(MultipartBody.FORM, binding.etAlbumDesc.getText().toString());
+                File originalFile = new File(bandImage.get().toString());
+                RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedImage)), originalFile);
+                MultipartBody.Part file = MultipartBody.Part.createFormData("album_pic", originalFile.getName(), filePart);
+
+                Disposable disposable = RetrofitClient.getClient().addAlbum(bandId,albumName,albumDesc,file)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableObserver<AlbumModel>() {
+                            @Override
+                            public void onNext(AlbumModel albumModel) {
+                                model.albums.add(albumModel);
+                                Toast.makeText(activity, "Successfully added the album", Toast.LENGTH_SHORT).show();
+                                EventBus.getDefault().post("","closeBottomSheet");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Toast.makeText(activity, "There was an error adding your new album", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
+                            }
+                        });
+
+                EventBus.getDefault().post(disposable, "myBandDisposables");
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
+            }
+        });
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.show();
+
+    }
+
+    @Subscriber(tag = "addVideo")
+    public void addVideo(String videoPath){
+
+        RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
+        RequestBody videoDesc = RequestBody.create(MultipartBody.FORM, "hello");
+        RequestBody videoTitle = RequestBody.create(MultipartBody.FORM, "Video Title Here");
+        File originalFile = new File(videoPath);
+        RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedVideo)), originalFile);
+        MultipartBody.Part file = MultipartBody.Part.createFormData("video_content", originalFile.getName(), filePart);
+
+        Log.d("mybands", videoPath);
+
+        Disposable disposable = RetrofitClient.getClient().addVideo(bandId,videoTitle,videoDesc, file)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<VideoModel>() {
+                    @Override
+                    public void onNext(VideoModel videoModel) {
+                        Singleton.getInstance().currentBand.videos.add(videoModel);
+                        Toast.makeText(activity, "Successfully added the video", Toast.LENGTH_SHORT).show();
+                        EventBus.getDefault().post("","closeBottomSheet");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(activity, "There was an error adding the video", Toast.LENGTH_SHORT).show();
+                        Log.d("mybands", e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        EventBus.getDefault().post(disposable, "myBandDisposables");
+    }
+
 }

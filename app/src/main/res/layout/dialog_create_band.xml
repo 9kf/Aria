@@ -140,7 +140,7 @@
                     android:layout_centerHorizontal="true"
                     android:scaleType="fitCenter"
                     bind:imgUrl="@{viewmodel.bandImage}"
-                    android:onClick="@{()->viewmodel.pickPhoto()}"/>
+                    android:onClick="@{()->viewmodel.pickPhoto(0)}"/>
 
             </RelativeLayout>
 

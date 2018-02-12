@@ -1,0 +1,122 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="BandBottomBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.CustomModelForBandPage"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.MyBandsViewModel"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/toolbarColor"
+            android:paddingBottom="8dp"
+            tools:context="com.example.ksfgh.aria.View.fragments.BandBottomSheetFragment">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="170dp">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:layout_centerInParent="true"
+                    bind:bandImage="@{model.band.bandPic}"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="2dp"
+                    android:text="@{model.band.bandName}"
+                    android:textColor="@color/white"/>
+
+            </RelativeLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="View Band Profile"
+                android:background="@android:color/transparent"
+                android:onClick="@{() -> viewmodel.viewBandPage()}"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Change band cover photo"
+                android:background="@android:color/transparent"
+                android:onClick="@{()->viewmodel.pickPhoto(1)}"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Add Album"
+                android:background="@android:color/transparent"
+                android:onClick="@{()->viewmodel.addAlbum(model)}"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Add Video"
+                android:background="@android:color/transparent"
+                android:onClick="@{()->viewmodel.pickVideo()}"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Add Event"
+                android:background="@android:color/transparent"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Edit Band Details"
+                android:background="@android:color/transparent"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Edit Band Members"
+                android:background="@android:color/transparent"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
