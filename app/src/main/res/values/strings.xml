@@ -25,6 +25,7 @@
     <string name="band_pic">Band Picture</string>
     <string name="album_description">Album Description</string>
     <string name="album_name">Album Name</string>
+    <string name="video_title">Video Title</string>
 
     <string-array name="roles">
         <item>Vocalist</item>

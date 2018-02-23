@@ -1,6 +1,8 @@
 package com.example.ksfgh.aria.ViewModel;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.BindingAdapter;
@@ -14,11 +16,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -37,8 +42,11 @@ import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
+import com.example.ksfgh.aria.databinding.AddEventBinding;
+import com.example.ksfgh.aria.databinding.AddVideoBinding;
 import com.example.ksfgh.aria.databinding.CreateAlbumBinding;
 import com.example.ksfgh.aria.databinding.CreateBandBinding;
+import com.google.android.exoplayer2.C;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
@@ -46,6 +54,7 @@ import org.simple.eventbus.Subscriber;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 
 import io.reactivex.Observable;
@@ -75,6 +84,7 @@ public class MyBandsViewModel {
     private ArrayList<BandMemberModel> memberModel;
     public Uri selectedImage = null;
     public Uri selectedVideo = null;
+    public ObservableField<String> videoPath;
     private HomeScreen activity;
 
     public MyBandsViewModel(HomeScreen activity) {
@@ -86,6 +96,8 @@ public class MyBandsViewModel {
         bandImage = new ObservableField<>();
         bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
         memberModel = new ArrayList<>();
+        videoPath = new ObservableField<>();
+        videoPath.set("");
         Collections.addAll(genres, activity.getResources().getStringArray(R.array.genres));
         Collections.addAll(bandRoles, activity.getResources().getStringArray(R.array.roles));
         getBands();
@@ -548,42 +560,210 @@ public class MyBandsViewModel {
 
     }
 
-    @Subscriber(tag = "addVideo")
-    public void addVideo(String videoPath){
+    @Subscriber(tag = "setVideoPath")
+    public void setVideoPath(String path){
 
-        RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
-        RequestBody videoDesc = RequestBody.create(MultipartBody.FORM, "hello");
-        RequestBody videoTitle = RequestBody.create(MultipartBody.FORM, "Video Title Here");
-        File originalFile = new File(videoPath);
-        RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedVideo)), originalFile);
-        MultipartBody.Part file = MultipartBody.Part.createFormData("video_content", originalFile.getName(), filePart);
-
-        Log.d("mybands", videoPath);
-
-        Disposable disposable = RetrofitClient.getClient().addVideo(bandId,videoTitle,videoDesc, file)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<VideoModel>() {
-                    @Override
-                    public void onNext(VideoModel videoModel) {
-                        Singleton.getInstance().currentBand.videos.add(videoModel);
-                        Toast.makeText(activity, "Successfully added the video", Toast.LENGTH_SHORT).show();
-                        EventBus.getDefault().post("","closeBottomSheet");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(activity, "There was an error adding the video", Toast.LENGTH_SHORT).show();
-                        Log.d("mybands", e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-        EventBus.getDefault().post(disposable, "myBandDisposables");
+        videoPath.set(path);
     }
+
+    public void addVideo(){
+
+        LayoutInflater inflater = activity.getLayoutInflater();
+        AddVideoBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_add_video, null, false);
+        binding.setViewmodel(this);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
+        alertDialogBuilder
+                .setView(binding.getRoot())
+                .setCancelable(false)
+                .setPositiveButton("Add video", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
+                    RequestBody videoDesc = RequestBody.create(MultipartBody.FORM, "hello");
+                    RequestBody videoTitle = RequestBody.create(MultipartBody.FORM, binding.etVideoTitle.getText().toString());
+                    File originalFile = new File(videoPath.get().toString());
+                    RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedVideo)), originalFile);
+                    MultipartBody.Part file = MultipartBody.Part.createFormData("video_content", originalFile.getName(), filePart);
+
+                    Disposable disposable = RetrofitClient.getClient().addVideo(bandId,videoTitle,videoDesc, file)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableObserver<VideoModel>() {
+                                @Override
+                                public void onNext(VideoModel videoModel) {
+                                    Singleton.getInstance().currentBand.videos.add(videoModel);
+                                    Toast.makeText(activity, "Successfully added the video", Toast.LENGTH_SHORT).show();
+                                    EventBus.getDefault().post("","closeBottomSheet");
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Toast.makeText(activity, "There was an error adding the video", Toast.LENGTH_SHORT).show();
+                                    Log.d("mybands", e.getMessage());
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    videoPath.set("");
+                                }
+                            });
+
+                    EventBus.getDefault().post(disposable, "myBandDisposables");
+
+                }
+            }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    videoPath.set("");
+                }
+            });
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.show();
+    }
+
+
+    String time;
+    public void addEvent(CustomModelForBandPage model){
+
+        AddEventBinding binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.dialog_add_event, null, false);
+        binding.setViewmodel(this);
+
+        binding.btnAddTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar currentTime = Calendar.getInstance();
+                int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = currentTime.get(Calendar.MINUTE);
+                new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        if(i1 > 10){
+                            if(i == 12){
+                                time = "00:" + i1 + ":00";
+                                binding.tvEventTime.setText("00:" + i1 + " PM");
+                            }
+                            else if( i == 24){
+                                time = "00:" + i1 + ":00";
+                                binding.tvEventTime.setText("00:" + i1 + " AM");
+                            }
+                            else if( i < 10){
+                                time = "0"+i + ":" + i1 + ":00";
+                                binding.tvEventTime.setText("0"+i + ":" + i1 + " AM");
+                            }
+                            else if(i > 9 && i <= 11){
+                                time = i + ":" + i1 + ":00";
+                                binding.tvEventTime.setText(i + ":" + i1 + " AM");
+                            }
+                            else if( i > 11){
+                                time = i + ":" + i1 + ":00";
+                                binding.tvEventTime.setText((i-12) + ":" + i1 + " PM");
+                            }
+                        }
+                        else {
+                            if(i == 12){
+                                time = "00:0" + i1 + ":00";
+                                binding.tvEventTime.setText("00:0" + i1 + " PM");
+                            }
+                            else if( i == 24){
+                                time = "00:0" + i1 + ":00";
+                                binding.tvEventTime.setText("00:0" + i1 + " AM");
+                            }
+                            else if( i < 10){
+                                time = "0"+i + ":0" + i1 + ":00";
+                                binding.tvEventTime.setText("0"+i + ":0" + i1 + " AM");
+                            }
+                            else if(i > 9 && i <= 11){
+                                time = i + ":0" + i1 + ":00";
+                                binding.tvEventTime.setText(i + ":0" + i1 + " AM");
+                            }
+                            else if( i > 11){
+                                time = i + ":0" + i1 + ":00";
+                                binding.tvEventTime.setText((i-12) + ":0" + i1 + " PM");
+                            }
+                        }
+
+                    }
+                }, hour, minute, true).show();
+            }
+        });
+
+        binding.btnAddDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        if((i1+1) < 10){
+                            if(i2 < 10){
+                                binding.tvEventDate.setText("0"+(i1+1)+"/0"+i2+"/"+i);
+                            }
+                            else {
+                                binding.tvEventDate.setText("0"+(i1+1)+"/"+i2+"/"+i);
+                            }
+                        }
+                        else {
+                            if(i2 < 10){
+                                binding.tvEventDate.setText((i1+1)+"/0"+i2+"/"+i);
+                            }
+                            else {
+                                binding.tvEventDate.setText((i1+1)+"/"+i2+"/"+i);
+                            }
+                        }
+
+                    }
+                }, year, month, day).show();
+            }
+        });
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
+        alertDialogBuilder
+                .setView(binding.getRoot())
+                .setCancelable(false)
+                .setPositiveButton("Add event", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    Disposable disposable = RetrofitClient.getClient()
+                            .addEvent(String.valueOf(Singleton.getInstance().currentBand.band.bandId), binding.etEventName.getText().toString(), binding.tvEventDate.getText().toString(),
+                                    time, binding.etEventVenue.getText().toString())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableObserver<EventModel>() {
+                                @Override
+                                public void onNext(EventModel eventModel) {
+                                    model.events.add(eventModel);
+                                    Toast.makeText(activity, "Successfully added the event", Toast.LENGTH_SHORT).show();
+                                    EventBus.getDefault().post("","closeBottomSheet");
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Toast.makeText(activity, "There was an error adding the event", Toast.LENGTH_SHORT).show();
+                                    Log.d("mybands", e.getMessage());
+                                }
+
+                                @Override
+                                public void onComplete() {
+
+                                }
+                            });
+                    EventBus.getDefault().post(disposable, "myBandDisposables");
+                }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+
+    }
+
+
 
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data class="AddVideoBinding">
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.MyBandsViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/toolbarColor">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_margin="16dp"
+            android:text="Add a video"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/video_title"
+            android:theme="@style/TextStyle"
+            android:padding="8dp">
+
+            <EditText
+                android:id="@+id/etVideoTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/white"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Video"
+            android:theme="@style/TextStyle"
+            android:padding="8dp">
+
+            <EditText
+                android:id="@+id/etVideo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:editable="false"
+                android:text="@{viewmodel.videoPath}"
+                android:onClick="@{()->viewmodel.pickVideo()}"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+</layout>

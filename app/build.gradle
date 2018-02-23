@@ -44,9 +44,8 @@ dependencies {
     compile 'nl.psdcompany:duo-navigation-drawer:2.0.7'
     compile 'com.github.claudiodegio:MsvSearch:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
-    compile('com.github.florent37:androidparallax:1.0.1@aar') {
-        transitive = true
-    }
+    compile 'com.yarolegovich:discrete-scrollview:1.4.4'
+    compile 'com.github.hrskrs:InstaDotView:1.1'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'

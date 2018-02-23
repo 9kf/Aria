@@ -27,6 +27,7 @@ import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.ViewModel.HomeScreenViewModel;
 import com.example.ksfgh.aria.databinding.ActivityHomeScreenBinding;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -118,7 +119,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         //initialize exoplayer
         TrackSelector trackSelector = new DefaultTrackSelector();
         LoadControl loadControl = new DefaultLoadControl();
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this), trackSelector, loadControl);
         exoPlayer.addListener(this);
         dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Aria"), null);
         extractorsFactory = new DefaultExtractorsFactory();
@@ -531,7 +532,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         else if(requestCode == Singleton.getInstance().PICK_VIDEO && resultCode == Activity.RESULT_OK && data != null){
 
             EventBus.getDefault().post(data.getData(), "setSelectedVideo");
-            EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this), "addVideo");
+            EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this), "setVideoPath");
         }
     }
 

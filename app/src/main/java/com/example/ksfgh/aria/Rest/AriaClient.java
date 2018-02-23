@@ -1,5 +1,7 @@
 package com.example.ksfgh.aria.Rest;
 
+import android.graphics.Bitmap;
+
 import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
@@ -10,6 +12,7 @@ import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
 import com.example.ksfgh.aria.Model.SongModel;
+import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.Model.VideoModel;
 
 import io.reactivex.Observable;
@@ -37,6 +40,9 @@ public interface AriaClient {
 
     @GET("getusers")
     Observable<FacebookUserModel[]> getUsers();
+
+    @GET("getusers")
+    Observable<UserModel[]> getUsers2();
 
     @POST("saveUser")
     Observable<FacebookUserModel> createAccount(@Body FacebookUserModel facebookUserModel);
@@ -117,4 +123,13 @@ public interface AriaClient {
     @POST("addBandCoverPhoto")
     Observable<ResponseBody> addBandCoverPhoto(@Part("bandId") RequestBody bandId,
                                                @Part MultipartBody.Part pic);
+
+    @POST("addEvent")
+    @FormUrlEncoded
+    Observable<EventModel> addEvent(@Field("band_id") String bandId,
+                                    @Field("event_name") String eventName,
+                                    @Field("event_date") String eventDate,
+                                    @Field("event_time") String eventTime,
+                                    @Field("event_venue") String eventVenue);
+
 }

@@ -26,13 +26,13 @@ public class BandModel {
     @SerializedName("updated_at")
     public String updatedAt;
     @SerializedName("weekly_score")
-    public int weeklyScore;
+    public double weeklyScore;
     @SerializedName("band_score")
-    public int bandScore;
+    public double bandScore;
     @SerializedName("scored_updated_date")
     public String scoredUpdatedDate;
 
-    public BandModel(int bandId, String bandName, String bandDesc, int numFollowers, int visitCounts, String bandPic, String bandCoverpic, String createdAt, String updatedAt, int weeklyScore, int bandScore, String scoredUpdatedDate) {
+    public BandModel(int bandId, String bandName, String bandDesc, int numFollowers, int visitCounts, String bandPic, String bandCoverpic, String createdAt, String updatedAt, double weeklyScore, double bandScore, String scoredUpdatedDate) {
         this.bandId = bandId;
         this.bandName = bandName;
         this.bandDesc = bandDesc;
@@ -119,7 +119,7 @@ public class BandModel {
         this.updatedAt = updatedAt;
     }
 
-    public int getWeeklyScore() {
+    public double getWeeklyScore() {
         return weeklyScore;
     }
 
@@ -127,7 +127,7 @@ public class BandModel {
         this.weeklyScore = weeklyScore;
     }
 
-    public int getBandScore() {
+    public double getBandScore() {
         return bandScore;
     }
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.GenreModel;
@@ -84,12 +85,12 @@ public class HomeViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d("mybands", e.getMessage() + " ");
                     }
 
                     @Override
                     public void onComplete() {
-
+                        Log.d("mybands",  "complete!");
                     }
                 });
 
@@ -99,7 +100,7 @@ public class HomeViewModel {
     @BindingAdapter("bind:imgUrl")
     public static void setImage(ImageView view, String image){
         Glide.with(Singleton.getInstance().homeFragment).load(image)
-                .apply(RequestOptions.overrideOf(170,170))
+                    .apply(RequestOptions.overrideOf(150,150))
                 .apply(RequestOptions.centerCropTransform())
                 .into(view);
     }

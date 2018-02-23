@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data class="BandVideosBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.VideoModel"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.BandActivityViewModel"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="16dp">
+
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            bind:playerview="@{viewmodel}"
+            app:auto_show="false"
+            app:surface_type="surface_view"
+            android:focusable="true" />
+
+        <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:adjustViewBounds="true"-->
+            <!--android:scaleType="fitXY"-->
+            <!--app:vidPath="@{model.videoContent}"-->
+            <!--app:viewModel="@{viewmodel}"/>-->
+
+
+    </RelativeLayout>
+
+</layout>

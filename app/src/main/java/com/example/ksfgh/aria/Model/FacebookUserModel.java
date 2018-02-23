@@ -1,6 +1,7 @@
 package com.example.ksfgh.aria.Model;
 
 import android.databinding.BaseObservable;
+import android.databinding.ObservableField;
 
 /**
  * Created by ksfgh on 27/11/2017.

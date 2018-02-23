@@ -2,6 +2,12 @@ package com.example.ksfgh.aria.Model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by ksfgh on 10/02/2018.
  */
@@ -38,5 +44,27 @@ public class EventModel {
         this.eventLocation = eventLocation;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public String getFormattedDate(){
+
+        String dateText = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = sdf.parse(eventDate);
+            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+            calendar.setTime(date);
+            dateText = new SimpleDateFormat("MMM").format(calendar.getTime()) + " " + calendar.get(Calendar.DAY_OF_MONTH);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return dateText;
+    }
+
+    public String getFormattedTime(){
+
+        String[] choppedTime = eventTime.split(":");
+        return String.valueOf(Integer.parseInt(choppedTime[0])%12) + ":" + choppedTime[1] + " " + ((Integer.parseInt(choppedTime[0])>=12) ? "PM" : "AM");
     }
 }
