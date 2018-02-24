@@ -397,23 +397,6 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     }
 
 
-    ////// Video functions /////
-
-    @Subscriber(tag = "prepareBandVideo")
-    private void prepareBandVideo(String vidPath){
-        dynamicConcatenatingMediaSource.releaseSource();
-        dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
-
-        dynamicConcatenatingMediaSource.addMediaSource(
-                Singleton.getInstance().utilities.createMediaSource(
-                        Singleton.getInstance().utilities.buildVideoUrl(Singleton.getInstance().BASE,vidPath).toString(),
-                        dataSourceFactory,
-                        extractorsFactory
-                )
-        );
-        exoPlayer.prepare(dynamicConcatenatingMediaSource, true, false);
-    }
-
     //
     //Exoplayer Listener
     //

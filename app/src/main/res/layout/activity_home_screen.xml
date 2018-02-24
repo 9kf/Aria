@@ -191,12 +191,14 @@
                     android:layout_marginBottom="8dp"/>
 
                 <LinearLayout
+                    android:id="@+id/llUser"
                     android:layout_width="230dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp">
+                    android:paddingBottom="8dp"
+                    android:onClick="@{(v) -> viewModel.onDrawerItemClick(v)}">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/civUserPic"
@@ -409,7 +411,7 @@
                 <RelativeLayout
                     android:id="@+id/llPersistentBar"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="50dp"
                     android:orientation="vertical"
                     android:elevation="7dp"
                     android:background="@color/white"

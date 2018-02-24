@@ -1,37 +1,32 @@
 package com.example.ksfgh.aria.Adapters;
 
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.R;
-import com.example.ksfgh.aria.ViewModel.HomeViewModel;
-import com.example.ksfgh.aria.databinding.FragmentHomeBinding;
-import com.example.ksfgh.aria.databinding.PlaylistBinding;
-
-import java.util.ArrayList;
+import com.example.ksfgh.aria.ViewModel.UserViewModel;
+import com.example.ksfgh.aria.databinding.UserPlaylistBinding;
 
 /**
- * Created by ksfgh on 28/01/2018.
+ * Created by ksfgh on 25/02/2018.
  */
 
-public class HomePlaylistAdapter extends RecyclerView.Adapter<HomePlaylistAdapter.ViewHolder> {
+public class UserPlaylistsAdapter extends RecyclerView.Adapter<UserPlaylistsAdapter.ViewHolder> {
 
-    private ObservableArrayList<PlaylistModel> playlists;
-    private HomeViewModel homeViewModel;
+    private ObservableArrayList<PlaylistModel> playlistModels;
+    private UserViewModel viewModel;
 
-    public HomePlaylistAdapter(HomeViewModel homeViewModel) {
-        this.homeViewModel = homeViewModel;
-        this.playlists = homeViewModel.playlistModels;
+    public UserPlaylistsAdapter(UserViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.playlistModels = viewModel.userPlaylists;
 
-        playlists.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<PlaylistModel>>() {
+        playlistModels.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<PlaylistModel>>() {
             @Override
             public void onChanged(ObservableList<PlaylistModel> playlistModels) {
                 notifyDataSetChanged();
@@ -61,30 +56,29 @@ public class HomePlaylistAdapter extends RecyclerView.Adapter<HomePlaylistAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_playlist_recommendation, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_playlist, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        PlaylistModel model = playlists.get(position);
-        holder.playlistBinding.setModel(model);
-        holder.playlistBinding.setViewmodel(homeViewModel);
+        PlaylistModel model = playlistModels.get(position);
+        holder.binding.setModel(model);
+        holder.binding.setViewmodel(viewModel);
     }
 
     @Override
     public int getItemCount() {
-        return playlists.size();
+        return playlistModels.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private PlaylistBinding playlistBinding;
+        private UserPlaylistBinding binding;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            playlistBinding = DataBindingUtil.bind(itemView);
+            binding = DataBindingUtil.bind(itemView);
         }
-
     }
 }

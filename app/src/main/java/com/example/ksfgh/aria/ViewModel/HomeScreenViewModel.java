@@ -127,6 +127,11 @@ public class HomeScreenViewModel {
                 toolbarTitle.set("Search");
                 break;
 
+            case R.id.llUser:
+                toolbarTitle.set("My Profile");
+                EventBus.getDefault().post(Singleton.getInstance().userFragment, "switchFragment");
+                break;
+
             case R.id.llNotifications:
                 toolbarTitle.set("Notifications");
                 break;

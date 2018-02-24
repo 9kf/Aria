@@ -1,0 +1,192 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data class="FragmentUserBinding">
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.UserViewModel"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:background="@color/toolbarColor">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.ksfgh.aria.View.fragments.UserFragment"
+        android:background="@color/toolbarColor"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_ellipsis"
+            android:tint="@color/white"
+            android:layout_alignParentRight="true"/>
+
+        <ImageView
+            android:id="@+id/ivUserPic"
+            android:layout_width="120dp"
+            android:layout_height="150dp"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            bind:imgUrl="@{viewmodel.user.pic}"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical"
+            android:layout_toRightOf="@+id/ivUserPic"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text='@{viewmodel.user.fname + " " + viewmodel.user.lname}'
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginRight="24dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_location"
+                    android:tint="@color/highLightColor"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:text='@{viewmodel.user.address.empty ? "N/A" : viewmodel.user.address}'
+                    android:layout_marginLeft="4dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_email"
+                    android:tint="@color/highLightColor"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:text="@{viewmodel.user.email}"
+                    android:layout_marginLeft="4dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_phone"
+                    android:tint="@color/highLightColor"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:text='@{viewmodel.user.contact.empty ? "N/A" : viewmodel.user.contact}'
+                    android:layout_marginLeft="4dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvUserBioLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="Bio"
+            android:layout_below="@id/ivUserPic"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvUserBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvUserBioLabel"
+            android:layout_marginTop="4dp"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:text='@{viewmodel.user.bio.empty ? "N/A" : viewmodel.user.bio}'/>
+
+        <TextView
+            android:id="@+id/tvUserPlaylistLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="Playlists"
+            android:textStyle="bold"
+            android:layout_below="@id/tvUserBio"
+            android:layout_marginTop="24dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvUserPlaylists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvUserPlaylistLabel"
+            bind:userPlaylist="@{viewmodel}"/>
+
+        <TextView
+            android:id="@+id/tvUserFollowedBandsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="Bands Followed"
+            android:textStyle="bold"
+            android:layout_below="@id/rvUserPlaylists"
+            android:layout_marginTop="24dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvUserFollowedBandsLabel"/>
+
+
+    </RelativeLayout>
+    </ScrollView>
+
+</layout>

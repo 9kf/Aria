@@ -11,6 +11,7 @@ import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
+import com.example.ksfgh.aria.View.fragments.UserFragment;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,7 @@ public class Singleton {
     public static HomeFragment homeFragment = new HomeFragment();
     public static FeedFragment feedFragment = new FeedFragment();
     public static MyBandsFragment myBandsFragment = new MyBandsFragment();
+    public static UserFragment userFragment = new UserFragment();
 
     //static classes
     public Utils utilities = new Utils();

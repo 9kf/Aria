@@ -23,8 +23,8 @@ public class HomeWeekTopBandAdapter extends RecyclerView.Adapter<HomeWeekTopBand
     private HomeViewModel homeViewModel;
 
     public HomeWeekTopBandAdapter(HomeViewModel homeViewModel) {
-        this.bands = homeViewModel.bands;
         this.homeViewModel = homeViewModel;
+        this.bands = homeViewModel.bands;
 
         bands.addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<BandModel>>() {
             @Override
