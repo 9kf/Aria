@@ -41,7 +41,6 @@ public class BandBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     public void setVariables(MyBandsViewModel viewModel, CustomModelForBandPage model){
-        Log.d("mybands", model.band.getBandName());
         binding.setModel(model);
         binding.setViewmodel(viewModel);
     }

@@ -127,7 +127,7 @@ public class HomeViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d("playlists", e.getMessage());
+                        Log.d("playlists", e.getMessage() + "");
                     }
 
                     @Override

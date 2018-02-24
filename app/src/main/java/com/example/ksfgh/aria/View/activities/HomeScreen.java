@@ -76,8 +76,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
     //Exoplayer or Music and Video Player
     public SimpleExoPlayer exoPlayer;
-    private DataSource.Factory dataSourceFactory;
-    private ExtractorsFactory extractorsFactory;
+    public DataSource.Factory dataSourceFactory;
+    public ExtractorsFactory extractorsFactory;
     private DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource;
     public ArrayList<CustomSongModelForPlaylist> songList;
     public boolean isPlaying;
@@ -117,9 +117,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         });
 
         //initialize exoplayer
-        TrackSelector trackSelector = new DefaultTrackSelector();
-        LoadControl loadControl = new DefaultLoadControl();
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this), trackSelector, loadControl);
+        initPlayer("");
         exoPlayer.addListener(this);
         dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Aria"), null);
         extractorsFactory = new DefaultExtractorsFactory();
@@ -167,6 +165,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     //
     //MusicPlayer Functions
     //
+
+    @Subscriber(tag = "initPlayer")
+    private void initPlayer(String empty){
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this),  new DefaultTrackSelector(), new DefaultLoadControl());
+    }
+
     @Subscriber(tag = "addSongToQueue")
     private void addSongToQueue(CustomSongModelForPlaylist song){
         dynamicConcatenatingMediaSource.addMediaSource(
@@ -390,6 +394,24 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Subscriber(tag = "repeatPlaylist")
     private void repeatPlaylist(int mode){
         exoPlayer.setRepeatMode(mode);
+    }
+
+
+    ////// Video functions /////
+
+    @Subscriber(tag = "prepareBandVideo")
+    private void prepareBandVideo(String vidPath){
+        dynamicConcatenatingMediaSource.releaseSource();
+        dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
+
+        dynamicConcatenatingMediaSource.addMediaSource(
+                Singleton.getInstance().utilities.createMediaSource(
+                        Singleton.getInstance().utilities.buildVideoUrl(Singleton.getInstance().BASE,vidPath).toString(),
+                        dataSourceFactory,
+                        extractorsFactory
+                )
+        );
+        exoPlayer.prepare(dynamicConcatenatingMediaSource, true, false);
     }
 
     //

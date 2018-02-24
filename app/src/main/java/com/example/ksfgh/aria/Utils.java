@@ -91,9 +91,26 @@ public class Utils {
         }
     }
 
+    public URL buildVideoUrl(String base, String path){
+
+        Uri uri = Uri.parse(base)
+                .buildUpon()
+                .path("Aria/public/assets/video/"+path)
+                .build();
+
+        try {
+            return new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public MediaSource createMediaSource(String song, DataSource.Factory dataSourceFactory, ExtractorsFactory extractorsFactory){
         return new ExtractorMediaSource(Uri.parse(song), dataSourceFactory, extractorsFactory, null, null);
     }
+
+
 
     public String timeToString(int time){
 

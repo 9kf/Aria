@@ -30,12 +30,22 @@ import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.hrskrs.instadotlib.InstaDotView;
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
 import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
+import org.simple.eventbus.EventBus;
+
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +58,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.http.Url;
 
 /**
  * Created by ksfgh on 15/02/2018.
@@ -57,6 +68,7 @@ public class BandActivityViewModel {
 
     private BandActivity activity;
     private ArrayList<MemberModel> memberInfo;
+    public ArrayList<SimpleExoPlayer> exoPlayers;
     public ObservableArrayList<UserModel> members;
     public ObservableArrayList<AlbumModel> albums;
     public ObservableArrayList<EventModel> events;
@@ -69,11 +81,15 @@ public class BandActivityViewModel {
         events = new ObservableArrayList<>();
         videos = new ObservableArrayList<>();
         memberInfo = new ArrayList<>();
+        exoPlayers = new ArrayList<>();
         memberInfo.addAll(Singleton.getInstance().currentBand.members);
         albums.addAll(Singleton.getInstance().currentBand.albums);
         events.addAll(Singleton.getInstance().currentBand.events);
         videos.addAll(Singleton.getInstance().currentBand.videos);
         getMemberInfo();
+        for(VideoModel videoModel: videos){
+            exoPlayers.add(ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(activity), new DefaultTrackSelector(), new DefaultLoadControl()));
+        }
     }
 
     @BindingAdapter("bind:memberAdapter")
@@ -143,9 +159,20 @@ public class BandActivityViewModel {
         });
     }
 
-    @BindingAdapter("bind:playerview")
-    public static void setUpVideoPlayer(SimpleExoPlayerView videoPlayer, BandActivityViewModel viewModel){
-        videoPlayer.setPlayer(Singleton.homeScreen.exoPlayer);
+    @BindingAdapter({"bind:playerview", "bind:playerModel"})
+    public static void setUpVideoPlayer(SimpleExoPlayerView videoPlayer, BandActivityViewModel viewModel, VideoModel model){
+        for(int i = 0; i < viewModel.videos.size(); i++){
+            if(viewModel.videos.get(i).videoId == model.videoId){
+                videoPlayer.setPlayer(viewModel.exoPlayers.get(i));
+                MediaSource mediaSource = Singleton.getInstance().utilities.createMediaSource(
+                        Singleton.getInstance().utilities.buildVideoUrl(Singleton.getInstance().BASE, model.videoContent).toString(),
+                        Singleton.homeScreen.dataSourceFactory,
+                        Singleton.homeScreen.extractorsFactory
+                );
+                viewModel.exoPlayers.get(i).prepare(mediaSource, true, false);
+                break;
+            }
+        }
     }
 
     private void getMemberInfo() {
@@ -190,73 +217,5 @@ public class BandActivityViewModel {
 
         return info;
     }
-
-    public void onPlayerClicked(){
-
-    }
-
-//    @BindingAdapter({"bind:vidPath", "bind:viewModel"})
-//    public static void vidThumbnail(ImageView view, String vidPath, BandActivityViewModel viewModel){
-//
-//        String path = Singleton.getInstance().BASE + "Aria/public/assets/video/" + vidPath;
-//
-//        Observable<Bitmap> observable = Observable.fromCallable(new Callable<Bitmap>() {
-//            @Override
-//            public Bitmap call() throws Exception {
-//                return viewModel.getVidThumbnail(vidPath);
-//            }
-//        });
-//
-//        Disposable disposable = observable
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeWith(new DisposableObserver<Bitmap>() {
-//                    @Override
-//                    public void onNext(Bitmap bitmap) {
-//                        if(bitmap != null)
-//                            view.setImageBitmap(bitmap);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-//    }
-//
-//    public Bitmap getVidThumbnail(String path){
-//
-//        Bitmap bitmap = null;
-//        MediaMetadataRetriever mediaMetadataRetriever = null;
-//
-//        try {
-//            mediaMetadataRetriever = new MediaMetadataRetriever();
-//            if (Build.VERSION.SDK_INT >= 14)
-//                mediaMetadataRetriever.setDataSource(path, new HashMap<String, String>());
-//            else
-//                mediaMetadataRetriever.setDataSource(path);
-//
-//            bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (mediaMetadataRetriever != null) {
-//                mediaMetadataRetriever.release();
-//            }
-//        }
-//
-//        if(bitmap != null){
-//            bitmap = Bitmap.createScaledBitmap(bitmap, 240, 240, false);
-//        }
-//
-//        return bitmap;
-//    }
-
-
 
 }
