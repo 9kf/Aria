@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -169,7 +170,8 @@ public class BandActivityViewModel {
                         Singleton.homeScreen.dataSourceFactory,
                         Singleton.homeScreen.extractorsFactory
                 );
-                viewModel.exoPlayers.get(i).prepare(mediaSource, true, false);
+                viewModel.exoPlayers.get(i).prepare(mediaSource, true, true);
+                viewModel.exoPlayers.get(i).setRepeatMode(Player.REPEAT_MODE_ONE);
                 break;
             }
         }
@@ -216,6 +218,10 @@ public class BandActivityViewModel {
         }
 
         return info;
+    }
+
+    public void goBack(){
+        activity.finish();
     }
 
 }

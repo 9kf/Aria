@@ -131,5 +131,10 @@ public interface AriaClient {
                                     @Field("event_date") String eventDate,
                                     @Field("event_time") String eventTime,
                                     @Field("event_venue") String eventVenue);
+    @Multipart
+    @POST("AddPlayList")
+    Observable<PlaylistModel> addPlaylist(@Part("user_id") RequestBody userId,
+                                          @Part("pl_title") RequestBody plTitle,
+                                          @Part MultipartBody.Part pic);
 
 }

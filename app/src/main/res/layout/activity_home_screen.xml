@@ -192,12 +192,13 @@
 
                 <LinearLayout
                     android:id="@+id/llUser"
-                    android:layout_width="230dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
+                    android:layout_marginRight="100dp"
                     android:onClick="@{(v) -> viewModel.onDrawerItemClick(v)}">
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -440,7 +441,7 @@
                         android:textStyle="bold"
                         android:textColor="@color/white"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="12dp"/>
+                        android:layout_marginTop="8dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"

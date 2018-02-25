@@ -27,7 +27,6 @@ public class UserFragment extends Fragment {
 
     FragmentUserBinding binding;
     UserViewModel viewModel;
-    CompositeDisposable compositeDisposable;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,17 +35,7 @@ public class UserFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_user, container, false);
         viewModel = new UserViewModel(this);
         binding.setViewmodel(viewModel);
-        compositeDisposable = new CompositeDisposable();
         return binding.getRoot();
     }
 
-    public void addDisposables(Disposable disposable){
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        compositeDisposable.dispose();
-    }
 }

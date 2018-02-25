@@ -20,7 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:onClick="@{()->viewmodel.playlistClicked(model)}">
 
         <ImageView
             android:layout_width="130dp"

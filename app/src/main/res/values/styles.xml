@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:popupMenuStyle">@style/popupMenu</item>
     </style>
 
     <!--Start screen theme-->
@@ -17,6 +18,12 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/toolbarColor</item>
         <item name="android:spinnerItemStyle">@style/StartScreenSpinnerItem</item>
         <item name="android:spinnerDropDownItemStyle">@style/SpinnerItemDropdown</item>
+    </style>
+
+    <!--popupmenu style-->
+    <style name="popupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@color/toolbarColor</item>
+        <item name="android:textColor">@color/white</item>
     </style>
     
     <style name="StartScreenSpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">

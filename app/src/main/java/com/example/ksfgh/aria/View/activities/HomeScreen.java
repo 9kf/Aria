@@ -523,6 +523,10 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                     EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
                     EventBus.getDefault().post(data.getData(),"setSelectedImage");
                 }
+                else if(Singleton.getInstance().CHANGE_OR_ADD == 2){
+                    EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPicUser");
+                    EventBus.getDefault().post(data.getData(),"setSelectedImageUser");
+                }
                 else {
                     EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this),"changeBandPic");
                     EventBus.getDefault().post(data.getData(),"setSelectedImage");

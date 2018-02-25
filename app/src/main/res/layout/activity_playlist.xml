@@ -91,15 +91,15 @@
                     android:layout_centerInParent="true"
                     bind:imgUrl="@{viewmodel.playlistModel.image}" />
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/playOrPause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:elevation="7dp"
-                    app:backgroundTint="@color/highLightColor"
-                    android:layout_centerInParent="true"
-                    android:src="@{viewmodel.isPlayerPlaying() ? @drawable/exo_controls_pause : @drawable/exo_controls_play}"
-                    android:onClick="@{()->viewmodel.playSelectedPlaylist()}"/>
+                <!--<android.support.design.widget.FloatingActionButton-->
+                    <!--android:id="@+id/playOrPause"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:elevation="7dp"-->
+                    <!--app:backgroundTint="@color/highLightColor"-->
+                    <!--android:layout_centerInParent="true"-->
+                    <!--android:src="@{viewmodel.isPlayerPlaying() ? @drawable/exo_controls_pause : @drawable/exo_controls_play}"-->
+                    <!--android:onClick="@{()->viewmodel.playSelectedPlaylist()}"/>-->
 
 
                 <TextView

@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_ellipsis"
             android:tint="@color/white"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:onClick="@{(v)->viewmodel.optionsClicked(v)}"/>
 
         <ImageView
             android:id="@+id/ivUserPic"
