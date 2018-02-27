@@ -80,6 +80,8 @@ public class UserViewModel {
                         for(PlaylistModel model:playlistModels){
                             if(model.getPlCreator().equals(user.getId())){
                                 userPlaylists.add(model);
+                                if(Singleton.getInstance().userPlaylists.size() == 0)
+                                    Singleton.getInstance().userPlaylists.add(model);
                             }
                         }
                     }

@@ -1,5 +1,8 @@
 package com.example.ksfgh.aria.Model;
 
+import android.databinding.ObservableBoolean;
+import android.databinding.ObservableField;
+
 import com.google.gson.annotations.SerializedName;
 
 /**

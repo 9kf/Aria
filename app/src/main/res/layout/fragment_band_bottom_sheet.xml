@@ -102,6 +102,16 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="normal"
+                android:text="Add Song to album"
+                android:background="@android:color/transparent"
+                android:onClick="@{()->viewmodel.addSongToAlbum(model)}"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="normal"
                 android:text="Add Video"
                 android:background="@android:color/transparent"
                 android:onClick="@{()->viewmodel.addVideo()}"/>

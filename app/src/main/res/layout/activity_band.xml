@@ -14,210 +14,309 @@
             type="com.example.ksfgh.aria.ViewModel.BandActivityViewModel"/>
     </data>
 
-    <ScrollView
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.example.ksfgh.aria.View.activities.BandActivity"
-        android:scrollbars="none"
-        android:background="@color/toolbarColor">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context="com.example.ksfgh.aria.View.activities.BandActivity"
+            android:scrollbars="none"
+            android:background="@color/toolbarColor">
 
-            <ImageView
-                android:id="@+id/ivCover"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                bind:bandImage="@{model.band.bandCoverpic}"/>
+                android:layout_height="match_parent">
 
-            <View
+                <ImageView
+                    android:id="@+id/ivCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
+                    bind:bandImage="@{model.band.bandCoverpic}"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@color/black"
+                    android:alpha=".6"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow_down"
+                    android:tint="@color/white"
+                    android:layout_margin="16dp"
+                    android:onClick="@{()->viewmodel.goBack()}"/>
+
+                <ImageView
+                    android:id="@+id/ivPic"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/ivCover"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="-50dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
+                    bind:bandImage="@{model.band.bandPic}"/>
+
+                <TextView
+                    android:id="@+id/tvBandName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="@{model.band.bandName}"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_above="@id/ivPic"
+                    android:layout_toRightOf="@id/ivPic"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="20dp"/>
+
+                <TextView
+                    android:id="@+id/tvFollowers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text='@{String.valueOf(model.band.numFollowers) + " followers"}'
+                    android:textSize="16sp"
+                    android:layout_below="@id/tvBandName"
+                    android:layout_toRightOf="@id/ivPic"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="-20dp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_below="@+id/tvFollowers"
+                    android:layout_toRightOf="@id/ivPic"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/shape_sqaure_with_border"
+                    android:textColor="@color/highLightColor"
+                    android:text="Follow"/>
+
+                <TextView
+                    android:id="@+id/tvDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:text="@{model.band.bandDesc}"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_below="@id/ivPic"/>
+
+                <TextView
+                    android:id="@+id/tvBandMemberHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Members:"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_below="@id/tvDesc"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvMembrs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvBandMemberHeader"
+                    bind:memberAdapter="@{viewmodel}"/>
+
+                <TextView
+                    android:id="@+id/tvBandEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Events:"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_below="@id/rvMembrs"/>
+
+                <com.yarolegovich.discretescrollview.DiscreteScrollView
+                    android:id="@+id/rvBandEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:dsv_orientation="horizontal"
+                    bind:eventAdapter="@{viewmodel}"
+                    android:layout_below="@id/tvBandEvents"/>
+
+                <com.hrskrs.instadotlib.InstaDotView
+                    android:id="@+id/idvEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rvBandEvents"
+                    android:layout_centerHorizontal="true"
+                    app:dot_activeColor="@color/highLightColor"
+                    app:dot_inactiveColor="@color/white"
+                    app:dot_activeSize="10dp"
+                    app:dot_inactiveSize="8dp"
+                    app:dot_margin="10dp"
+                    app:dot_mediumSize="6dp"
+                    app:dot_smallSize="4dp"
+                    bind:eventDots="@{viewmodel}"/>
+
+                <TextView
+                    android:id="@+id/tvBandVideos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Videos:"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_below="@id/idvEvents"/>
+
+                <com.yarolegovich.discretescrollview.DiscreteScrollView
+                    android:id="@+id/dsvBandVids"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvBandVideos"
+                    app:dsv_orientation="horizontal"
+                    bind:videosAdapter="@{viewmodel}"/>
+
+                <com.hrskrs.instadotlib.InstaDotView
+                    android:id="@+id/idVideos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/dsvBandVids"
+                    android:layout_centerHorizontal="true"
+                    app:dot_activeColor="@color/highLightColor"
+                    app:dot_inactiveColor="@color/white"
+                    app:dot_activeSize="10dp"
+                    app:dot_inactiveSize="8dp"
+                    app:dot_margin="10dp"
+                    app:dot_mediumSize="6dp"
+                    app:dot_smallSize="4dp"
+                    bind:videoDots="@{viewmodel}"/>
+
+                <TextView
+                    android:id="@+id/tvBandAlbums"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="Albums:"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_below="@id/idVideos"/>
+
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:layout_below="@id/tvBandAlbums"
+                    bind:albumAdapter="@{viewmodel}"/>
+
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <!--bottomsheet part-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="auto"
+            android:background="@color/toolbarColor"
+            android:orientation="vertical"
+            bind:bandBottomSheet="@{viewmodel}">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/black"
-                android:alpha=".6"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_down"
-                android:tint="@color/white"
-                android:layout_margin="16dp"
-                android:onClick="@{()->viewmodel.goBack()}"/>
+                android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/ivPic"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_below="@id/ivCover"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="-50dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                bind:bandImage="@{model.band.bandPic}"/>
+                <ImageView
+                    android:id="@+id/ivBandAlbumPic"
+                    android:layout_width="120dp"
+                    android:layout_height="150dp"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    bind:imgUrl="@{viewmodel.selectedAlbumImage}"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:orientation="vertical"
+                    android:layout_toRightOf="@id/ivBandAlbumPic"
+                    android:layout_marginLeft="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:text="@{viewmodel.selectedAlbumName}"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:layout_marginTop="4dp"
+                        android:text="@{model.band.bandName}"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:layout_marginTop="4dp"
+                        android:text="Release date"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/shape_sqaure_with_border"
+                        android:textColor="@color/highLightColor"
+                        android:text="Like"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
             <TextView
-                android:id="@+id/tvBandName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="@{model.band.bandName}"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_above="@id/ivPic"
-                android:layout_toRightOf="@id/ivPic"
-                android:layout_marginLeft="16dp"
-                android:layout_marginBottom="20dp"/>
-
-            <TextView
-                android:id="@+id/tvFollowers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text='@{String.valueOf(model.band.numFollowers) + " followers"}'
-                android:textSize="16sp"
-                android:layout_below="@id/tvBandName"
-                android:layout_toRightOf="@id/ivPic"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="-20dp"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_below="@+id/tvFollowers"
-                android:layout_toRightOf="@id/ivPic"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/shape_sqaure_with_border"
-                android:textColor="@color/highLightColor"
-                android:text="Follow"/>
-
-            <TextView
-                android:id="@+id/tvDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:textSize="14sp"
-                android:text="@{model.band.bandDesc}"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_below="@id/ivPic"/>
-
-            <TextView
-                android:id="@+id/tvBandMemberHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
                 android:textStyle="bold"
-                android:text="Members:"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_below="@id/tvDesc"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvMembrs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tvBandMemberHeader"
-                bind:memberAdapter="@{viewmodel}"/>
-
-            <TextView
-                android:id="@+id/tvBandEvents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="Events:"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_below="@id/rvMembrs"/>
-
-            <com.yarolegovich.discretescrollview.DiscreteScrollView
-                android:id="@+id/rvBandEvents"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:dsv_orientation="horizontal"
-                bind:eventAdapter="@{viewmodel}"
-                android:layout_below="@id/tvBandEvents"/>
-
-            <com.hrskrs.instadotlib.InstaDotView
-                android:id="@+id/idvEvents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rvBandEvents"
-                android:layout_centerHorizontal="true"
-                app:dot_activeColor="@color/highLightColor"
-                app:dot_inactiveColor="@color/white"
-                app:dot_activeSize="10dp"
-                app:dot_inactiveSize="8dp"
-                app:dot_margin="10dp"
-                app:dot_mediumSize="6dp"
-                app:dot_smallSize="4dp"
-                bind:eventDots="@{viewmodel}"/>
-
-            <TextView
-                android:id="@+id/tvBandVideos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="Videos:"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_below="@id/idvEvents"/>
-
-            <com.yarolegovich.discretescrollview.DiscreteScrollView
-                android:id="@+id/dsvBandVids"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tvBandVideos"
-                app:dsv_orientation="horizontal"
-                bind:videosAdapter="@{viewmodel}"/>
-
-            <com.hrskrs.instadotlib.InstaDotView
-                android:id="@+id/idVideos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/dsvBandVids"
-                android:layout_centerHorizontal="true"
-                app:dot_activeColor="@color/highLightColor"
-                app:dot_inactiveColor="@color/white"
-                app:dot_activeSize="10dp"
-                app:dot_inactiveSize="8dp"
-                app:dot_margin="10dp"
-                app:dot_mediumSize="6dp"
-                app:dot_smallSize="4dp"
-                bind:videoDots="@{viewmodel}"/>
-
-            <TextView
-                android:id="@+id/tvBandAlbums"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="Albums:"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_below="@id/idVideos"/>
-
+                android:layout_marginTop="4dp"
+                android:text="@{viewmodel.selectedAlbumDesc}"
+                android:padding="16dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:layout_below="@id/tvBandAlbums"
-                bind:albumAdapter="@{viewmodel}"/>
+                bind:selectedAlbumSongsAdapter="@{viewmodel}"/>
 
+        </LinearLayout>
 
-        </RelativeLayout>
-
-    </ScrollView>
+    </android.support.design.widget.CoordinatorLayout>
 
 
 </layout>

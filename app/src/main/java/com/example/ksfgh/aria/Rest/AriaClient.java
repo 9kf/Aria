@@ -6,6 +6,7 @@ import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandCreationModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
+import com.example.ksfgh.aria.Model.CustomModelForAlbum;
 import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
@@ -136,5 +137,13 @@ public interface AriaClient {
     Observable<PlaylistModel> addPlaylist(@Part("user_id") RequestBody userId,
                                           @Part("pl_title") RequestBody plTitle,
                                           @Part MultipartBody.Part pic);
+
+    @GET("getSongByAlbumId")
+    @POST
+    Observable<SongModel[]> getSongsByAlbumId(@Field("album_id") String albumId);
+
+    @POST("bandsongs")
+    @FormUrlEncoded
+    Observable<CustomModelForAlbum> getAlbumSongs(@Field("album_id") String albumId);
 
 }

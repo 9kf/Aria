@@ -1,6 +1,7 @@
 package com.example.ksfgh.aria;
 
 import android.app.Activity;
+import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 
 import com.example.ksfgh.aria.Model.CustomModelForBandPage;
@@ -39,7 +40,7 @@ public class Singleton {
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
     public final int PICK_VIDEO = 125;
-    public final String BASE = "http://192.168.254.112";
+    public final String BASE = "http://192.168.254.109";
 
     //home screen
     public static HomeScreen homeScreen;
@@ -74,5 +75,8 @@ public class Singleton {
 
     //used to indicate if the user is changing the image details of the band or just adding a band
     public int CHANGE_OR_ADD = 0;
+
+    //used to identify what playlist the user is having
+    public ArrayList<PlaylistModel> userPlaylists = new ObservableArrayList<>();
 
 }

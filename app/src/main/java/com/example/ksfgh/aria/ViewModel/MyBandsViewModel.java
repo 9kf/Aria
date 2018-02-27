@@ -36,6 +36,7 @@ import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.MemberModel;
+import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
@@ -43,16 +44,15 @@ import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.databinding.AddEventBinding;
+import com.example.ksfgh.aria.databinding.AddSongToAlbumBinding;
 import com.example.ksfgh.aria.databinding.AddVideoBinding;
 import com.example.ksfgh.aria.databinding.CreateAlbumBinding;
 import com.example.ksfgh.aria.databinding.CreateBandBinding;
-import com.google.android.exoplayer2.C;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -84,7 +84,9 @@ public class MyBandsViewModel {
     private ArrayList<BandMemberModel> memberModel;
     public Uri selectedImage = null;
     public Uri selectedVideo = null;
+    public Uri selectedAudio = null;
     public ObservableField<String> videoPath;
+    public ObservableField<String> audioPath;
     private HomeScreen activity;
 
     public MyBandsViewModel(HomeScreen activity) {
@@ -98,6 +100,8 @@ public class MyBandsViewModel {
         memberModel = new ArrayList<>();
         videoPath = new ObservableField<>();
         videoPath.set("");
+        audioPath = new ObservableField<>();
+        audioPath.set("");
         Collections.addAll(genres, activity.getResources().getStringArray(R.array.genres));
         Collections.addAll(bandRoles, activity.getResources().getStringArray(R.array.roles));
         getBands();
@@ -224,7 +228,7 @@ public class MyBandsViewModel {
 
         Glide.with(view.getContext()).load(url)
                 .apply(RequestOptions.overrideOf(70,70))
-                .apply(RequestOptions.centerCropTransform())
+                .apply(RequestOptions.centerInsideTransform())
                 .into(view);
     }
 
@@ -263,6 +267,23 @@ public class MyBandsViewModel {
         selectedVideo = video;
     }
 
+    @Subscriber(tag = "setVideoPath")
+    public void setVideoPath(String path){
+
+        videoPath.set(path);
+    }
+
+    @Subscriber(tag = "setSelectedAudio")
+    public void setSelectedAudio(Uri audio){
+        selectedAudio = audio;
+    }
+
+    @Subscriber(tag = "setAudioPath")
+    public void setAudioPath(String path){
+        audioPath.set(path);
+    }
+
+
     public void pickPhoto(int identifier){
 
         Singleton.getInstance().CHANGE_OR_ADD = identifier;
@@ -290,6 +311,13 @@ public class MyBandsViewModel {
             activity.startActivityForResult(intent, Singleton.getInstance().PICK_VIDEO);
         }
 
+    }
+
+    public void pickAudio(){
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+        activity.startActivityForResult(intent, Singleton.getInstance().PICK_AUDIO);
     }
 
     @Subscriber(tag="changeBandPic")
@@ -560,12 +588,6 @@ public class MyBandsViewModel {
 
     }
 
-    @Subscriber(tag = "setVideoPath")
-    public void setVideoPath(String path){
-
-        videoPath.set(path);
-    }
-
     public void addVideo(){
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -764,6 +786,79 @@ public class MyBandsViewModel {
 
     }
 
+    public void addSongToAlbum(CustomModelForBandPage model){
+        AddSongToAlbumBinding binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.dialog_add_song_to_album, null, false);
+        binding.setViewmodel(this);
+
+        ArrayList<String> albums = new ArrayList<>();
+        for(AlbumModel bandAlbums: model.albums){
+            albums.add(bandAlbums.getAlbumName());
+        }
+
+        ArrayAdapter<String> albumAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item, albums);
+        binding.spnrAlbum.setAdapter(albumAdapter);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
+        alertDialogBuilder
+                .setView(binding.getRoot())
+                .setCancelable(false)
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        EventBus.getDefault().post("","closeBottomSheet");
+                        Toast.makeText(activity, "Adding the song...", Toast.LENGTH_SHORT).show();
+                        int selectedAlbumId = 0;
+                        for (AlbumModel albumModel: model.albums){
+                            if(albumModel.getAlbumName().equals(binding.spnrAlbum.getSelectedItem().toString())){
+                                selectedAlbumId = albumModel.getAlbumId();
+                                break;
+                            }
+                        }
+
+                        RequestBody albumId = RequestBody.create(MultipartBody.FORM, String.valueOf(selectedAlbumId));
+                        RequestBody songTitle = RequestBody.create(MultipartBody.FORM, binding.etSongTitle.getText().toString());
+                        RequestBody songDesc = RequestBody.create(MultipartBody.FORM, binding.etSongDesc.getText().toString());
+                        RequestBody genreId = RequestBody.create(MultipartBody.FORM, String.valueOf(binding.spnrSongGenre.getSelectedItemPosition()+1));
+                        RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(model.band.bandId));
+
+                        File originalFile = new File(audioPath.get());
+                        RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedAudio)), originalFile);
+                        MultipartBody.Part file = MultipartBody.Part.createFormData("song_audio", originalFile.getName(), filePart);
+
+                        Disposable disposable = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(new DisposableObserver<SongModel>() {
+                                    @Override
+                                    public void onNext(SongModel songModel) {
+                                        Log.d("song", songModel.songAudio + " ");
+                                        Toast.makeText(activity, "Successfully added", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d("song error", e.getMessage());
+                                        Toast.makeText(activity, "There was an error adding the song", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+
+                                    }
+                                });
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        audioPath.set("");
+                    }
+                });
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.show();
+    }
 
 
 }

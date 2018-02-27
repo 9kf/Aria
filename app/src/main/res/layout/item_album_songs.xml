@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data class="AlbumSongsBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.SongModel"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.BandActivityViewModel"/>
+
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@color/toolbarColor"
+        android:onClick="@{(v)->viewmodel.songClicked(v)}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="28dp">
+
+            <TextView
+                android:id="@+id/tvAlbumSongTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{model.songTitle}"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_ellipsis"
+            android:tint="@color/white"
+            android:layout_alignParentRight="true"
+            android:onClick="@{(v)->viewmodel.songOptionsClicked(v,model)}"/>
+
+    </RelativeLayout>
+
+</layout>

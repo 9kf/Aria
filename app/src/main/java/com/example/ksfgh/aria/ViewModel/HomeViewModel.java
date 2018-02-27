@@ -111,6 +111,7 @@ public class HomeViewModel {
     public static void setImage(ImageView view, String image){
         Glide.with(Singleton.getInstance().homeFragment).load(image)
                     .apply(RequestOptions.overrideOf(150,150))
+                    .apply(RequestOptions.centerInsideTransform())
                 .apply(RequestOptions.centerCropTransform())
                 .into(view);
     }

@@ -104,17 +104,17 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         bottomSheetBehavior = BottomSheetBehavior.from(activityHomeScreenBinding.llPersistentBar);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+//        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+//            @Override
+//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//
+//            }
+//
+//            @Override
+//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//
+//            }
+//        });
 
         //initialize exoplayer
         initPlayer("");
@@ -421,7 +421,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         Log.d("exooplayer", "player state changed to " + String.valueOf(playbackState));
         if(playbackState == Player.STATE_ENDED){
             EventBus.getDefault().post("final", "highlightPlayedSong");
-            EventBus.getDefault().post(false, "setFabSrc");
+            //EventBus.getDefault().post(false, "setFabSrc");
             EventBus.getDefault().post("","playerEndOfQueue");
             Singleton.getInstance().song = songList.get(0);
             Singleton.getInstance().isPlayerPlaying = false;
@@ -542,6 +542,10 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
             EventBus.getDefault().post(data.getData(), "setSelectedVideo");
             EventBus.getDefault().post(Singleton.getInstance().utilities.getImageAbsolutePath(data.getData(), this), "setVideoPath");
+        }
+        else if(requestCode == Singleton.getInstance().PICK_AUDIO && resultCode == Activity.RESULT_OK && data != null){
+            EventBus.getDefault().post(data.getData(), "setSelectedAudio");
+            EventBus.getDefault().post(Singleton.getInstance().utilities.getAudioAbsolutePath(data.getData(), this), "setAudioPath");
         }
     }
 

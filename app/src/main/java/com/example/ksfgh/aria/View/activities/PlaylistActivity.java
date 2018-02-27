@@ -35,7 +35,7 @@ public class PlaylistActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
 
     //unecessary shit
-    FloatingActionButton fab;
+    //FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class PlaylistActivity extends AppCompatActivity {
         playlistBinding.setViewmodel(playlistActivityViewModel);
 
         //Unecessary shits and I dont know why is this happening fml
-        fab = findViewById(R.id.playOrPause);
+        //fab = findViewById(R.id.playOrPause);
     }
 
     @Subscriber(tag = "playlistDisposables")
@@ -79,14 +79,14 @@ public class PlaylistActivity extends AppCompatActivity {
     }
 
 
-    public void setFabSrc(boolean playOrPause){
-        if(playOrPause){
-            fab.setImageResource(R.drawable.exo_controls_pause);
-        }
-        else {
-            fab.setImageResource(R.drawable.exo_controls_play);
-        }
-    }
+//    public void setFabSrc(boolean playOrPause){
+//        if(playOrPause){
+//            fab.setImageResource(R.drawable.exo_controls_pause);
+//        }
+//        else {
+//            fab.setImageResource(R.drawable.exo_controls_play);
+//        }
+//    }
 
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {

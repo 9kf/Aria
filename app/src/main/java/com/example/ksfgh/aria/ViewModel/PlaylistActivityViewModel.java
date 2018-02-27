@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -72,11 +73,11 @@ public class PlaylistActivityViewModel{
         getPlists();
     }
 
-    @BindingAdapter("bind:imgUrl")
-    public static void setImage(ImageView view, String image){
-        Glide.with(view.getContext()).load(image).into(view);
-
-    }
+//    @BindingAdapter("bind:imgUrl")
+//    public static void setImage(ImageView view, String image){
+//        Glide.with(view.getContext()).load(image).into(view);
+//
+//    }
 
     @BindingAdapter("bind:imgUrlBlur")
     public static void blurImage(ImageView view, String image){
@@ -178,19 +179,19 @@ public class PlaylistActivityViewModel{
                 EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
                 EventBus.getDefault().post(true, "playOrPause");
                 isPlaying = true;
-                playlistActivity.setFabSrc(true);
+                //playlistActivity.setFabSrc(true);
             }
             else {
                 if(!Singleton.getInstance().currentPlaylistId.equals(Singleton.getInstance().playedPlist)){
                     EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
                     EventBus.getDefault().post(true, "playOrPause");
                     isPlaying = true;
-                    playlistActivity.setFabSrc(true);
+                    //playlistActivity.setFabSrc(true);
                 }
                 else {
                     EventBus.getDefault().post(false, "playOrPause");
                     isPlaying = false;
-                    playlistActivity.setFabSrc(false);
+                    //playlistActivity.setFabSrc(false);
                 }
 
             }
@@ -218,13 +219,19 @@ public class PlaylistActivityViewModel{
     }
 
     View currentView;
+    TextView currentTextView;
+    TextView currentTextViewDetails;
     @Subscriber(tag = "highlightPlayedSong")
     @SuppressLint("ResourceAsColor")
     public void higlightPlayedSong(String empty){
 
         if(empty.equals("final")){
             currentView.setBackgroundColor(android.R.color.transparent);
+            currentTextView.setTextColor(Color.parseColor("#FFFFFF"));
+            currentTextViewDetails.setTextColor(Color.parseColor("#FFFFFF"));
             currentView = null;
+            currentTextViewDetails = null;
+            currentTextView = null;
         }
         else{
             if(Singleton.getInstance().song != null){
@@ -234,13 +241,23 @@ public class PlaylistActivityViewModel{
                         if(currentView == null){
                             if(!viewList.isEmpty()){
                                 currentView = viewList.get(i);
-                                currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
+                                currentView.setBackgroundColor(Color.parseColor("#000000"));
+                                currentTextView = viewList.get(i).findViewById(R.id.tvSongTitle);
+                                currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                                currentTextViewDetails = viewList.get(i).findViewById(R.id.tvSongDetails);
+                                currentTextViewDetails.setTextColor(Color.parseColor("#E57C1F"));
                             }
                         }
                         else {
+                            currentTextView.setTextColor(Color.parseColor("#FFFFFF"));
+                            currentTextViewDetails.setTextColor(Color.parseColor("#FFFFFF"));
                             currentView.setBackgroundColor(android.R.color.transparent);
                             currentView = viewList.get(i);
-                            currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
+                            currentView.setBackgroundColor(Color.parseColor("#000000"));
+                            currentTextView = viewList.get(i).findViewById(R.id.tvSongTitle);
+                            currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                            currentTextViewDetails = viewList.get(i).findViewById(R.id.tvSongDetails);
+                            currentTextViewDetails.setTextColor(Color.parseColor("#E57C1F"));
                         }
                     }
                 }
@@ -253,14 +270,25 @@ public class PlaylistActivityViewModel{
 
     public void onClickSong(View view, CustomSongModelForPlaylist item){
 
-        EventBus.getDefault().post(item, "skipSong");
-        isPlaying = true;
-        playlistActivity.setFabSrc(true);
+        if(Singleton.getInstance().song == null){
+            EventBus.getDefault().post(item, "skipSong");
+            isPlaying = true;
+        }
+        else {
+            if(Singleton.getInstance().song.getSong().songId == item.getSong().songId)
+                return;
+            else {
+                EventBus.getDefault().post(item, "skipSong");
+                isPlaying = true;
+            }
+        }
+
+        //playlistActivity.setFabSrc(true);
     }
 
     @Subscriber(tag = "setFabSrc")
     public void setFabSrc(boolean playOrPause){
-        playlistActivity.setFabSrc(playOrPause);
+        //playlistActivity.setFabSrc(playOrPause);
     }
 
     public void openPlayer(){

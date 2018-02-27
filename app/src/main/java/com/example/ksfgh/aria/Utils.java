@@ -66,9 +66,9 @@ public class Utils {
         return Uri.parse("android.resource://" + R.class.getPackage().getName()+"/" + resourceId).toString();
     }
 
-    public String getAudioAbsolutePath(Uri audioFileUrl, PlaylistActivity playlistActivity){
+    public String getAudioAbsolutePath(Uri audioFileUrl, HomeScreen activity){
         String[] audioPathColumn = {MediaStore.Audio.Media.DATA};
-        Cursor audioCursor = playlistActivity.getContentResolver().query(audioFileUrl, audioPathColumn, null, null, null);
+        Cursor audioCursor = activity.getContentResolver().query(audioFileUrl, audioPathColumn, null, null, null);
         audioCursor.moveToFirst();
         int audioColumnIndex = audioCursor.getColumnIndex(audioPathColumn[0]);
         String audioPath = audioCursor.getString(audioColumnIndex);
