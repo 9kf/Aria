@@ -199,7 +199,7 @@ public class HomeViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d("mybands", e.getMessage() + " ");
                     }
 
                     @Override
@@ -219,7 +219,7 @@ public class HomeViewModel {
 
                                     @Override
                                     public void onError(Throwable e) {
-
+                                        Log.d("mybands", e.getMessage() + " ");
                                     }
 
                                     @Override

@@ -420,12 +420,14 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         Log.d("exooplayer", "player state changed to " + String.valueOf(playbackState));
         if(playbackState == Player.STATE_ENDED){
-            EventBus.getDefault().post("final", "highlightPlayedSong");
-            //EventBus.getDefault().post(false, "setFabSrc");
-            EventBus.getDefault().post("","playerEndOfQueue");
-            Singleton.getInstance().song = songList.get(0);
-            Singleton.getInstance().isPlayerPlaying = false;
-            viewModel.isPlayerPlaying.set(false);
+            if(songList.size() != 0){
+                EventBus.getDefault().post("final", "highlightPlayedSong");
+                //EventBus.getDefault().post(false, "setFabSrc");
+                EventBus.getDefault().post("","playerEndOfQueue");
+                Singleton.getInstance().song = songList.get(0);
+                Singleton.getInstance().isPlayerPlaying = false;
+                viewModel.isPlayerPlaying.set(false);
+            }
         }
         else if(playbackState == Player.STATE_READY){
             EventBus.getDefault().post("","onNextSong");

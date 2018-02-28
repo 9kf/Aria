@@ -40,7 +40,7 @@ public class Singleton {
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
     public final int PICK_VIDEO = 125;
-    public final String BASE = "http://192.168.254.109";
+    public final String BASE = "http://192.168.1.204";
 
     //home screen
     public static HomeScreen homeScreen;

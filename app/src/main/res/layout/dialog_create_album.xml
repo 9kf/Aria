@@ -8,79 +8,124 @@
             type="com.example.ksfgh.aria.ViewModel.MyBandsViewModel"/>
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/toolbarColor"
-        android:orientation="vertical">
+        android:scrollbars="none"
+        android:background="@color/toolbarColor">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Create New Album"
-            android:textColor="@color/white"
-            android:textSize="20sp"/>
-
-
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/album_name"
-            android:padding="8dp"
-            android:theme="@style/TextStyle">
+            android:layout_height="match_parent"
+            android:background="@color/toolbarColor"
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etAlbumName"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="Create New Album"
+                android:textColor="@color/white"
+                android:textSize="20sp"/>
+
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@color/white"/>
+                android:hint="@string/album_name"
+                android:padding="8dp"
+                android:theme="@style/TextStyle">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/etAlbumName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/album_description"
-            android:padding="8dp"
-            android:theme="@style/TextStyle">
+            </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/etAlbumDesc"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text|textMultiLine"
-                android:minLines="4"
-                android:scrollbars="vertical"
-                android:gravity="start"
+                android:hint="@string/album_description"
+                android:padding="8dp"
+                android:theme="@style/TextStyle">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/etAlbumDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text|textMultiLine"
+                    android:minLines="4"
+                    android:scrollbars="vertical"
+                    android:gravity="start"
+                    android:textColor="@color/white"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?attr/collapsedTitleTextAppearance"
+                android:layout_marginLeft="8dp"
+                android:text="@string/band_pic"
                 android:textColor="@color/white"/>
 
-        </android.support.design.widget.TextInputLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?attr/collapsedTitleTextAppearance"
-            android:layout_marginLeft="8dp"
-            android:text="@string/band_pic"
-            android:textColor="@color/white"/>
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true"
+                    android:scaleType="fitCenter"
+                    bind:imgUrl="@{viewmodel.bandImage}"
+                    android:onClick="@{()->viewmodel.pickPhoto(0)}"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            </RelativeLayout>
 
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_centerHorizontal="true"
-                android:scaleType="fitCenter"
-                bind:imgUrl="@{viewmodel.bandImage}"
-                android:onClick="@{()->viewmodel.pickPhoto(0)}"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:text="Release date"
+                android:textColor="@color/white"
+                android:textSize="14sp"/>
 
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnAddReleaseDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:text="Set Date"
+                    android:background="@drawable/shape_sqaure_with_border"
+                    android:textColor="@color/highLightColor"
+                    android:layout_margin="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvAlbumReleaseDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.9"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </layout>

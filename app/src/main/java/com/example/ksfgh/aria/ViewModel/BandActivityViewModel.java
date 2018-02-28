@@ -3,6 +3,7 @@ package com.example.ksfgh.aria.ViewModel;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -18,10 +19,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +51,7 @@ import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
+import com.example.ksfgh.aria.databinding.AddSongToPlaylistBinding;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -361,11 +367,48 @@ public class BandActivityViewModel {
 
     }
 
-
     public void songOptionsClicked(View view, SongModel song){
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
-        dialog.setTitle("Where should we add the song?");
+        AddSongToPlaylistBinding binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.dialog_user_playlists, null, false);
+        binding.setViewmodel(this);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
+        alertDialogBuilder.setView(binding.getRoot());
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        ArrayList<String> userPlaylists = new ArrayList<>();
+        for(PlaylistModel playlistModel : Singleton.getInstance().userPlaylists){
+            userPlaylists.add(playlistModel.getPlTitle());
+        }
+        binding.lvUserPlaylists.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, userPlaylists));
+        binding.lvUserPlaylists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
+                Toast.makeText(activity, "Adding song to the playlist...", Toast.LENGTH_SHORT).show();
+                Disposable disposable = RetrofitClient.getClient().addSongToPlaylist(song.genreId, String.valueOf(song.songId), String.valueOf(Singleton.getInstance().userPlaylists.get(i).getPlId()))
+                .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ResponseBody>() {
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        Toast.makeText(activity, "Successfully added", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(activity, "There was an error adding the song to the playlist", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+            }
+        });
 
         PopupMenu popupMenu = new PopupMenu(Singleton.homeScreen, view);
         popupMenu.getMenuInflater().inflate(R.menu.song_popup_menu, popupMenu.getMenu());
@@ -374,7 +417,7 @@ public class BandActivityViewModel {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.itmAddToPlaylist:
-
+                        dialog.show();
                         break;
                     case R.id.itmAddToQueue:
 

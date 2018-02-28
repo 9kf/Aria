@@ -9,109 +9,130 @@
 
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:scrollbars="none"
         android:background="@color/toolbarColor">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:layout_margin="16dp"
-            android:text="Add an Event"/>
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event Name"
-            android:theme="@style/TextStyle"
-            android:padding="8dp">
-
-            <EditText
-                android:id="@+id/etEventName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"/>
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event Venue"
-            android:theme="@style/TextStyle"
-            android:padding="8dp">
-
-            <EditText
-                android:id="@+id/etEventVenue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"/>
-
-        </android.support.design.widget.TextInputLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="3"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnAddTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".1"
-                android:text="Set Time"
-                android:background="@drawable/shape_sqaure_with_border"
-                android:textColor="@color/highLightColor"
-                android:layout_margin="12dp"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/toolbarColor">
 
             <TextView
-                android:id="@+id/tvEventTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.9"
                 android:textColor="@color/white"
-                android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"/>
+                android:layout_margin="16dp"
+                android:text="Add an Event"/>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Name"
+                android:theme="@style/TextStyle"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/etEventName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Venue"
+                android:theme="@style/TextStyle"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/etEventVenue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Location"
+                android:theme="@style/TextStyle"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/etEventLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnAddTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:text="Set Time"
+                    android:background="@drawable/shape_sqaure_with_border"
+                    android:textColor="@color/highLightColor"
+                    android:layout_margin="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvEventTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.9"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnAddDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:text="Set Date"
+                    android:background="@drawable/shape_sqaure_with_border"
+                    android:textColor="@color/highLightColor"
+                    android:layout_margin="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvEventDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.9"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"/>
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="3"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnAddDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".1"
-                android:text="Set Date"
-                android:background="@drawable/shape_sqaure_with_border"
-                android:textColor="@color/highLightColor"
-                android:layout_margin="12dp"/>
-
-            <TextView
-                android:id="@+id/tvEventDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.9"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </layout>

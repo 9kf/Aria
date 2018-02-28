@@ -24,13 +24,10 @@
             android:textSize="20sp"/>
 
 
-        <Spinner
-            android:id="@+id/spnrAlbum"
+        <ListView
+            android:id="@+id/lvUserPlaylists"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dialog"
-            android:padding="8dp"
-            android:popupBackground="@color/toolbarColor"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

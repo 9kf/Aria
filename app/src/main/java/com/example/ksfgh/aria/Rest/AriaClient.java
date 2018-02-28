@@ -64,6 +64,7 @@ public interface AriaClient {
             @Part("band_id") RequestBody bandId,
             @Part("album_name") RequestBody albumName,
             @Part("album_desc") RequestBody albumDesc,
+            @Part("released_date") RequestBody releaseDate,
             @Part MultipartBody.Part albumImage
     );
 
@@ -131,16 +132,13 @@ public interface AriaClient {
                                     @Field("event_name") String eventName,
                                     @Field("event_date") String eventDate,
                                     @Field("event_time") String eventTime,
-                                    @Field("event_venue") String eventVenue);
+                                    @Field("event_venue") String eventVenue,
+                                    @Field("event_location") String eventLocation);
     @Multipart
     @POST("AddPlayList")
     Observable<PlaylistModel> addPlaylist(@Part("user_id") RequestBody userId,
                                           @Part("pl_title") RequestBody plTitle,
                                           @Part MultipartBody.Part pic);
-
-    @GET("getSongByAlbumId")
-    @POST
-    Observable<SongModel[]> getSongsByAlbumId(@Field("album_id") String albumId);
 
     @POST("bandsongs")
     @FormUrlEncoded

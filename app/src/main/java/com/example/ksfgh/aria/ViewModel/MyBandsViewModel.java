@@ -53,6 +53,7 @@ import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -341,6 +342,8 @@ public class MyBandsViewModel {
                     .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
+                            Toast.makeText(activity, "Creating band...", Toast.LENGTH_SHORT).show();
+
                             BandCreationModel model = new BandCreationModel(activity.user.user_id,
                                     binding.actvBandRole.getText().toString(),
                                     binding.etBandName.getText().toString(),
@@ -366,7 +369,8 @@ public class MyBandsViewModel {
                                     .doOnComplete(new Action() {
                                         @Override
                                         public void run() throws Exception {
-
+                                            Toast.makeText(activity, "Band created succesfully", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(activity, "Uploading the image...", Toast.LENGTH_SHORT).show();
                                             if(selectedImage != null){
                                                 RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(memberModel.get(0).band.id));
                                                 File originalFile = new File(bandImage.get().toString());
@@ -376,28 +380,26 @@ public class MyBandsViewModel {
                                                 Disposable disposable1 = RetrofitClient.getClient().editBandPic(bandId, file)
                                                         .subscribeOn(Schedulers.newThread())
                                                         .observeOn(AndroidSchedulers.mainThread())
-                                                        .doOnNext(new Consumer<ResponseBody>() {
+                                                        .subscribeWith(new DisposableObserver<ResponseBody>() {
                                                             @Override
-                                                            public void accept(ResponseBody responseBody) throws Exception {
+                                                            public void onNext(ResponseBody responseBody) {
 
                                                             }
-                                                        })
-                                                        .doOnError(new Consumer<Throwable>() {
+
                                                             @Override
-                                                            public void accept(Throwable throwable) throws Exception {
-                                                                Log.d("mybands", throwable.getMessage() + "edit pic");
+                                                            public void onError(Throwable e) {
+                                                                Toast.makeText(activity, "There was a problem uploading the image of the band", Toast.LENGTH_SHORT).show();
+                                                                Log.d("mybands",e.getMessage() + " edit pic");
                                                             }
-                                                        })
-                                                        .doOnComplete(new Action() {
+
                                                             @Override
-                                                            public void run() throws Exception {
+                                                            public void onComplete() {
                                                                 bandModels.clear();
                                                                 getBands();
                                                                 bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
                                                                 dialog.dismiss();
                                                             }
-                                                        })
-                                                        .subscribe();
+                                                        });
 
                                                 EventBus.getDefault().post(disposable1, "myBandDisposables");
                                             }
@@ -500,6 +502,9 @@ public class MyBandsViewModel {
     @Subscriber(tag = "addBandCoverPhoto")
     public void addBandCoverPhoto(String empty){
 
+        EventBus.getDefault().post("","closeBottomSheet");
+        Toast.makeText(activity, "Changing the cover photo of the band ...", Toast.LENGTH_SHORT).show();
+
         RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
         File originalFile = new File(bandImage.get().toString());
         RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedImage)), originalFile);
@@ -513,13 +518,17 @@ public class MyBandsViewModel {
                     @Override
                     public void onNext(ResponseBody responseBody) {
                         Toast.makeText(activity, "Successfully changed the cover photo of your band", Toast.LENGTH_SHORT).show();
-                        EventBus.getDefault().post("","closeBottomSheet");
+                        try {
+                            Log.d("mybands", responseBody.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Toast.makeText(activity, "There was an error changing the cover photo of your band", Toast.LENGTH_SHORT).show();
-                        Log.d("mybands", e.getMessage());
+                        Log.d("mybands", e.getMessage() + " ");
                     }
 
                     @Override
@@ -537,29 +546,64 @@ public class MyBandsViewModel {
         CreateAlbumBinding binding = DataBindingUtil.inflate(inflater, R.layout.dialog_create_album, null, false);
         binding.setViewmodel(this);
 
+        binding.btnAddReleaseDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        if((i1+1) < 10){
+                            if(i2 < 10){
+                                binding.tvAlbumReleaseDate.setText("0"+(i1+1)+"/0"+i2+"/"+i);
+                            }
+                            else {
+                                binding.tvAlbumReleaseDate.setText("0"+(i1+1)+"/"+i2+"/"+i);
+                            }
+                        }
+                        else {
+                            if(i2 < 10){
+                                binding.tvAlbumReleaseDate.setText((i1+1)+"/0"+i2+"/"+i);
+                            }
+                            else {
+                                binding.tvAlbumReleaseDate.setText((i1+1)+"/"+i2+"/"+i);
+                            }
+                        }
+
+                    }
+                }, year, month, day).show();
+            }
+        });
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);
         alertDialogBuilder
                 .setView(binding.getRoot())
                 .setCancelable(false)
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(activity, "Adding album ...", Toast.LENGTH_SHORT).show();
+                EventBus.getDefault().post("","closeBottomSheet");
 
                 RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(model.band.bandId));
                 RequestBody albumName = RequestBody.create(MultipartBody.FORM, binding.etAlbumName.getText().toString());
                 RequestBody albumDesc = RequestBody.create(MultipartBody.FORM, binding.etAlbumDesc.getText().toString());
+                RequestBody releaseDate = RequestBody.create(MultipartBody.FORM, binding.tvAlbumReleaseDate.getText().toString());
                 File originalFile = new File(bandImage.get().toString());
                 RequestBody filePart = RequestBody.create(MediaType.parse(activity.getContentResolver().getType(selectedImage)), originalFile);
                 MultipartBody.Part file = MultipartBody.Part.createFormData("album_pic", originalFile.getName(), filePart);
 
-                Disposable disposable = RetrofitClient.getClient().addAlbum(bandId,albumName,albumDesc,file)
+                Disposable disposable = RetrofitClient.getClient().addAlbum(bandId,albumName,albumDesc, releaseDate,file)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableObserver<AlbumModel>() {
                             @Override
                             public void onNext(AlbumModel albumModel) {
-                                model.albums.add(albumModel);
+                                Singleton.getInstance().currentBand.albums.add(albumModel);
                                 Toast.makeText(activity, "Successfully added the album", Toast.LENGTH_SHORT).show();
-                                EventBus.getDefault().post("","closeBottomSheet");
                             }
 
                             @Override
@@ -601,6 +645,9 @@ public class MyBandsViewModel {
                 .setPositiveButton("Add video", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
+                    EventBus.getDefault().post("","closeBottomSheet");
+                    Toast.makeText(activity, "Adding the video ...", Toast.LENGTH_SHORT).show();
+
                     RequestBody bandId = RequestBody.create(MultipartBody.FORM, String.valueOf(Singleton.getInstance().currentBand.band.bandId));
                     RequestBody videoDesc = RequestBody.create(MultipartBody.FORM, "hello");
                     RequestBody videoTitle = RequestBody.create(MultipartBody.FORM, binding.etVideoTitle.getText().toString());
@@ -616,7 +663,7 @@ public class MyBandsViewModel {
                                 public void onNext(VideoModel videoModel) {
                                     Singleton.getInstance().currentBand.videos.add(videoModel);
                                     Toast.makeText(activity, "Successfully added the video", Toast.LENGTH_SHORT).show();
-                                    EventBus.getDefault().post("","closeBottomSheet");
+
                                 }
 
                                 @Override
@@ -752,9 +799,12 @@ public class MyBandsViewModel {
                 .setPositiveButton("Add event", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
+                    Toast.makeText(activity, "Adding the event...", Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post("","closeBottomSheet");
+
                     Disposable disposable = RetrofitClient.getClient()
                             .addEvent(String.valueOf(Singleton.getInstance().currentBand.band.bandId), binding.etEventName.getText().toString(), binding.tvEventDate.getText().toString(),
-                                    time, binding.etEventVenue.getText().toString())
+                                    time, binding.etEventVenue.getText().toString(), binding.etEventLocation.getText().toString())
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeWith(new DisposableObserver<EventModel>() {
@@ -762,13 +812,13 @@ public class MyBandsViewModel {
                                 public void onNext(EventModel eventModel) {
                                     model.events.add(eventModel);
                                     Toast.makeText(activity, "Successfully added the event", Toast.LENGTH_SHORT).show();
-                                    EventBus.getDefault().post("","closeBottomSheet");
+
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
                                     Toast.makeText(activity, "There was an error adding the event", Toast.LENGTH_SHORT).show();
-                                    Log.d("mybands", e.getMessage());
+                                    Log.d("mybands", e.getMessage() + " ");
                                 }
 
                                 @Override
@@ -782,7 +832,11 @@ public class MyBandsViewModel {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
-                }).show();
+                });
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.show();
 
     }
 
