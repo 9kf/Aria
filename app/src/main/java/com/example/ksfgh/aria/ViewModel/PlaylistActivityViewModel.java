@@ -8,8 +8,10 @@ import android.databinding.ObservableField;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -72,12 +74,6 @@ public class PlaylistActivityViewModel{
 
         getPlists();
     }
-
-//    @BindingAdapter("bind:imgUrl")
-//    public static void setImage(ImageView view, String image){
-//        Glide.with(view.getContext()).load(image).into(view);
-//
-//    }
 
     @BindingAdapter("bind:imgUrlBlur")
     public static void blurImage(ImageView view, String image){
@@ -164,8 +160,6 @@ public class PlaylistActivityViewModel{
                     public void onComplete() {
                         if(!Singleton.getInstance().isPlayerPrepared)
                             EventBus.getDefault().post(playlistSongs, "addSongsInPlaylist");
-
-                        higlightPlayedSong("");
                     }
                 });
 
@@ -218,9 +212,9 @@ public class PlaylistActivityViewModel{
         viewList.add(view);
     }
 
-    View currentView;
-    TextView currentTextView;
-    TextView currentTextViewDetails;
+    public View currentView;
+    public TextView currentTextView;
+    public TextView currentTextViewDetails;
     @Subscriber(tag = "highlightPlayedSong")
     @SuppressLint("ResourceAsColor")
     public void higlightPlayedSong(String empty){
@@ -234,6 +228,7 @@ public class PlaylistActivityViewModel{
             currentTextView = null;
         }
         else{
+
             if(Singleton.getInstance().song != null){
 
                 for(int i = 0; i < playlistSongs.size(); i++){
@@ -263,6 +258,10 @@ public class PlaylistActivityViewModel{
                 }
 
             }
+
+//            currentView.setBackgroundColor(Color.parseColor("#000000"));
+//            currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+//            currentTextViewDetails.setTextColor(Color.parseColor("#E57C1F"));
         }
 
     }
@@ -275,7 +274,7 @@ public class PlaylistActivityViewModel{
             isPlaying = true;
         }
         else {
-            if(Singleton.getInstance().song.getSong().songId == item.getSong().songId)
+            if(Singleton.getInstance().song.getSong().songId == item.getSong().songId && Singleton.homeScreen.plist == Singleton.getInstance().playedPlist)
                 return;
             else {
                 EventBus.getDefault().post(item, "skipSong");
@@ -295,80 +294,31 @@ public class PlaylistActivityViewModel{
         EventBus.getDefault().post(playlistActivity, "openPlayer");
     }
 
-    public void onOptionsClick(CustomSongModelForPlaylist item){
+    public void onOptionsClick(View view, CustomSongModelForPlaylist item){
 
+        PopupMenu popupMenu = new PopupMenu(Singleton.homeScreen, view);
+        popupMenu.getMenuInflater().inflate(R.menu.song_popup_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.itmAddToPlaylist:
+
+                        break;
+                    case R.id.itmAddToQueue:
+
+                        break;
+
+                }
+
+                return true;
+            }
+        });
+        popupMenu.show();
     }
 
     public void destroyActivity(){
         playlistActivity.finish();
     }
-
-//    public void addSongToAlbum(){
-//        Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        intent.setType("audio/*");
-//        playlistActivity.startActivityForResult(intent, Singleton.getInstance().PICK_AUDIO);
-//    }
-//
-//    public void uploadSongToAlbum(Uri audioFileUrl, String audioPath){
-//
-//        RequestBody albumId = RequestBody.create(MultipartBody.FORM, "2");
-//        RequestBody songTitle = RequestBody.create(MultipartBody.FORM, "Song #6");
-//        RequestBody songDesc = RequestBody.create(MultipartBody.FORM, "this is a song for the lit shit");
-//        RequestBody genreId = RequestBody.create(MultipartBody.FORM, "2");
-//        RequestBody bandId = RequestBody.create(MultipartBody.FORM, "1");
-//
-//        File originalFile = new File(audioPath);
-//        RequestBody filePart = RequestBody.create(MediaType.parse(playlistActivity.getContentResolver().getType(audioFileUrl)), originalFile);
-//        MultipartBody.Part file = MultipartBody.Part.createFormData("song_audio", originalFile.getName(), filePart);
-//
-//        Disposable disposable = RetrofitClient.getClient().addSong(albumId, songTitle, songDesc, genreId, bandId, file)
-//                .subscribeOn(Schedulers.newThread())
-//                .subscribeWith(new DisposableObserver<SongModel>() {
-//                    @Override
-//                    public void onNext(SongModel songModel) {
-//                        Log.d("song", songModel.songAudio);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Log.d("song error", e.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-//    }
-//
-//    public void addSongToPlaylist(){
-//
-//        Disposable disposable = RetrofitClient.getClient().addSongToPlaylist("1", "1", "1")
-//                .subscribeOn(Schedulers.newThread())
-//                .subscribeWith(new DisposableObserver<ResponseBody>() {
-//                    @Override
-//                    public void onNext(ResponseBody responseBody) {
-//                        try {
-//                            Log.d("playlist", responseBody.string());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Log.d("playlist", e.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-//
-//    }
-
-
 
 }

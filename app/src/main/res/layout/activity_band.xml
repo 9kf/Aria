@@ -49,6 +49,7 @@
                     android:src="@drawable/ic_arrow_down"
                     android:tint="@color/white"
                     android:layout_margin="16dp"
+                    android:layout_alignParentRight="true"
                     android:onClick="@{()->viewmodel.goBack()}"/>
 
                 <ImageView
@@ -245,7 +246,7 @@
                     android:layout_height="150dp"
                     android:scaleType="fitXY"
                     android:adjustViewBounds="true"
-                    bind:imgUrl="@{viewmodel.selectedAlbumImage}"/>
+                    bind:url="@{viewmodel.selectedAlbum.get().getAlbumPic()}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -262,7 +263,7 @@
                         android:textColor="@color/white"
                         android:maxLines="2"
                         android:ellipsize="end"
-                        android:text="@{viewmodel.selectedAlbumName}"/>
+                        android:text="@{viewmodel.selectedAlbum.get().getAlbumName()}"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -284,7 +285,7 @@
                         android:maxLines="2"
                         android:ellipsize="end"
                         android:layout_marginTop="4dp"
-                        android:text="Release date"/>
+                        android:text="@{viewmodel.selectedAlbum.get().getReleasedDate()}"/>
 
                     <Button
                         android:layout_width="wrap_content"
@@ -305,7 +306,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:layout_marginTop="4dp"
-                android:text="@{viewmodel.selectedAlbumDesc}"
+                android:text="@{viewmodel.selectedAlbum.get().getAlbumDesc()}"
                 android:padding="16dp"/>
 
             <android.support.v7.widget.RecyclerView

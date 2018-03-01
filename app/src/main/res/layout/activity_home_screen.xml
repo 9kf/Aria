@@ -412,13 +412,14 @@
                 <RelativeLayout
                     android:id="@+id/llPersistentBar"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="55dp"
                     android:orientation="vertical"
                     android:elevation="7dp"
                     android:background="@color/white"
                     app:behavior_hideable="true"
                     app:behavior_peekHeight="70dp"
-                    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+                    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+                    android:onClick="@{() -> viewModel.openPlayer()}">
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -431,7 +432,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/black"
-                        android:alpha=".5"/>
+                        android:alpha=".8"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -439,7 +440,7 @@
                         android:layout_gravity="center"
                         android:text="@{viewModel.persistentBarSong.song.songTitle}"
                         android:textStyle="bold"
-                        android:textColor="@color/white"
+                        android:textColor="@color/highLightColor"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="8dp"/>
 
@@ -448,18 +449,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@{viewModel.persistentBarSong.album.albumName}"
-                        android:textColor="@color/white"
+                        android:textColor="#808080"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="30dp"/>
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_arrow_up"
-                        android:tint="@color/white"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="16dp"
-                        android:onClick="@{() -> viewModel.openPlayer()}"/>
+                        android:layout_marginTop="24dp"/>
 
                 </RelativeLayout>
 

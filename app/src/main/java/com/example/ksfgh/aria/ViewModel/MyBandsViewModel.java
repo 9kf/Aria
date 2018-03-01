@@ -884,8 +884,8 @@ public class MyBandsViewModel {
                                 .subscribeWith(new DisposableObserver<SongModel>() {
                                     @Override
                                     public void onNext(SongModel songModel) {
-                                        Log.d("song", songModel.songAudio + " ");
                                         Toast.makeText(activity, "Successfully added", Toast.LENGTH_SHORT).show();
+                                        Singleton.getInstance().isNewSongAddedToAlbum = true;
                                     }
 
                                     @Override
@@ -896,7 +896,7 @@ public class MyBandsViewModel {
 
                                     @Override
                                     public void onComplete() {
-
+                                        audioPath.set("");
                                     }
                                 });
 

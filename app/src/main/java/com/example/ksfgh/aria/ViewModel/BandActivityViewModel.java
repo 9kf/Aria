@@ -40,6 +40,7 @@ import com.example.ksfgh.aria.Adapters.BandMemberAdapter;
 import com.example.ksfgh.aria.Adapters.BandVideosAdapter;
 import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.CustomModelForAlbum;
+import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
@@ -55,12 +56,17 @@ import com.example.ksfgh.aria.databinding.AddSongToPlaylistBinding;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.hrskrs.instadotlib.InstaDotView;
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
@@ -68,6 +74,7 @@ import com.yarolegovich.discretescrollview.transform.Pivot;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
 import java.io.IOException;
 import java.net.URL;
@@ -91,7 +98,7 @@ import retrofit2.http.Url;
  * Created by ksfgh on 15/02/2018.
  */
 
-public class BandActivityViewModel {
+public class BandActivityViewModel implements Player.EventListener {
 
     private BandActivity activity;
     private ArrayList<MemberModel> memberInfo;
@@ -101,22 +108,21 @@ public class BandActivityViewModel {
     public ObservableArrayList<EventModel> events;
     public ObservableArrayList<VideoModel> videos;
     public ObservableArrayList<CustomModelForAlbum> albumSongs;
-    public ObservableField<String> selectedAlbumImage;
-    public ObservableField<String> selectedAlbumName;
-    public ObservableField<String> selectedAlbumDesc;
-    public ObservableArrayList<SongModel> selectedAlbumSongs;
+    public ObservableField<AlbumModel>  selectedAlbum;
+    public ObservableArrayList<CustomSongModelForPlaylist> selectedAlbumSongs;
     private BottomSheetBehavior bottomSheetBehavior;
+    public View currentView;
+    public TextView currentTextView;
 
     public BandActivityViewModel(BandActivity activity) {
         this.activity = activity;
+        EventBus.getDefault().register(this);
         members = new ObservableArrayList<>();
         albums = new ObservableArrayList<>();
         events = new ObservableArrayList<>();
         videos = new ObservableArrayList<>();
         albumSongs = new ObservableArrayList<>();
-        selectedAlbumImage = new ObservableField<>();
-        selectedAlbumName = new ObservableField<>();
-        selectedAlbumDesc = new ObservableField<>();
+        selectedAlbum = new ObservableField<>();
         selectedAlbumSongs = new ObservableArrayList<>();
         memberInfo = new ArrayList<>();
         exoPlayers = new ArrayList<>();
@@ -126,6 +132,9 @@ public class BandActivityViewModel {
         videos.addAll(Singleton.getInstance().currentBand.videos);
         for(VideoModel videoModel: videos){
             exoPlayers.add(ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(activity), new DefaultTrackSelector(), new DefaultLoadControl()));
+        }
+        for(SimpleExoPlayer exoPlayer: exoPlayers){
+            exoPlayer.addListener(this);
         }
         getMemberInfo();
         getAlbumSongs();
@@ -330,25 +339,35 @@ public class BandActivityViewModel {
 
     public void albumClicked(AlbumModel albumModel){
 
-        selectedAlbumName.set(albumModel.getAlbumName());
-        selectedAlbumImage.set(albumModel.getAlbumPic());
-        selectedAlbumDesc.set(albumModel.getAlbumDesc());
+        selectedAlbum.set(albumModel);
 
         for(CustomModelForAlbum customModelForAlbum:albumSongs){
-           if(customModelForAlbum.album.getAlbumId() == albumModel.getAlbumId()){
+           if(customModelForAlbum.album.getAlbumId() == selectedAlbum.get().getAlbumId()){
+
                selectedAlbumSongs.clear();
-               selectedAlbumSongs.addAll(customModelForAlbum.songs);
+               for(SongModel song: customModelForAlbum.songs){
+                   selectedAlbumSongs.add(new CustomSongModelForPlaylist(song, Singleton.getInstance().currentBand.band, selectedAlbum.get()));
+               }
                break;
            }
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        currentTextView = null;
+        currentView = null;
+
+    }
+
+    @Subscriber(tag = "getSongsInAlbum")
+    public void getSongsInAlbum(CustomSongModelForPlaylist song){
+
+        EventBus.getDefault().post(selectedAlbumSongs, "addSongsInPlaylist");
+        EventBus.getDefault().post(song, "skipSong2");
     }
 
 
-    View currentView;
-    TextView currentTextView;
-    public void songClicked(View view){
+
+    public void songClicked(View view, CustomSongModelForPlaylist song){
 
         if(currentView == null && currentTextView == null){
             currentView = view;
@@ -365,9 +384,11 @@ public class BandActivityViewModel {
             currentTextView.setTextColor(Color.parseColor("#E57C1F"));
         }
 
+        EventBus.getDefault().post(song, "skipSong2");
+
     }
 
-    public void songOptionsClicked(View view, SongModel song){
+    public void songOptionsClicked(View view, CustomSongModelForPlaylist song){
 
         AddSongToPlaylistBinding binding = DataBindingUtil.inflate(activity.getLayoutInflater(), R.layout.dialog_user_playlists, null, false);
         binding.setViewmodel(this);
@@ -388,7 +409,7 @@ public class BandActivityViewModel {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 dialog.dismiss();
                 Toast.makeText(activity, "Adding song to the playlist...", Toast.LENGTH_SHORT).show();
-                Disposable disposable = RetrofitClient.getClient().addSongToPlaylist(song.genreId, String.valueOf(song.songId), String.valueOf(Singleton.getInstance().userPlaylists.get(i).getPlId()))
+                Disposable disposable = RetrofitClient.getClient().addSongToPlaylist(song.getSong().genreId, String.valueOf(song.getSong().songId), String.valueOf(Singleton.getInstance().userPlaylists.get(i).getPlId()))
                 .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<ResponseBody>() {
@@ -432,4 +453,61 @@ public class BandActivityViewModel {
 
     }
 
+
+
+    //Video Listener//
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+        Log.d("exovid", "timeline changed");
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        Log.d("exovid", "tracks changed");
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+        Log.d("exovid", "loading changed");
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        Log.d("exovid", "player state changed to " + String.valueOf(playbackState) + "\nplaywhenready: " + playWhenReady);
+
+        if(playWhenReady){
+            EventBus.getDefault().post(false,"playOrPause");
+        }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+        Log.d("exovid", "error: " + error.getMessage());
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+        Log.d("exovid", "position disconuity: " + String.valueOf(reason));
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+        Log.d("exovid", "playback parameters changed");
+    }
+
+    @Override
+    public void onSeekProcessed() {
+        Log.d("exovid", "seek processed");
+    }
 }

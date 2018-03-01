@@ -102,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".1"
                     android:text="Select Song"
+                    android:textSize="14sp"
                     android:background="@drawable/shape_sqaure_with_border"
                     android:textColor="@color/highLightColor"
                     android:layout_margin="12dp"

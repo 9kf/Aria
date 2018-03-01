@@ -100,8 +100,8 @@ public class HomeScreenViewModel {
     @BindingAdapter("bind:persistentBarBlur")
     public static void persistentBarBlur(ImageView view, String url){
         Glide.with(view.getContext()).load(url)
-                .apply(RequestOptions.bitmapTransform(new BlurTransformation(50)))
-                .apply(RequestOptions.overrideOf(400,70))
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(70)))
+                .apply(RequestOptions.overrideOf(100,100))
                 .apply(RequestOptions.centerInsideTransform())
                 .into(view);
     }

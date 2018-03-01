@@ -3,13 +3,16 @@ package com.example.ksfgh.aria.Adapters;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.R;
+import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.ViewModel.BandActivityViewModel;
 import com.example.ksfgh.aria.databinding.AlbumSongsBinding;
 
@@ -19,7 +22,7 @@ import com.example.ksfgh.aria.databinding.AlbumSongsBinding;
 
 public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.ViewHolder> {
 
-    private ObservableArrayList<SongModel> albumSongs;
+    private ObservableArrayList<CustomSongModelForPlaylist> albumSongs;
     private BandActivityViewModel viewModel;
 
     public AlbumSongsAdapter(BandActivityViewModel viewModel) {
@@ -61,9 +64,19 @@ public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SongModel model = albumSongs.get(position);
+        CustomSongModelForPlaylist model = albumSongs.get(position);
         holder.binding.setModel(model);
         holder.binding.setViewmodel(viewModel);
+
+        if(Singleton.homeScreen.currentAlbumPlaying != null){
+            if(model.getSong().songId == Singleton.getInstance().song.getSong().songId && Singleton.homeScreen.currentAlbumPlaying.getAlbumId() == model.getAlbum().getAlbumId()){
+                viewModel.currentTextView = holder.binding.tvAlbumSongTitle;
+                viewModel.currentView = holder.binding.rlAlbumSong;
+
+                viewModel.currentView.setBackgroundColor(Color.parseColor("#000000"));
+                viewModel.currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+            }
+        }
     }
 
     @Override

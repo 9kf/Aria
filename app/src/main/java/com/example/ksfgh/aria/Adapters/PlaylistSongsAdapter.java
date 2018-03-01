@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.R;
+import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.ViewModel.PlaylistActivityViewModel;
 import com.example.ksfgh.aria.databinding.PlaylistSongsBinding;
 
@@ -66,6 +67,15 @@ public class PlaylistSongsAdapter extends RecyclerView.Adapter<PlaylistSongsAdap
         holder.binding.setModel(song);
         holder.binding.setViewmodel(playlistActivityViewModel);
         playlistActivityViewModel.addViews(holder.binding.rvWrapper);
+
+        if(Singleton.getInstance().song != null && Singleton.homeScreen.plist == Singleton.getInstance().playedPlist){
+            if(song.getSong().songId == Singleton.getInstance().song.getSong().songId){
+                playlistActivityViewModel.currentView = holder.binding.rvWrapper;
+                playlistActivityViewModel.currentTextView = holder.binding.tvSongTitle;
+                playlistActivityViewModel.currentTextViewDetails = holder.binding.tvSongDetails;
+                playlistActivityViewModel.higlightPlayedSong("");
+            }
+        }
     }
 
     @Override

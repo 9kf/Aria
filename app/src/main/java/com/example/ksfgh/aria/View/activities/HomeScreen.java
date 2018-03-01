@@ -18,7 +18,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
@@ -81,7 +83,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource;
     public ArrayList<CustomSongModelForPlaylist> songList;
     public boolean isPlaying;
-    private PlaylistModel plist;
+    public PlaylistModel plist;
+    public AlbumModel currentAlbumPlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,6 +234,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, true);
         Singleton.getInstance().isPlayerPrepared = true;
+
     }
 
     public int windowIndex = -1;
@@ -263,7 +267,6 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             }
 
             Singleton.getInstance().playedPlist = plist;
-            EventBus.getDefault().post("","highlightPlayedSong");
 
             if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -277,6 +280,63 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             viewModel.persistentBarSong.set(Singleton.getInstance().song);
             viewModel.isPlayerPlaying.set(true);
         }
+    }
+
+    @Subscriber(tag = "skipSong2")
+    private void skipSong2(CustomSongModelForPlaylist song){
+
+        if(Singleton.getInstance().playedPlist == null){
+            if(currentAlbumPlaying == null){
+                EventBus.getDefault().post(song,"getSongsInAlbum");
+                currentAlbumPlaying = song.getAlbum();
+            }
+            else if(currentAlbumPlaying != null && currentAlbumPlaying.getAlbumId() != song.getAlbum().getAlbumId()){
+                EventBus.getDefault().post(song,"getSongsInAlbum");
+                currentAlbumPlaying = song.getAlbum();
+            }
+            else if(Singleton.getInstance().isNewSongAddedToAlbum){
+                Singleton.getInstance().isNewSongAddedToAlbum = false;
+                EventBus.getDefault().post(song,"getSongsInAlbum");
+                currentAlbumPlaying = song.getAlbum();
+            }
+            else{
+                for(int i = 0; i < songList.size(); i++){
+                    if(songList.get(i).getSong().songId == song.getSong().songId){
+                        windowIndex = i;
+                        break;
+                    }
+                }
+
+                if(isPlaying == true){
+                    exoPlayer.seekTo(windowIndex, 0);
+                    Singleton.getInstance().song = song;
+                }
+                else {
+                    exoPlayer.seekTo(windowIndex, 0);
+                    exoPlayer.setPlayWhenReady(true);
+                    Singleton.getInstance().isPlayerPlaying = true;
+                    Singleton.getInstance().song = song;
+                    isPlaying = true;
+                }
+
+                if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    viewModel.isBottomsheetUp.set(true);
+                    bottomSheetBehavior.setHideable(false);
+
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) activityHomeScreenBinding.layoutContainer.getLayoutParams();
+                    params.bottomMargin = 100;
+                    activityHomeScreenBinding.layoutContainer.requestLayout();
+                }
+                viewModel.persistentBarSong.set(Singleton.getInstance().song);
+                viewModel.isPlayerPlaying.set(true);
+            }
+        }
+        else {
+            Singleton.getInstance().playedPlist = null;
+            skipSong2(song);
+        }
+
     }
 
     @Subscriber(tag = "seekSongTo")
@@ -328,10 +388,10 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Subscriber(tag = "playOrPause")
     private void playOrPause(boolean play){
 
-        if(Singleton.getInstance().song == null || Singleton.getInstance().playedPlist != plist){
-            Singleton.getInstance().song = songList.get(0);
-            EventBus.getDefault().post("","highlightPlayedSong");
-        }
+//        if(Singleton.getInstance().song == null || Singleton.getInstance().playedPlist != plist){
+//            Singleton.getInstance().song = songList.get(0);
+//            EventBus.getDefault().post("","highlightPlayedSong");
+//        }
 
         if(exoPlayer.getPlaybackState() == Player.STATE_ENDED){
             Singleton.getInstance().song = songList.get(0);
@@ -393,6 +453,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
     @Subscriber(tag = "repeatPlaylist")
     private void repeatPlaylist(int mode){
+        
+        if(mode == Player.REPEAT_MODE_ALL)
+            Toast.makeText(this, "Repeat mode on", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Repeat mode off", Toast.LENGTH_SHORT).show();
+        
         exoPlayer.setRepeatMode(mode);
     }
 

@@ -28,7 +28,7 @@
                 android:layout_height="130dp"
                 android:padding="10dp"
                 android:layout_marginBottom="4dp"
-                bind:imgUrl="@{model.image}"
+                bind:url="@{model.image}"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"/>
 

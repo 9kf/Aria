@@ -5,7 +5,7 @@
 
         <variable
             name="model"
-            type="com.example.ksfgh.aria.Model.SongModel"/>
+            type="com.example.ksfgh.aria.Model.CustomSongModelForPlaylist"/>
         <variable
             name="viewmodel"
             type="com.example.ksfgh.aria.ViewModel.BandActivityViewModel"/>
@@ -14,11 +14,12 @@
 
 
     <RelativeLayout
+        android:id="@+id/rlAlbumSong"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:background="@color/toolbarColor"
-        android:onClick="@{(v)->viewmodel.songClicked(v)}">
+        android:onClick="@{(v)->viewmodel.songClicked(v, model)}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +31,7 @@
                 android:id="@+id/tvAlbumSongTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{model.songTitle}"
+                android:text="@{model.song.songTitle}"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:maxLines="1"

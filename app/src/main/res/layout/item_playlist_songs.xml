@@ -25,7 +25,9 @@
             android:id="@+id/ivAlbumImage"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            bind:imgUrl="@{model.getAlbum().getAlbumPic()}"/>
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            bind:url="@{model.getAlbum().getAlbumPic()}"/>
 
         <TextView
             android:id="@+id/tvSongTitle"
@@ -58,7 +60,7 @@
             android:layout_alignParentRight="true"
             android:tint="@color/white"
             android:layout_centerVertical="true"
-            android:onClick="@{() -> viewmodel.onOptionsClick(model)}"/>
+            android:onClick="@{(v) -> viewmodel.onOptionsClick(v, model)}"/>
 
     </RelativeLayout>
 
