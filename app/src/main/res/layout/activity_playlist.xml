@@ -108,11 +108,23 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/civPlaylistImage"
                     android:layout_centerHorizontal="true"
-                    android:text='@{"by: " + viewmodel.creatorName + " | " + String.valueOf(viewmodel.playlistModel.followers) + " followers"}'
+                    android:text='@{"by: " + viewmodel.creatorName + " | " + String.valueOf(viewmodel.playlistFollowers.get()) + " followers"}'
                     android:fontFamily="@font/bebasnue"
                     android:textSize="16sp"
                     android:layout_marginTop="12dp"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvPlaylistCreator"
+                    android:layout_centerHorizontal="true"
+                    android:text="@{viewmodel.isFollowing ? @string/unFollow:@string/follow}"
+                    android:textSize="10sp"
+                    android:background="@{viewmodel.isFollowing ? @drawable/following_background:@drawable/shape_sqaure_with_border}"
+                    android:textColor="@{viewmodel.isFollowing ? @color/white:@color/highLightColor}"
+                    android:layout_marginTop="4dp"
+                    android:onClick="@{(v)->viewmodel.followPlaylist(v)}"/>
 
             </RelativeLayout>
 

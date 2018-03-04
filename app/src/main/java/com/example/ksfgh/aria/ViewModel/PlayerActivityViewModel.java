@@ -130,12 +130,12 @@ public class PlayerActivityViewModel {
         if(Singleton.getInstance().isPlayerPlaying){
             EventBus.getDefault().post(false, "playOrPause");
             this.view.setImageResource(R.drawable.exo_controls_play);
-            EventBus.getDefault().post(false, "setFabSrc");
+            //EventBus.getDefault().post(false, "setFabSrc");
         }
         else {
             EventBus.getDefault().post(true, "playOrPause");
             this.view.setImageResource(R.drawable.exo_controls_pause);
-            EventBus.getDefault().post(true, "setFabSrc");
+            //EventBus.getDefault().post(true, "setFabSrc");
         }
     }
 

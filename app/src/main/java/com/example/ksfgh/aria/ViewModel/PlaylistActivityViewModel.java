@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.databinding.ObservableInt;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
+import com.example.ksfgh.aria.Model.PreferenceModel;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
@@ -59,6 +62,8 @@ public class PlaylistActivityViewModel{
     private PlaylistSongsAdapter adapter;
     private ArrayList<View> viewList;
     private boolean isPlaying;
+    public ObservableBoolean isFollowing;
+    public ObservableInt playlistFollowers;
 
 
     public PlaylistActivityViewModel(PlaylistActivity playlistActivity) {
@@ -67,12 +72,46 @@ public class PlaylistActivityViewModel{
         creatorName.set(Singleton.getInstance().utilities.findUserById(playlistModel.getPlCreator()));
         viewList = new ArrayList<>();
         playlistSongs = new ObservableArrayList<>();
+        isFollowing = new ObservableBoolean();
+        playlistFollowers = new ObservableInt();
+        playlistFollowers.set(playlistModel.getFollowers());
         EventBus.getDefault().register(this);
         adapter = new PlaylistSongsAdapter(playlistSongs, this);
         EventBus.getDefault().post(adapter, "setRecyclerView");
         isPlaying = Singleton.getInstance().isPlayerPlaying;
 
         getPlists();
+        getIsFollowing();
+    }
+
+    private void getIsFollowing() {
+        Disposable disposable = RetrofitClient.getClient().getUserPreferences(Singleton.homeScreen.user.user_id)
+                .subscribeOn(Schedulers.newThread())
+                .subscribeWith(new DisposableObserver<PreferenceModel[]>() {
+                    @Override
+                    public void onNext(PreferenceModel[] preferenceModel) {
+                        for(PreferenceModel model:preferenceModel){
+                            if(model.plId == playlistModel.getPlId()){
+                                isFollowing.set(true);
+                            }
+                            else {
+                                isFollowing.set(false);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("follow", e.getMessage() + " ");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        EventBus.getDefault().post(disposable, "playlistDisposables");
     }
 
     @BindingAdapter("bind:imgUrlBlur")
@@ -315,6 +354,59 @@ public class PlaylistActivityViewModel{
             }
         });
         popupMenu.show();
+    }
+
+    public void followPlaylist(View view){
+
+        Disposable disposable;
+        if(isFollowing.get()){
+             disposable = RetrofitClient.getClient().unFollowPlaylist(Singleton.homeScreen.user.user_id, String.valueOf(playlistModel.getPlId()))
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeWith(new DisposableObserver<Integer>() {
+                        @Override
+                        public void onNext(Integer responseBody) {
+                            Log.d("follow", responseBody.toString() + " ");
+                            isFollowing.set(false);
+                            playlistModel.setFollowers(responseBody);
+                            playlistFollowers.set(responseBody);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("follow", e.getMessage() + " ");
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+        else {
+             disposable = RetrofitClient.getClient().followPlaylist(Singleton.homeScreen.user.user_id, String.valueOf(playlistModel.getPlId()))
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeWith(new DisposableObserver<Integer>() {
+                        @Override
+                        public void onNext(Integer responseBody) {
+                            Log.d("follow", responseBody.toString() + " ");
+                            isFollowing.set(true);
+                            playlistModel.setFollowers(responseBody);
+                            playlistFollowers.set(responseBody);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("follow", e.getMessage() + " ");
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+
+        EventBus.getDefault().post(disposable, "playlistDisposables");
     }
 
     public void destroyActivity(){

@@ -279,6 +279,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             }
             viewModel.persistentBarSong.set(Singleton.getInstance().song);
             viewModel.isPlayerPlaying.set(true);
+
+            currentAlbumPlaying = null;
         }
     }
 

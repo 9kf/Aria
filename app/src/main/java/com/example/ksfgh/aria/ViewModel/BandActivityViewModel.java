@@ -110,6 +110,7 @@ public class BandActivityViewModel implements Player.EventListener {
     public ObservableArrayList<CustomModelForAlbum> albumSongs;
     public ObservableField<AlbumModel>  selectedAlbum;
     public ObservableArrayList<CustomSongModelForPlaylist> selectedAlbumSongs;
+    public ObservableArrayList<View> albumViews;
     private BottomSheetBehavior bottomSheetBehavior;
     public View currentView;
     public TextView currentTextView;
@@ -124,6 +125,7 @@ public class BandActivityViewModel implements Player.EventListener {
         albumSongs = new ObservableArrayList<>();
         selectedAlbum = new ObservableField<>();
         selectedAlbumSongs = new ObservableArrayList<>();
+        albumViews = new ObservableArrayList<>();
         memberInfo = new ArrayList<>();
         exoPlayers = new ArrayList<>();
         memberInfo.addAll(Singleton.getInstance().currentBand.members);
@@ -264,6 +266,10 @@ public class BandActivityViewModel implements Player.EventListener {
         viewModel.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
+    public void addViews(View view){
+        albumViews.add(view);
+    }
+
     private void getMemberInfo() {
 
         Disposable disposable = RetrofitClient.getClient().getUsers2()
@@ -340,6 +346,8 @@ public class BandActivityViewModel implements Player.EventListener {
     public void albumClicked(AlbumModel albumModel){
 
         selectedAlbum.set(albumModel);
+        albumViews.clear();
+
 
         for(CustomModelForAlbum customModelForAlbum:albumSongs){
            if(customModelForAlbum.album.getAlbumId() == selectedAlbum.get().getAlbumId()){
@@ -353,9 +361,6 @@ public class BandActivityViewModel implements Player.EventListener {
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        currentTextView = null;
-        currentView = null;
-
     }
 
     @Subscriber(tag = "getSongsInAlbum")
@@ -365,15 +370,43 @@ public class BandActivityViewModel implements Player.EventListener {
         EventBus.getDefault().post(song, "skipSong2");
     }
 
+    @Subscriber(tag = "highlightPlayedSong")
+    public void highlightNextSong(String empty){
+        if(currentView != null && currentTextView != null){
+            if(empty.equals("final")){
+                currentView.setBackgroundColor(Color.parseColor("#161616"));
+                currentTextView.setTextColor(Color.parseColor("#FFFFFF"));
+                currentView = null;
+                currentTextView = null;
+            }
+            else {
+                currentView.setBackgroundColor(Color.parseColor("#161616"));
+                currentTextView.setTextColor(Color.parseColor("#FFFFFF"));
+
+                for(int i = 0; i < selectedAlbumSongs.size(); i++){
+                    if(Singleton.getInstance().song.getSong().songId == selectedAlbumSongs.get(i).getSong().songId){
+                        currentView = albumViews.get(i);
+                        currentTextView = currentView.findViewById(R.id.tvAlbumSongTitle);
+                        currentView.setBackgroundColor(Color.parseColor("#000000"));
+                        currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
 
     public void songClicked(View view, CustomSongModelForPlaylist song){
 
         if(currentView == null && currentTextView == null){
-            currentView = view;
-            currentView.setBackgroundColor(Color.parseColor("#000000"));
-            currentTextView = currentView.findViewById(R.id.tvAlbumSongTitle);
-            currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+            if(Singleton.getInstance().isPlayerPlaying == false){
+                currentView = view;
+                currentView.setBackgroundColor(Color.parseColor("#000000"));
+                currentTextView = currentView.findViewById(R.id.tvAlbumSongTitle);
+                currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+            }
         }
         else {
             currentView.setBackgroundColor(Color.parseColor("#161616"));
@@ -452,6 +485,28 @@ public class BandActivityViewModel implements Player.EventListener {
         popupMenu.show();
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

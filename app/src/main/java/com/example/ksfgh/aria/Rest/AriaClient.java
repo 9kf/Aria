@@ -12,6 +12,7 @@ import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
+import com.example.ksfgh.aria.Model.PreferenceModel;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.Model.VideoModel;
@@ -143,5 +144,19 @@ public interface AriaClient {
     @POST("bandsongs")
     @FormUrlEncoded
     Observable<CustomModelForAlbum> getAlbumSongs(@Field("album_id") String albumId);
+
+    @POST("followPlaylist")
+    @FormUrlEncoded
+    Observable<Integer> followPlaylist(@Field("user_id") String userId,
+                                            @Field("pid") String pl_id);
+
+    @POST("unFollowPlaylist")
+    @FormUrlEncoded
+    Observable<Integer> unFollowPlaylist(@Field("user_id") String userId,
+                                            @Field("pid") String pl_id);
+
+    @POST("preferences")
+    @FormUrlEncoded
+    Observable<PreferenceModel[]> getUserPreferences(@Field("user_id") String userId);
 
 }

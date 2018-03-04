@@ -67,14 +67,25 @@ public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.Vi
         CustomSongModelForPlaylist model = albumSongs.get(position);
         holder.binding.setModel(model);
         holder.binding.setViewmodel(viewModel);
+        viewModel.addViews(holder.binding.rlAlbumSong);
 
         if(Singleton.homeScreen.currentAlbumPlaying != null){
             if(model.getSong().songId == Singleton.getInstance().song.getSong().songId && Singleton.homeScreen.currentAlbumPlaying.getAlbumId() == model.getAlbum().getAlbumId()){
-                viewModel.currentTextView = holder.binding.tvAlbumSongTitle;
-                viewModel.currentView = holder.binding.rlAlbumSong;
+                if(viewModel.currentView == null && viewModel.currentTextView == null){
+                    viewModel.currentTextView = holder.binding.tvAlbumSongTitle;
+                    viewModel.currentView = holder.binding.rlAlbumSong;
+                    viewModel.currentView.setBackgroundColor(Color.parseColor("#000000"));
+                    viewModel.currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                }
+                else {
+                    viewModel.currentView.setBackgroundColor(Color.parseColor("#161616"));
+                    viewModel.currentTextView.setTextColor(Color.parseColor("#FFFFFF"));
 
-                viewModel.currentView.setBackgroundColor(Color.parseColor("#000000"));
-                viewModel.currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                    viewModel.currentTextView = holder.binding.tvAlbumSongTitle;
+                    viewModel.currentView = holder.binding.rlAlbumSong;
+                    viewModel.currentView.setBackgroundColor(Color.parseColor("#000000"));
+                    viewModel.currentTextView.setTextColor(Color.parseColor("#E57C1F"));
+                }
             }
         }
     }

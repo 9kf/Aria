@@ -27,6 +27,8 @@
     <string name="album_name">Album Name</string>
     <string name="video_title">Video Title</string>
     <string name="playlist_name">Playlist Name</string>
+    <string name="follow">Follow</string>
+    <string name="unFollow">Unfollow</string>
 
     <string-array name="roles">
         <item>Vocalist</item>
