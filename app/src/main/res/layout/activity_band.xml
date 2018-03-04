@@ -81,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:text='@{String.valueOf(model.band.numFollowers) + " followers"}'
+                    android:text='@{String.valueOf(viewmodel.bandFollowers.get()) + " followers"}'
                     android:textSize="16sp"
                     android:layout_below="@id/tvBandName"
                     android:layout_toRightOf="@id/ivPic"
@@ -90,14 +90,15 @@
 
                 <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@+id/tvFollowers"
                     android:layout_toRightOf="@id/ivPic"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/shape_sqaure_with_border"
-                    android:textColor="@color/highLightColor"
-                    android:text="Follow"/>
+                    android:text="@{viewmodel.isFollowing ? @string/unFollow:@string/follow}"
+                    android:background="@{viewmodel.isFollowing ? @drawable/following_background:@drawable/shape_sqaure_with_border}"
+                    android:textColor="@{viewmodel.isFollowing ? @color/white:@color/highLightColor}"
+                    android:onClick="@{()->viewmodel.followBand()}"/>
 
                 <TextView
                     android:id="@+id/tvDesc"
@@ -289,11 +290,12 @@
 
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:background="@drawable/shape_sqaure_with_border"
-                        android:textColor="@color/highLightColor"
-                        android:text="Like"/>
+                        android:text="@{viewmodel.isAlbumLiked ? @string/unLike:@string/like}"
+                        android:background="@{viewmodel.isAlbumLiked ? @drawable/following_background:@drawable/shape_sqaure_with_border}"
+                        android:textColor="@{viewmodel.isAlbumLiked ? @color/white:@color/highLightColor}"
+                        android:onClick="@{()->viewmodel.likeAlbum()}"/>
 
                 </LinearLayout>
 

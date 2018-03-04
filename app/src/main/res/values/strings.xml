@@ -29,6 +29,8 @@
     <string name="playlist_name">Playlist Name</string>
     <string name="follow">Follow</string>
     <string name="unFollow">Unfollow</string>
+    <string name="like">Like</string>
+    <string name="unLike">Unlike</string>
 
     <string-array name="roles">
         <item>Vocalist</item>

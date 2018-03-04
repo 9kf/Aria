@@ -159,4 +159,24 @@ public interface AriaClient {
     @FormUrlEncoded
     Observable<PreferenceModel[]> getUserPreferences(@Field("user_id") String userId);
 
+    @POST("followBand")
+    @FormUrlEncoded
+    Observable<Integer> followBand(@Field("user_id") String userId,
+                                        @Field("band_id") String bandId);
+
+    @POST("unfollowBand")
+    @FormUrlEncoded
+    Observable<Integer> unFollowBand(@Field("user_id") String userId,
+                                        @Field("band_id") String bandId);
+
+    @POST("likeAlbum")
+    @FormUrlEncoded
+    Observable<PreferenceModel> likeAlbum(@Field("user_id") String userId,
+                                     @Field("album_id") String albumId);
+
+    @POST("unLikeAlbum")
+    @FormUrlEncoded
+    Observable<ResponseBody> unLikeAlbum(@Field("user_id") String userId,
+                                  @Field("album_id") String albumId);
+
 }

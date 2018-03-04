@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.databinding.ObservableInt;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
@@ -45,6 +46,7 @@ import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.Model.PreferenceModel;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.Model.VideoModel;
@@ -103,6 +105,7 @@ public class BandActivityViewModel implements Player.EventListener {
     private BandActivity activity;
     private ArrayList<MemberModel> memberInfo;
     public ArrayList<SimpleExoPlayer> exoPlayers;
+    private ArrayList<PreferenceModel> userPreferences;
     public ObservableArrayList<UserModel> members;
     public ObservableArrayList<AlbumModel> albums;
     public ObservableArrayList<EventModel> events;
@@ -114,6 +117,9 @@ public class BandActivityViewModel implements Player.EventListener {
     private BottomSheetBehavior bottomSheetBehavior;
     public View currentView;
     public TextView currentTextView;
+    public ObservableBoolean isFollowing;
+    public ObservableInt bandFollowers;
+    public ObservableBoolean isAlbumLiked;
 
     public BandActivityViewModel(BandActivity activity) {
         this.activity = activity;
@@ -126,8 +132,13 @@ public class BandActivityViewModel implements Player.EventListener {
         selectedAlbum = new ObservableField<>();
         selectedAlbumSongs = new ObservableArrayList<>();
         albumViews = new ObservableArrayList<>();
+        isFollowing = new ObservableBoolean();
+        bandFollowers = new ObservableInt();
+        bandFollowers.set(Singleton.getInstance().currentBand.band.getNumFollowers());
+        isAlbumLiked = new ObservableBoolean();
         memberInfo = new ArrayList<>();
         exoPlayers = new ArrayList<>();
+        userPreferences = new ArrayList<>();
         memberInfo.addAll(Singleton.getInstance().currentBand.members);
         albums.addAll(Singleton.getInstance().currentBand.albums);
         events.addAll(Singleton.getInstance().currentBand.events);
@@ -140,8 +151,43 @@ public class BandActivityViewModel implements Player.EventListener {
         }
         getMemberInfo();
         getAlbumSongs();
+        getIsFollowing();
         if(Singleton.getInstance().userPlaylists.size() == 0)
             getUserPlaylist();
+    }
+
+    private void getIsFollowing() {
+        Disposable disposable = RetrofitClient.getClient().getUserPreferences(Singleton.homeScreen.user.user_id)
+                .subscribeOn(Schedulers.newThread())
+                .subscribeWith(new DisposableObserver<PreferenceModel[]>() {
+                    @Override
+                    public void onNext(PreferenceModel[] preferenceModel) {
+                        for(PreferenceModel model:preferenceModel){
+
+                            if(model.bandId != null){
+                                if(Integer.parseInt(model.bandId) == Singleton.getInstance().currentBand.band.bandId){
+                                    isFollowing.set(true);
+                                }
+                                else {
+                                    isFollowing.set(false);
+                                }
+                            }
+
+                            if(model.userId.equals(Singleton.homeScreen.user.getId()))
+                                userPreferences.add(model);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("followshit", e.getMessage() + " ");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void getUserPlaylist() {
@@ -347,7 +393,18 @@ public class BandActivityViewModel implements Player.EventListener {
 
         selectedAlbum.set(albumModel);
         albumViews.clear();
+        isAlbumLiked.set(false);
 
+        if(userPreferences.size() != 0){
+            for(PreferenceModel model:userPreferences){
+                if(model.albumId != null){
+                    if(albumModel.getAlbumId() == Integer.parseInt(model.albumId)){
+                        isAlbumLiked.set(true);
+                        break;
+                    }
+                }
+            }
+        }
 
         for(CustomModelForAlbum customModelForAlbum:albumSongs){
            if(customModelForAlbum.album.getAlbumId() == selectedAlbum.get().getAlbumId()){
@@ -395,8 +452,6 @@ public class BandActivityViewModel implements Player.EventListener {
             }
         }
     }
-
-
 
     public void songClicked(View view, CustomSongModelForPlaylist song){
 
@@ -484,6 +539,110 @@ public class BandActivityViewModel implements Player.EventListener {
         });
         popupMenu.show();
 
+    }
+
+    public void followBand(){
+        if(isFollowing.get()){
+            Disposable disposable = RetrofitClient.getClient().unFollowBand(Singleton.homeScreen.user.user_id, String.valueOf(Singleton.getInstance().currentBand.band.bandId))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<Integer>() {
+                        @Override
+                        public void onNext(Integer responseBody) {
+                            isFollowing.set(false);
+                            bandFollowers.set(responseBody);
+                            Singleton.getInstance().currentBand.band.setNumFollowers(responseBody);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+        else {
+            Disposable disposable = RetrofitClient.getClient().followBand(Singleton.homeScreen.user.user_id, String.valueOf(Singleton.getInstance().currentBand.band.bandId))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<Integer>() {
+                        @Override
+                        public void onNext(Integer responseBody) {
+                            isFollowing.set(true);
+                            bandFollowers.set(responseBody);
+                            Singleton.getInstance().currentBand.band.setNumFollowers(responseBody);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+    }
+
+    public void likeAlbum(){
+        Disposable disposable;
+        if(isAlbumLiked.get()){
+            disposable = RetrofitClient.getClient().unLikeAlbum(Singleton.homeScreen.user.user_id, String.valueOf(selectedAlbum.get().getAlbumId()))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<ResponseBody>() {
+                        @Override
+                        public void onNext(ResponseBody integer) {
+                            isAlbumLiked.set(false);
+                            for(PreferenceModel model:userPreferences){
+                                if(model.albumId != null){
+                                    if(model.albumId.equals(String.valueOf(selectedAlbum.get().getAlbumId()))){
+                                        userPreferences.remove(model);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("follow", e.getMessage() + " ");
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+        else {
+            disposable = RetrofitClient.getClient().likeAlbum(Singleton.homeScreen.user.user_id, String.valueOf(selectedAlbum.get().getAlbumId()))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<PreferenceModel>() {
+                        @Override
+                        public void onNext(PreferenceModel integer) {
+                            isAlbumLiked.set(true);
+                            userPreferences.add(integer);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("follow", e.getMessage() + " ");
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
     }
 
 
