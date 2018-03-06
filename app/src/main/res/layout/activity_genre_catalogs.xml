@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="GenreCatalogActivityBinding">
+        <variable
+            name="view"
+            type="com.example.ksfgh.aria.View.activities.GenreCatalogsActivity"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/toolbarColor"
+        tools:context="com.example.ksfgh.aria.View.activities.GenreCatalogsActivity">
+
+        <RelativeLayout
+            android:id="@+id/rvGenreToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/toolbarColor"
+            android:elevation="7dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/white"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{()->view.destroyActivity()}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{view.genre}"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_below="@+id/rvGenreToolbar"
+            bind:catalogAdapter="@{view}"/>
+
+
+    </RelativeLayout>
+
+</layout>

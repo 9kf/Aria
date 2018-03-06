@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandCreationModel;
+import com.example.ksfgh.aria.Model.BandGenreModel;
 import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.CustomModelForAlbum;
@@ -178,5 +179,8 @@ public interface AriaClient {
     @FormUrlEncoded
     Observable<ResponseBody> unLikeAlbum(@Field("user_id") String userId,
                                   @Field("album_id") String albumId);
+
+    @GET("getBandGenres")
+    Observable<BandGenreModel[]> getBandGenre();
 
 }

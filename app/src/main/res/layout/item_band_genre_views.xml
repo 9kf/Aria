@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="BandGenreViewsBinding">
+        <import type="java.lang.String"/>
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.BandModel"/>
+        <variable
+            name="view"
+            type="com.example.ksfgh.aria.View.activities.GenreCatalogsActivity"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbarColor"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:onClick="@{()->view.bandClicked(model)}">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            bind:imgUrl="@{model.bandPic}"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{model.bandName}"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{String.valueOf(model.numFollowers) + " Followers"}'
+                android:textColor="@color/white"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

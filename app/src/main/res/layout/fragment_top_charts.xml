@@ -1,0 +1,239 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="TopChartsBinding">
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.TopChartsViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/toolbarColor"
+        tools:context="com.example.ksfgh.aria.View.fragments.TopChartsFragment">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="@{viewmodel.isLoading ? View.VISIBLE : View.GONE}"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{viewmodel.isLoading ? View.GONE: View.VISIBLE}">
+
+                <TextView
+                    android:id="@+id/tvFeatured"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_margin="16dp"
+                    android:text="@string/featured"
+                    android:layout_centerHorizontal="true"/>
+
+                <ImageView
+                    android:id="@+id/ivTopChartsFeaturedBandCoverPic"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_below="@+id/tvFeatured"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    bind:imgUrl="@{viewmodel.topBand.get().band.bandCoverpic}"/>
+
+
+                <RelativeLayout
+                    android:id="@+id/rvFeaturedBand"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_below="@id/tvFeatured"
+                    android:background="#D8000000">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/civFeaturedBandPic"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="16dp"
+                        bind:url="@{viewmodel.topBand.get().band.bandPic}"/>
+
+                    <View
+                        android:id="@+id/vSeparator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/white"
+                        android:layout_toRightOf="@id/civFeaturedBandPic"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginTop="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_above="@id/vSeparator"
+                        android:layout_toRightOf="@id/civFeaturedBandPic"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvTopBandName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:textSize="24sp"
+                            android:maxLines="2"
+                            android:ellipsize="end"
+                            android:text="@{viewmodel.topBand.get().band.bandName}"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:text='@{String.valueOf(viewmodel.topBand.get().band.numFollowers) + " Followers"}'/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:text="Top 1"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_below="@id/vSeparator"
+                        android:layout_toRightOf="@id/civFeaturedBandPic"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Visit Page"
+                            android:onClick="@{()->viewmodel.visitFeaturedPage()}"/>
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_below="@id/rvFeaturedBand"
+                    android:layout_marginTop="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="8dp"
+                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{()->viewmodel.OverallTwenty()}">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_chart"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:text="The top 20"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="8dp"
+                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{()->viewmodel.TopTwentyThisWeek()}">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_rank_by_week"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:text="This week's top 20"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="8dp"
+                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{()->viewmodel.Top10ByGenre()}">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_mood"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:text="Top 10 by genre"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+
+    </RelativeLayout>
+
+
+</layout>

@@ -1,0 +1,56 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="TopTwentyBinding">
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.TopChartsViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/toolbarColor"
+        tools:context="com.example.ksfgh.aria.View.fragments.TopTwentyDialogFragment"
+        style="android.R.style.Theme_Material_Light_NoActionBar_Fullscreen">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/toolbarColor"
+            android:elevation="7dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="@color/white"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{()->viewmodel.dismissDialogFragment()}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:text="@{viewmodel.category}"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:scrollbars="none"
+            bind:setTop20Adapter="@{viewmodel}"/>
+
+
+    </RelativeLayout>
+
+
+</layout>

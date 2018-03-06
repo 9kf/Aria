@@ -12,6 +12,7 @@ import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
+import com.example.ksfgh.aria.View.fragments.TopChartsFragment;
 import com.example.ksfgh.aria.View.fragments.UserFragment;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class Singleton {
     public  final int PICK_PHOTO = 123;
     public  final int PICK_AUDIO = 124;
     public final int PICK_VIDEO = 125;
-    public final String BASE = "http://192.168.254.109";
+    public final String BASE = "http://192.168.254.106";
 
     //home screen
     public static HomeScreen homeScreen;
@@ -50,6 +51,7 @@ public class Singleton {
     public static FeedFragment feedFragment = new FeedFragment();
     public static MyBandsFragment myBandsFragment = new MyBandsFragment();
     public static UserFragment userFragment = new UserFragment();
+    public static TopChartsFragment topChartsFragment = new TopChartsFragment();
 
     //static classes
     public Utils utilities = new Utils();
@@ -81,5 +83,9 @@ public class Singleton {
 
     //used to identify if a song is added in the album
     public boolean isNewSongAddedToAlbum = false;
+
+    //used to indicate what genre is clicked
+    public String currentGenre = "";
+    public int genreNumber = 0;
 
 }

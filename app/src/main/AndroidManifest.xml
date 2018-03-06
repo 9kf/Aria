@@ -44,7 +44,10 @@
         <activity
             android:name=".View.activities.PlayerActivity"
             android:theme="@style/StartScreenTheme" />
-        <activity android:name=".View.activities.BandActivity"
+        <activity
+            android:name=".View.activities.BandActivity"
+            android:theme="@style/StartScreenTheme" />
+        <activity android:name=".View.activities.GenreCatalogsActivity"
             android:theme="@style/StartScreenTheme"></activity>
     </application>
 

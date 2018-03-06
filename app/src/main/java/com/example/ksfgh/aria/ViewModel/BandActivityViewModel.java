@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -491,7 +493,16 @@ public class BandActivityViewModel implements Player.EventListener {
         for(PlaylistModel playlistModel : Singleton.getInstance().userPlaylists){
             userPlaylists.add(playlistModel.getPlTitle());
         }
-        binding.lvUserPlaylists.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, userPlaylists));
+        binding.lvUserPlaylists.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, android.R.id.text1, userPlaylists){
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view1 =  super.getView(position, convertView, parent);
+                TextView text = (TextView) view1.findViewById(android.R.id.text1);
+                text.setTextColor(Color.WHITE);
+                return view1;
+            }
+        });
         binding.lvUserPlaylists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -644,28 +655,6 @@ public class BandActivityViewModel implements Player.EventListener {
                     });
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -121,6 +121,7 @@ public class HomeScreenViewModel {
 
             case R.id.llTopCharts:
                 toolbarTitle.set("Top Charts");
+                EventBus.getDefault().post(Singleton.getInstance().topChartsFragment, "switchFragment");
                 break;
 
             case R.id.llSearch:

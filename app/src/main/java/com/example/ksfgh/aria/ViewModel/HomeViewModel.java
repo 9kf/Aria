@@ -21,6 +21,7 @@ import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
+import com.example.ksfgh.aria.View.activities.GenreCatalogsActivity;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 
@@ -231,5 +232,18 @@ public class HomeViewModel {
                     }
                 });
 
+    }
+
+    public void genreClicked(GenreModel genre){
+
+        for(int i = 0; i < genres.size(); i++){
+            if(genres.get(i).genreText.equals(genre.genreText)){
+                Singleton.getInstance().genreNumber = i+1;
+                break;
+            }
+        }
+        Singleton.getInstance().currentGenre = genre.genreText;
+        Intent intent = new Intent(homeScreen, GenreCatalogsActivity.class);
+        homeScreen.startActivity(intent);
     }
 }

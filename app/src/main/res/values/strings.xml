@@ -31,6 +31,7 @@
     <string name="unFollow">Unfollow</string>
     <string name="like">Like</string>
     <string name="unLike">Unlike</string>
+    <string name="featured">FEATURED</string>
 
     <string-array name="roles">
         <item>Vocalist</item>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <data class="ItemTopChartsBandBinding">
+        <import type="java.lang.String"/>
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.CustomModelForBandPage"/>
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.TopChartsViewModel"/>
+        <variable
+            name="position"
+            type="java.lang.Integer"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivTopChartsFeaturedBandCoverPic"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@+id/tvFeatured"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            bind:imgUrl="@{model.band.bandCoverpic}"/>
+
+
+        <RelativeLayout
+            android:id="@+id/rvFeaturedBand"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/tvFeatured"
+            android:background="#D8000000">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civFeaturedBandPic"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                bind:url="@{model.band.bandPic}"/>
+
+            <View
+                android:id="@+id/vSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white"
+                android:layout_toRightOf="@id/civFeaturedBandPic"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_above="@id/vSeparator"
+                android:layout_toRightOf="@id/civFeaturedBandPic"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvTopBandName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:text="@{model.band.bandName}"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:text='@{String.valueOf(model.band.numFollowers) + " Followers"}'/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/vSeparator"
+                android:layout_toRightOf="@id/civFeaturedBandPic"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="Visit Page"
+                    android:onClick="@{()->viewmodel.visitPage(model)}"/>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/highLightColor"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:text='@{"#" + String.valueOf(position+1)}'
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</layout>
