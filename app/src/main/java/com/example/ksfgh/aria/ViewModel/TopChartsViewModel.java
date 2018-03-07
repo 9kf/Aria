@@ -230,7 +230,7 @@ public class TopChartsViewModel implements Serializable {
 
                                         @Override
                                         public void onComplete() {
-                                            Log.d("topCharts", bandPage.band.bandName + " ");
+
                                         }
                                     });
                         }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="UserFollowedBandsBinding">
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.CustomModelForBandPage"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.ksfgh.aria.ViewModel.UserViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:onClick="@{()->viewmodel.bandsClicked(model)}">
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:padding="10dp"
+            android:layout_marginBottom="4dp"
+            bind:url="@{model.band.bandPic}"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/bebasnue"
+            android:text="@{model.band.bandName}"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</layout>

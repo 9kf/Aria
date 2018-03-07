@@ -19,12 +19,21 @@ import android.view.WindowManager;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.example.ksfgh.aria.Adapters.UserFollowedBandsAdapter;
 import com.example.ksfgh.aria.Adapters.UserPlaylistsAdapter;
+import com.example.ksfgh.aria.Model.AlbumModel;
+import com.example.ksfgh.aria.Model.BandModel;
+import com.example.ksfgh.aria.Model.CustomModelForBandPage;
+import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.Model.PreferenceModel;
+import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
+import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 import com.example.ksfgh.aria.View.fragments.UserFragment;
 import com.example.ksfgh.aria.databinding.CreatePlaylistBinding;
@@ -33,9 +42,13 @@ import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function3;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
@@ -50,6 +63,7 @@ public class UserViewModel {
 
     public FacebookUserModel user;
     public ObservableArrayList<PlaylistModel> userPlaylists;
+    public ObservableArrayList<CustomModelForBandPage> userFollowedBands;
     private UserFragment fragment;
     public Uri selectedImage = null;
     public ObservableField<String> bandImage;
@@ -58,16 +72,156 @@ public class UserViewModel {
         EventBus.getDefault().register(this);
         user = Singleton.homeScreen.user;
         userPlaylists = new ObservableArrayList<>();
+        userFollowedBands = new ObservableArrayList<>();
         this.fragment = fragment;
         bandImage = new ObservableField<>();
         bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
         getUserPlaylists();
+        getUserFollowedBands();
     }
 
     @BindingAdapter("bind:userPlaylist")
     public static void userPlaylistAdapter(RecyclerView view, UserViewModel viewModel){
         view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
         view.setAdapter(new UserPlaylistsAdapter(viewModel));
+    }
+
+    @BindingAdapter("bind:userFollowedBands")
+    public static void userFollowedBandsAdapter(RecyclerView view, UserViewModel viewModel){
+        view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        view.setAdapter(new UserFollowedBandsAdapter(viewModel));
+    }
+
+    private void getUserFollowedBands() {
+        Observable<PreferenceModel[]> prefs = RetrofitClient.getClient().getUserPreferences(Singleton.homeScreen.user.user_id);
+        Observable<BandModel[]> bands = RetrofitClient.getClient().getbands();
+        Observable<ArrayList<BandModel>> observable = Observable.zip(prefs, bands, new BiFunction<PreferenceModel[], BandModel[], ArrayList<BandModel>>() {
+            @Override
+            public ArrayList<BandModel> apply(PreferenceModel[] preferenceModels, BandModel[] bandModels) throws Exception {
+                ArrayList<BandModel> list = new ArrayList<>();
+                for(PreferenceModel preferenceModel: preferenceModels){
+                    for(BandModel bandModel: bandModels){
+                        if(preferenceModel.bandId != null){
+                            if(preferenceModel.bandId.equals(String.valueOf(bandModel.bandId))){
+                                list.add(bandModel);
+                            }
+                        }
+                    }
+                }
+                return list;
+            }
+        });
+
+
+        Disposable disposable = observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ArrayList<BandModel>>() {
+                    @Override
+                    public void onNext(ArrayList<BandModel> bandModels) {
+                        getBandDetails(bandModels);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void getBandDetails(ArrayList<BandModel> bandModels) {
+        Observable<AlbumModel[]> observable2 = RetrofitClient.getClient().getAllAlbums();
+        Observable<MemberModel[]> observable3 = RetrofitClient.getClient().getBandMembers();
+        Observable<EventModel[]> observable4 = RetrofitClient.getClient().getEvents();
+        Observable<ArrayList<CustomModelForBandPage>> observable = Observable.zip(observable2, observable3, observable4, new Function3<AlbumModel[], MemberModel[], EventModel[], ArrayList<CustomModelForBandPage>>() {
+            @Override
+            public ArrayList<CustomModelForBandPage> apply(AlbumModel[] albumModels, MemberModel[] memberModels, EventModel[] eventModels) throws Exception {
+                ArrayList<CustomModelForBandPage> customModelForBandPages = new ArrayList<>();
+
+                for(BandModel bandModel: bandModels){
+
+                    ArrayList<MemberModel> bandMembers = new ArrayList<>();
+                    ArrayList<AlbumModel> bandAlbums = new ArrayList<>();
+                    ArrayList<EventModel> bandEvents = new ArrayList<>();
+
+                    //this loop will determine the members of the band
+                    for(MemberModel members2: memberModels){
+                        if(bandModel.getBandId() == members2.bandId){
+                            bandMembers.add(members2);
+                        }
+                    }
+
+                    //this loop below will determine the albums of the band
+                    for(AlbumModel albums: albumModels){
+                        if(bandModel.getBandId() == albums.getBandId()){
+                            bandAlbums.add(albums);
+                        }
+                    }
+
+                    //this loop below will determine the events of the band
+                    for(EventModel events: eventModels){
+                        if(bandModel.getBandId() == events.bandId){
+                            bandEvents.add(events);
+                        }
+                    }
+
+                    customModelForBandPages.add(new CustomModelForBandPage(bandModel, bandMembers, bandAlbums, bandEvents));
+
+                }
+
+                return customModelForBandPages;
+            }
+        });
+
+
+        Disposable disposable = observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<ArrayList<CustomModelForBandPage>>() {
+                    @Override
+                    public void onNext(ArrayList<CustomModelForBandPage> customModelForBandPages) {
+                        userFollowedBands.addAll(customModelForBandPages);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        for(CustomModelForBandPage model:userFollowedBands){
+                            Disposable disposable1 = RetrofitClient.getClient().getBandVideos(String.valueOf(model.band.bandId))
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeWith(new DisposableObserver<VideoModel[]>() {
+                                        @Override
+                                        public void onNext(VideoModel[] videoModels) {
+                                            ArrayList<VideoModel> videoList = new ArrayList<>();
+                                            for(VideoModel videos: videoModels){
+                                                videoList.add(videos);
+                                            }
+                                            model.setVideos(videoList);
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void getUserPlaylists() {
@@ -102,6 +256,12 @@ public class UserViewModel {
         EventBus.getDefault().post(model, "setPlist");
         Singleton.getInstance().currentPlaylistId = model;
         Intent intent = new Intent(Singleton.homeScreen, PlaylistActivity.class);
+        Singleton.homeScreen.startActivity(intent);
+    }
+
+    public void bandsClicked(CustomModelForBandPage band){
+        Singleton.getInstance().currentBand = band;
+        Intent intent = new Intent(Singleton.homeScreen, BandActivity.class);
         Singleton.homeScreen.startActivity(intent);
     }
 
