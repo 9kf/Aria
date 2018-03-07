@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.ksfgh.aria.Adapters.TopBandsByGenreAdapter;
 import com.example.ksfgh.aria.Adapters.TopTwentyAdapter;
 import com.example.ksfgh.aria.Adapters.TopTwentyThisWeekAdapter;
 import com.example.ksfgh.aria.Model.AlbumModel;
@@ -35,6 +36,7 @@ import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.fragments.Top20ThisWeekDialogFragment;
+import com.example.ksfgh.aria.View.fragments.TopBandByGenreDialogFragment;
 import com.example.ksfgh.aria.View.fragments.TopTwentyDialogFragment;
 import com.example.ksfgh.aria.databinding.TopTenByGenreBinding;
 
@@ -63,6 +65,7 @@ import io.reactivex.schedulers.Schedulers;
 public class TopChartsViewModel implements Serializable {
 
     public ObservableArrayList<CustomModelForBandPage> topChartBands;
+    public ObservableArrayList<CustomModelForBandPage> topBandsByGenre;
     public ObservableField<CustomModelForBandPage> topBand;
     public ObservableBoolean isLoading;
     public ObservableField<String> category;
@@ -70,25 +73,30 @@ public class TopChartsViewModel implements Serializable {
     public int identifier;
     TopTwentyDialogFragment top20;
     Top20ThisWeekDialogFragment top20ThisWeek;
+    TopBandByGenreDialogFragment topBandByGenreDialogFragment;
 
     public TopChartsViewModel() {
         topChartBands = new ObservableArrayList<>();
+        topBandsByGenre = new ObservableArrayList<>();
         topBand = new ObservableField<>();
         category = new ObservableField<>();
         isLoading = new ObservableBoolean();
+        genres = new ObservableArrayList<>();
         Collections.addAll(genres, Singleton.homeScreen.getResources().getStringArray(R.array.genres));
         getTopChartBands();
     }
 
     @BindingAdapter("bind:setTop20Adapter")
     public static void setTop20Adapter(RecyclerView view, TopChartsViewModel viewModel){
+        view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         if(viewModel.identifier == 0){
-            view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
             view.setAdapter(new TopTwentyAdapter(viewModel));
         }
         else if(viewModel.identifier == 1){
-            view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
             view.setAdapter(new TopTwentyThisWeekAdapter(viewModel));
+        }
+        else if(viewModel.identifier == 2){
+            view.setAdapter(new TopBandsByGenreAdapter(viewModel));
         }
 
     }
@@ -258,7 +266,10 @@ public class TopChartsViewModel implements Serializable {
         top20ThisWeek.show(Singleton.homeScreen.getSupportFragmentManager(), top20ThisWeek.getTag());
     }
 
-    public void Top10ByGenre(){
+    public void Top10ByGenre(TopChartsViewModel viewModel){
+        identifier = 2;
+        if(!topBandsByGenre.isEmpty())
+            topBandsByGenre.clear();
         TopTenByGenreBinding binding = DataBindingUtil.inflate(Singleton.homeScreen.getLayoutInflater(), R.layout.dialog_top_10_by_genre, null, false);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen, R.style.BlackAlertDialog);
         alertDialogBuilder.setView(binding.getRoot());
@@ -280,6 +291,7 @@ public class TopChartsViewModel implements Serializable {
         binding.lvGenres.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                category.set("Top 10 for " + genres.get(i));
                 Observable<BandGenreModel[]> observable1 = RetrofitClient.getClient().getBandGenre();
                 Observable<BandModel[]> observable2 = RetrofitClient.getClient().getbands();
                 Observable<ArrayList<BandModel>> observable = Observable.zip(observable1, observable2, new BiFunction<BandGenreModel[], BandModel[], ArrayList<BandModel>>() {
@@ -302,9 +314,38 @@ public class TopChartsViewModel implements Serializable {
                     }
                 });
 
+                dialog.dismiss();
+                Disposable disposable = observable
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableObserver<ArrayList<BandModel>>() {
+                            @Override
+                            public void onNext(ArrayList<BandModel> bandModels) {
+                                for(CustomModelForBandPage model:topChartBands){
+                                    for(BandModel band:bandModels){
+                                        if(model.band.bandId == band.bandId){
+                                            topBandsByGenre.add(model);
+                                        }
+                                    }
+                                }
+                            }
 
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                topBandByGenreDialogFragment = TopBandByGenreDialogFragment.newInstance(viewModel);
+                                topBandByGenreDialogFragment.show(Singleton.homeScreen.getSupportFragmentManager(), topBandByGenreDialogFragment.getTag());
+                            }
+                        });
             }
         });
+
+
+        dialog.show();
     }
 
     public void dismissDialogFragment(){
@@ -313,6 +354,9 @@ public class TopChartsViewModel implements Serializable {
 
         if(top20ThisWeek != null)
             top20ThisWeek.dismiss();
+
+        if(topBandByGenreDialogFragment != null)
+            topBandByGenreDialogFragment.dismiss();
     }
 
 }
