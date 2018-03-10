@@ -42,7 +42,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:27.0.2'
     compile 'com.android.support:design:27.0.2'
     compile 'nl.psdcompany:duo-navigation-drawer:2.0.7'
-    compile 'com.github.claudiodegio:MsvSearch:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile 'com.yarolegovich:discrete-scrollview:1.4.4'
     compile 'com.github.hrskrs:InstaDotView:1.1'

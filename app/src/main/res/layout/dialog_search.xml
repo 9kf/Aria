@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="frag"
+            type="com.example.ksfgh.aria.View.fragments.SearchDialogFragment"/>
+    </data>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minWidth="1000dp"
+        android:minHeight="1000dp"
+        android:background="@android:color/transparent">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="7dp"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:weightSum="3">
+
+                    <ImageView
+                        android:id="@+id/ivCloseSearch"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:tint="#C0C0C0"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".1"/>
+
+                    <EditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="Search..."
+                        android:textColor="@color/black"
+                        android:textColorHint="#C0C0C0"
+                        android:background="@android:color/transparent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_weight="2.8"
+                        android:maxLines="1"/>
+
+                    <ImageView
+                        android:id="@+id/ivClearSearch"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_close"
+                        android:layout_marginRight="8dp"
+                        android:tint="#C0C0C0"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".1"
+                        android:visibility="@{frag.isTextEmpty ? View.GONE : View.VISIBLE}"/>
+
+
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="7dp"
+                    android:indeterminateOnly="true"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:theme="@style/hProgressBar"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="@{frag.isLoading ? View.VISIBLE : View.GONE}"/>
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cvSearch"
+            app:cardElevation="7dp"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="@{frag.hasData ? View.VISIBLE : View.GONE}">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tlFilter"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="7dp"
+                app:tabGravity="fill"
+                app:tabTextColor="@color/white"
+                app:tabIndicatorColor="@color/highLightColor"
+                app:tabBackground="@color/toolbarColor"
+                app:tabIndicatorHeight="2dp"
+                app:tabMode="scrollable"
+                app:tabMaxWidth="0dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvSearchResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:scrollbars="none"/>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+</layout>

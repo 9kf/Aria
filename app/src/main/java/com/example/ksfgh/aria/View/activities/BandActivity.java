@@ -50,6 +50,7 @@ public class BandActivity extends AppCompatActivity {
 
         EventBus.getDefault().unregister(this);
         EventBus.getDefault().unregister(viewModel);
+        Singleton.getInstance().videoPlayed = false;
 
     }
 }

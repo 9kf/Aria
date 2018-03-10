@@ -11,6 +11,7 @@ import android.databinding.ObservableInt;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -681,7 +682,11 @@ public class BandActivityViewModel implements Player.EventListener {
 
         if(playWhenReady){
             EventBus.getDefault().post(false,"playOrPause");
+            Singleton.getInstance().videoPlayed = true;
         }
+
+        if(playbackState == Player.STATE_ENDED)
+            Singleton.getInstance().videoPlayed = false;
     }
 
     @Override

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <data class="ItemSearchBandBinding">
+
+        <variable
+            name="model"
+            type="com.example.ksfgh.aria.Model.BandModel"/>
+        <variable
+            name="frag"
+            type="com.example.ksfgh.aria.View.fragments.SearchDialogFragment"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbarColor"
+        android:padding="16dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:layout_gravity="center_vertical"
+            bind:imgUrl="@{model.bandPic}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:text="@{model.bandName}"
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+</layout>

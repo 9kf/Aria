@@ -151,36 +151,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/llSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:layout_marginRight="100dp"
-                    android:orientation="horizontal"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:onClick="@{(v) -> viewModel.onDrawerItemClick(v)}">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_search"
-                        android:tint="@color/drawerItemColor"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:text="@string/search"
-                        android:textColor="@color/drawerItemColor"
-                        android:fontFamily="@font/bebasnue"
-                        android:layout_marginLeft="20dp"
-                        android:textSize="16sp"/>
-
-                </LinearLayout>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -399,6 +369,7 @@
                             android:theme="@style/ToolBarStyle"
                             app:popupTheme="@style/ToolBarStyle"
                             app:title="@{viewModel.toolbarTitle}" />
+
                     </android.support.design.widget.AppBarLayout>
 
                     <FrameLayout

@@ -669,6 +669,7 @@ public class MyBandsViewModel {
                                 @Override
                                 public void onError(Throwable e) {
                                     Toast.makeText(activity, "There was an error adding the video", Toast.LENGTH_SHORT).show();
+                                    videoPath.set("");
                                     Log.d("mybands", e.getMessage());
                                 }
 

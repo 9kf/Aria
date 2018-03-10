@@ -12,6 +12,7 @@ import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
+import com.example.ksfgh.aria.View.fragments.SearchFragment;
 import com.example.ksfgh.aria.View.fragments.TopChartsFragment;
 import com.example.ksfgh.aria.View.fragments.UserFragment;
 
@@ -52,6 +53,7 @@ public class Singleton {
     public static MyBandsFragment myBandsFragment = new MyBandsFragment();
     public static UserFragment userFragment = new UserFragment();
     public static TopChartsFragment topChartsFragment = new TopChartsFragment();
+    public static SearchFragment searchFragment = new SearchFragment();
 
     //static classes
     public Utils utilities = new Utils();
@@ -71,6 +73,9 @@ public class Singleton {
 
     //used to identify if there is already a song prepared for the player
     public boolean isPlayerPrepared;
+
+    //used to identify if a video is played
+    public boolean videoPlayed = false;
 
     //used to identify what band the user is currently in
     public CustomModelForBandPage currentBand;

@@ -6,6 +6,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +19,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -26,6 +31,7 @@ import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Singleton;
+import com.example.ksfgh.aria.View.fragments.SearchDialogFragment;
 import com.example.ksfgh.aria.ViewModel.HomeScreenViewModel;
 import com.example.ksfgh.aria.databinding.ActivityHomeScreenBinding;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -74,6 +80,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private DuoDrawerLayout duoDrawerLayout;
     private DuoDrawerToggle duoDrawerToggle;
     private BottomSheetBehavior bottomSheetBehavior;
+    Toolbar toolbar;
     private HomeScreenViewModel viewModel;
 
     //Exoplayer or Music and Video Player
@@ -96,7 +103,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         compositeDisposable = new CompositeDisposable();
 
         //set the toolbar
-        Toolbar toolbar = activityHomeScreenBinding.toolbar;
+        toolbar = activityHomeScreenBinding.toolbar;
         setSupportActionBar(toolbar);
 
         //register to event bus
@@ -107,17 +114,6 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
 
         bottomSheetBehavior = BottomSheetBehavior.from(activityHomeScreenBinding.llPersistentBar);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-//        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//
-//            }
-//        });
 
         //initialize exoplayer
         initPlayer("");
@@ -390,11 +386,6 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Subscriber(tag = "playOrPause")
     private void playOrPause(boolean play){
 
-//        if(Singleton.getInstance().song == null || Singleton.getInstance().playedPlist != plist){
-//            Singleton.getInstance().song = songList.get(0);
-//            EventBus.getDefault().post("","highlightPlayedSong");
-//        }
-
         if(exoPlayer.getPlaybackState() == Player.STATE_ENDED){
             Singleton.getInstance().song = songList.get(0);
             exoPlayer.seekToDefaultPosition(0);
@@ -418,16 +409,18 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             Singleton.getInstance().playedPlist = plist;
         }
 
-        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            bottomSheetBehavior.setHideable(false);
-            viewModel.isBottomsheetUp.set(true);
+        if(!Singleton.getInstance().videoPlayed){
+            if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN){
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                bottomSheetBehavior.setHideable(false);
+                viewModel.isBottomsheetUp.set(true);
 
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) activityHomeScreenBinding.layoutContainer.getLayoutParams();
-            params.bottomMargin = 100;
-            activityHomeScreenBinding.layoutContainer.requestLayout();
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) activityHomeScreenBinding.layoutContainer.getLayoutParams();
+                params.bottomMargin = 100;
+                activityHomeScreenBinding.layoutContainer.requestLayout();
+            }
+            viewModel.persistentBarSong.set(Singleton.getInstance().song);
         }
-        viewModel.persistentBarSong.set(Singleton.getInstance().song);
     }
 
     @Subscriber(tag = "isPlayerPlaying")
@@ -620,10 +613,33 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.searchbar_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        Drawable drawable = item.getIcon();
+        if(drawable != null){
+            drawable.mutate();
+            drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        }
+
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                SearchDialogFragment dialogFragment = SearchDialogFragment.newInstance();
+                dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
         EventBus.getDefault().unregister(this);
         exoPlayer.release();
     }
+
 }
