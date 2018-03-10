@@ -29,6 +29,7 @@ import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PreferenceModel;
+import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
@@ -61,23 +62,31 @@ import okhttp3.RequestBody;
 
 public class UserViewModel {
 
-    public FacebookUserModel user;
+    public ObservableField<UserModel> user;
     public ObservableArrayList<PlaylistModel> userPlaylists;
     public ObservableArrayList<CustomModelForBandPage> userFollowedBands;
-    private UserFragment fragment;
     public Uri selectedImage = null;
     public ObservableField<String> bandImage;
 
     public UserViewModel(UserFragment fragment) {
         EventBus.getDefault().register(this);
-        user = Singleton.homeScreen.user;
+        user = new ObservableField<>();
+        user.set(Singleton.getInstance().currentUser.get());
         userPlaylists = new ObservableArrayList<>();
         userFollowedBands = new ObservableArrayList<>();
-        this.fragment = fragment;
         bandImage = new ObservableField<>();
         bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
         getUserPlaylists();
         getUserFollowedBands();
+    }
+
+    @Subscriber(tag = "changeUser")
+    public void changeUser(String empty){
+        user.set(Singleton.getInstance().currentUser.get());
+        userFollowedBands.clear();
+        userPlaylists.clear();
+        getUserFollowedBands();
+        getUserPlaylists();
     }
 
     @BindingAdapter("bind:userPlaylist")
@@ -102,7 +111,7 @@ public class UserViewModel {
                 for(PreferenceModel preferenceModel: preferenceModels){
                     for(BandModel bandModel: bandModels){
                         if(preferenceModel.bandId != null){
-                            if(preferenceModel.bandId.equals(String.valueOf(bandModel.bandId))){
+                            if(preferenceModel.bandId.equals(String.valueOf(bandModel.bandId))&& preferenceModel.userId.equals(user.get().userId)){
                                 list.add(bandModel);
                             }
                         }
@@ -232,7 +241,7 @@ public class UserViewModel {
                     @Override
                     public void onNext(PlaylistModel[] playlistModels) {
                         for(PlaylistModel model:playlistModels){
-                            if(model.getPlCreator().equals(user.getId())){
+                            if(model.getPlCreator().equals(user.get().userId)){
                                 userPlaylists.add(model);
                                 if(Singleton.getInstance().userPlaylists.size() == 0)
                                     Singleton.getInstance().userPlaylists.add(model);
@@ -325,7 +334,7 @@ public class UserViewModel {
 
                         Toast.makeText(Singleton.homeScreen, "Adding playlist ...", Toast.LENGTH_SHORT).show();
 
-                        RequestBody userId = RequestBody.create(MultipartBody.FORM, user.user_id);
+                        RequestBody userId = RequestBody.create(MultipartBody.FORM, user.get().userId);
                         RequestBody playlistName = RequestBody.create(MultipartBody.FORM, binding.etPlaylistName.getText().toString());
                         File originalFile = new File(bandImage.get().toString());
                         RequestBody filePart = RequestBody.create(MediaType.parse(Singleton.homeScreen.getContentResolver().getType(selectedImage)), originalFile);

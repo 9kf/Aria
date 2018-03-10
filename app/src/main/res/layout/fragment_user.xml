@@ -35,7 +35,7 @@
             android:layout_height="150dp"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
-            bind:imgUrl="@{viewmodel.user.pic}"/>
+            bind:imgUrl="@{viewmodel.user.profilePic}"/>
 
 
         <LinearLayout
@@ -51,7 +51,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:text='@{viewmodel.user.fname + " " + viewmodel.user.lname}'
+                android:text='@{viewmodel.user.fullname}'
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:layout_marginRight="24dp"/>

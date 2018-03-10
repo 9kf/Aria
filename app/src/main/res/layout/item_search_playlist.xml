@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:background="@color/toolbarColor"
         android:padding="16dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:onClick="@{()->frag.playlistClicked(model)}">
 
         <ImageView
             android:layout_width="70dp"

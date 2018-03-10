@@ -1,5 +1,6 @@
 package com.example.ksfgh.aria.View.fragments;
 
+import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -19,14 +20,22 @@ import android.view.ViewGroup;
 import com.example.ksfgh.aria.Adapters.SearchAdapter;
 import com.example.ksfgh.aria.Model.AlbumModel;
 import com.example.ksfgh.aria.Model.BandModel;
+import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.CustomSearchModel;
+import com.example.ksfgh.aria.Model.EventModel;
+import com.example.ksfgh.aria.Model.MemberModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.SongModel;
 import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.Model.VideoModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
+import com.example.ksfgh.aria.Singleton;
+import com.example.ksfgh.aria.View.activities.BandActivity;
+import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 import com.example.ksfgh.aria.databinding.DialogSearchBinding;
+
+import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -34,6 +43,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function3;
 import io.reactivex.functions.Function6;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -126,49 +136,51 @@ public class SearchDialogFragment extends DialogFragment {
                     .subscribeWith(new DisposableObserver<CustomSearchModel>() {
                         @Override
                         public void onNext(CustomSearchModel customSearchModel2) {
+
+                            if(!customSearchModel2.band.isEmpty()){
+                                hasData.set(true);
+                            }
+                            else if(!customSearchModel2.user.isEmpty()){
+                                hasData.set(true);
+                            }
+                            else if(!customSearchModel2.playlist.isEmpty()){
+                                hasData.set(true);
+                            }
+                            else if(!customSearchModel2.song.isEmpty()){
+                                hasData.set(true);
+                            }
+                            else if(!customSearchModel2.album.isEmpty()){
+                                hasData.set(true);
+                            }
+                            else if(!customSearchModel2.video.isEmpty()){
+                                hasData.set(true);
+                            }
+
                             results.set(customSearchModel2);
                             generalList.clear();
                             switch (binding.tlFilter.getSelectedTabPosition()){
                                 case 0:
-                                    if(!customSearchModel2.band.isEmpty()){
-                                        generalList.addAll(customSearchModel2.band);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.band);
                                     break;
 
                                 case 1:
-                                    if(!customSearchModel2.user.isEmpty()){
-                                        generalList.addAll(customSearchModel2.user);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.user);
                                     break;
 
                                 case 2:
-                                    if(!customSearchModel2.playlist.isEmpty()){
-                                        generalList.addAll(customSearchModel2.playlist);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.playlist);
                                     break;
 
                                 case 3:
-                                    if(!customSearchModel2.song.isEmpty()){
-                                        generalList.addAll(customSearchModel2.song);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.song);
                                     break;
 
                                 case 4:
-                                    if(!customSearchModel2.album.isEmpty()){
-                                        generalList.addAll(customSearchModel2.album);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.album);
                                     break;
 
                                 case 5:
-                                    if(!customSearchModel2.video.isEmpty()){
-                                        generalList.addAll(customSearchModel2.video);
-                                        hasData.set(true);
-                                    }
+                                    generalList.addAll(customSearchModel2.video);
                                     break;
                             }
                         }
@@ -262,6 +274,105 @@ public class SearchDialogFragment extends DialogFragment {
             }
         });
 
+    }
+
+    public void userClicked(UserModel user){
+        getDialog().dismiss();
+        Singleton.getInstance().currentUser.set(user);
+        EventBus.getDefault().post("", "changeUser");
+        EventBus.getDefault().post(Singleton.getInstance().userFragment, "switchFragment");
+        Singleton.homeScreen.viewModel.onDrawerItemClick(null);
+
+    }
+
+    public void bandClicked(BandModel band){
+        getDialog().dismiss();
+        Observable<AlbumModel[]> observable2 = RetrofitClient.getClient().getAllAlbums();
+        Observable<MemberModel[]> observable3 = RetrofitClient.getClient().getBandMembers();
+        Observable<EventModel[]> observable4 = RetrofitClient.getClient().getEvents();
+        Observable<CustomModelForBandPage> observable = Observable.zip(observable2, observable3, observable4, new Function3<AlbumModel[], MemberModel[], EventModel[], CustomModelForBandPage>() {
+            @Override
+            public CustomModelForBandPage apply(AlbumModel[] albumModels, MemberModel[] memberModels, EventModel[] eventModels) throws Exception {
+
+                ArrayList<MemberModel> bandMembers = new ArrayList<>();
+                ArrayList<AlbumModel> bandAlbums = new ArrayList<>();
+                ArrayList<EventModel> bandEvents = new ArrayList<>();
+
+                for(MemberModel members2: memberModels){
+                    if(band.getBandId() == members2.bandId){
+                        bandMembers.add(members2);
+                    }
+                }
+
+                //this loop below will determine the albums of the band
+                for(AlbumModel albums: albumModels){
+                    if(band.getBandId() == albums.getBandId()){
+                        bandAlbums.add(albums);
+                    }
+                }
+
+                //this loop below will determine the events of the band
+                for(EventModel events: eventModels){
+                    if(band.getBandId() == events.bandId){
+                        bandEvents.add(events);
+                    }
+                }
+
+                return new CustomModelForBandPage(band, bandMembers, bandAlbums, bandEvents);
+            }
+        });
+
+
+        Disposable disposable = observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<CustomModelForBandPage>() {
+                    @Override
+                    public void onNext(CustomModelForBandPage customModelForBandPage) {
+                        Singleton.getInstance().currentBand = customModelForBandPage;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("mybands", e.getMessage() + " ");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Disposable disposable1 = RetrofitClient.getClient().getBandVideos(String.valueOf(Singleton.getInstance().currentBand.band.bandId))
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(new DisposableObserver<VideoModel[]>() {
+                                    @Override
+                                    public void onNext(VideoModel[] videoModels) {
+                                        ArrayList<VideoModel> videoList = new ArrayList<>();
+                                        for(VideoModel videos: videoModels){
+                                            videoList.add(videos);
+                                        }
+                                        Singleton.getInstance().currentBand.setVideos(videoList);
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d("mybands", e.getMessage() + " ");
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                        Intent intent = new Intent(Singleton.homeScreen, BandActivity.class);
+                                        Singleton.homeScreen.startActivity(intent);
+                                    }
+                                });
+                    }
+                });
+    }
+
+    public void playlistClicked(PlaylistModel playlistModel){
+        getDialog().dismiss();
+        EventBus.getDefault().post(playlistModel, "setPlist");
+        Singleton.getInstance().currentPlaylistId = playlistModel;
+        Intent intent = new Intent(Singleton.homeScreen, PlaylistActivity.class);
+        Singleton.homeScreen.startActivity(intent);
     }
 
     @Override

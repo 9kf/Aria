@@ -37,7 +37,10 @@ public class UserModel {
     @SerializedName("updated_at")
     public String updatedAt;
 
-    public UserModel(String userId, String fname, String lname, String fullname, String email, String age, String gender, String address, String contact, String bio, String profilePic, String rememberToken, String createdAt, String updatedAt) {
+    public UserModel() {
+    }
+
+    public UserModel(String userId, String fname, String lname, String fullname, String email, String age, String gender, String address, String contact, String bio, String profilePic) {
         this.userId = userId;
         this.fname = fname;
         this.lname = lname;
@@ -49,8 +52,5 @@ public class UserModel {
         this.contact = contact;
         this.bio = bio;
         this.profilePic = profilePic;
-        this.rememberToken = rememberToken;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

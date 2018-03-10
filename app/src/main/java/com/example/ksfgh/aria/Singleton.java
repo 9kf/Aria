@@ -1,18 +1,17 @@
 package com.example.ksfgh.aria;
 
-import android.app.Activity;
 import android.databinding.ObservableArrayList;
-import android.databinding.ObservableBoolean;
+import android.databinding.ObservableField;
 
 import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
-import com.example.ksfgh.aria.View.fragments.SearchFragment;
 import com.example.ksfgh.aria.View.fragments.TopChartsFragment;
 import com.example.ksfgh.aria.View.fragments.UserFragment;
 
@@ -53,7 +52,6 @@ public class Singleton {
     public static MyBandsFragment myBandsFragment = new MyBandsFragment();
     public static UserFragment userFragment = new UserFragment();
     public static TopChartsFragment topChartsFragment = new TopChartsFragment();
-    public static SearchFragment searchFragment = new SearchFragment();
 
     //static classes
     public Utils utilities = new Utils();
@@ -92,5 +90,8 @@ public class Singleton {
     //used to indicate what genre is clicked
     public String currentGenre = "";
     public int genreNumber = 0;
+
+    //used to indicate what is the current user being navigated
+    public ObservableField<UserModel> currentUser = new ObservableField<>();
 
 }

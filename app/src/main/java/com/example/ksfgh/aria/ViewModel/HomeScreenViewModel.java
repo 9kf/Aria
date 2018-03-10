@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.R;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
@@ -108,85 +109,106 @@ public class HomeScreenViewModel {
 
     public void onDrawerItemClick(View view){
 
-        switch (view.getId()){
-            case R.id.llHome:
-                toolbarTitle.set("Home");
-                EventBus.getDefault().post(Singleton.getInstance().homeFragment, "switchFragment");
-                break;
-
-            case R.id.llFeed:
-                toolbarTitle.set("Feed");
-                EventBus.getDefault().post(Singleton.getInstance().feedFragment, "switchFragment");
-                break;
-
-            case R.id.llTopCharts:
-                toolbarTitle.set("Top Charts");
-                EventBus.getDefault().post(Singleton.getInstance().topChartsFragment, "switchFragment");
-                break;
-
-            case R.id.llUser:
-                toolbarTitle.set("My Profile");
-                EventBus.getDefault().post(Singleton.getInstance().userFragment, "switchFragment");
-                break;
-
-            case R.id.llNotifications:
-                toolbarTitle.set("Notifications");
-                break;
-
-            case R.id.llMyBands:
-                toolbarTitle.set("My Bands");
-                EventBus.getDefault().post(Singleton.getInstance().myBandsFragment, "switchFragment");
-                break;
-
-            case R.id.llFindFriends:
-                toolbarTitle.set("Find Friends");
-                break;
-
-            case R.id.llSettings:
-                toolbarTitle.set("Settings");
-                break;
-
-            case R.id.llLogout:
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(homeScreen);
-                alertDialogBuilder
-                        .setMessage("Are you sure you want to log out?")
-                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                SharedPreferences.Editor editor = homeScreen.getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, Context.MODE_PRIVATE).edit();
-                                editor.remove("user");
-                                editor.commit();
-
-                                LoginManager.getInstance().logOut();
-
-                                Intent intent = new Intent(homeScreen, StartScreen.class);
-                                homeScreen.startActivity(intent);
-                                homeScreen.finish();
-                            }
-                        })
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("hello", "no");
-                            }
-                        })
-                        .show();
-
-                break;
+        if(view == null){
+            currentView.setBackgroundColor(Color.parseColor("#232323"));
+            currentView = null;
         }
+        else {
 
-        if(view.getId() != R.id.llLogout){
+            switch (view.getId()){
+                case R.id.llHome:
+                    toolbarTitle.set("Home");
+                    EventBus.getDefault().post(Singleton.getInstance().homeFragment, "switchFragment");
+                    break;
 
-            if(currentView == null){
-                currentView = view;
-                view.setBackgroundColor(Color.parseColor("#E57C1F"));
+                case R.id.llFeed:
+                    toolbarTitle.set("Feed");
+                    EventBus.getDefault().post(Singleton.getInstance().feedFragment, "switchFragment");
+                    break;
+
+                case R.id.llTopCharts:
+                    toolbarTitle.set("Top Charts");
+                    EventBus.getDefault().post(Singleton.getInstance().topChartsFragment, "switchFragment");
+                    break;
+
+                case R.id.llUser:
+                    toolbarTitle.set("User Profile");
+                    Singleton.getInstance().currentUser.set(new UserModel(
+                            Singleton.homeScreen.user.user_id,
+                            Singleton.homeScreen.user.fname,
+                            Singleton.homeScreen.user.lname,
+                            Singleton.homeScreen.user.fname + " " + Singleton.homeScreen.user.fname,
+                            Singleton.homeScreen.user.email,
+                            Singleton.homeScreen.user.age,
+                            Singleton.homeScreen.user.gender,
+                            Singleton.homeScreen.user.address,
+                            Singleton.homeScreen.user.contact,
+                            Singleton.homeScreen.user.bio,
+                            Singleton.homeScreen.user.pic
+                    ));
+                    EventBus.getDefault().post("", "changeUser");
+                    EventBus.getDefault().post(Singleton.getInstance().userFragment, "switchFragment");
+                    break;
+
+                case R.id.llNotifications:
+                    toolbarTitle.set("Notifications");
+                    break;
+
+                case R.id.llMyBands:
+                    toolbarTitle.set("My Bands");
+                    EventBus.getDefault().post(Singleton.getInstance().myBandsFragment, "switchFragment");
+                    break;
+
+                case R.id.llFindFriends:
+                    toolbarTitle.set("Find Friends");
+                    break;
+
+                case R.id.llSettings:
+                    toolbarTitle.set("Settings");
+                    break;
+
+                case R.id.llLogout:
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(homeScreen);
+                    alertDialogBuilder
+                            .setMessage("Are you sure you want to log out?")
+                            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences.Editor editor = homeScreen.getSharedPreferences(Singleton.getInstance().PREFERENCE_NAME, Context.MODE_PRIVATE).edit();
+                                    editor.remove("user");
+                                    editor.commit();
+
+                                    LoginManager.getInstance().logOut();
+
+                                    Intent intent = new Intent(homeScreen, StartScreen.class);
+                                    homeScreen.startActivity(intent);
+                                    homeScreen.finish();
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Log.d("hello", "no");
+                                }
+                            })
+                            .show();
+
+                    break;
             }
-            else {
-                currentView.setBackgroundColor(Color.parseColor("#232323"));
-                currentView = view;
-                currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
-            }
 
-            duoDrawerLayout.closeDrawer();
+            if(view.getId() != R.id.llLogout){
+
+                if(currentView == null){
+                    currentView = view;
+                    view.setBackgroundColor(Color.parseColor("#E57C1F"));
+                }
+                else {
+                    currentView.setBackgroundColor(Color.parseColor("#232323"));
+                    currentView = view;
+                    currentView.setBackgroundColor(Color.parseColor("#E57C1F"));
+                }
+
+                duoDrawerLayout.closeDrawer();
+            }
         }
 
     }

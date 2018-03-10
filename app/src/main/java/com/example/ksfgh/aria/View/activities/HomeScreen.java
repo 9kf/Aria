@@ -81,7 +81,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     private DuoDrawerToggle duoDrawerToggle;
     private BottomSheetBehavior bottomSheetBehavior;
     Toolbar toolbar;
-    private HomeScreenViewModel viewModel;
+    public HomeScreenViewModel viewModel;
 
     //Exoplayer or Music and Video Player
     public SimpleExoPlayer exoPlayer;
