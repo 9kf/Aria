@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.ksfgh.aria.Model.FacebookUserModel;
+import com.example.ksfgh.aria.Model.UserFacebookFriends;
 import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.activities.StartScreen;
@@ -65,7 +66,7 @@ public class Handlers {
         };
 
         LoginManager.getInstance().logInWithReadPermissions(activity,
-                Arrays.asList("email", "public_profile"));
+                Arrays.asList("email", "public_profile", "user_friends"));
 
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -77,7 +78,6 @@ public class Handlers {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.d("fbUser", object.toString());
                                 try {
                                     final FacebookUserModel user = new FacebookUserModel(
                                             profile.getId(),
@@ -104,7 +104,7 @@ public class Handlers {
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,link,email,gender,installed,friends");
+                parameters.putString("fields", "id,name,link,email,gender,installed,friends{id,name,picture,email}");
                 request.setParameters(parameters);
                 request.executeAsync();
             }

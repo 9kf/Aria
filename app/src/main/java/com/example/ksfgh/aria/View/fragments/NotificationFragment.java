@@ -119,8 +119,27 @@ public class NotificationFragment extends Fragment {
                                 .subscribeWith(new DisposableObserver<ResponseBody>() {
                                     @Override
                                     public void onNext(ResponseBody responseBody) {
-                                        notifs.remove(model);
-                                        Toast.makeText(Singleton.homeScreen, "You joined " + model.bandName, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(Singleton.homeScreen, "You joined " + model.bandName.get(), Toast.LENGTH_SHORT).show();
+                                        Disposable disposable1 = RetrofitClient.getClient().declineInvitation(model)
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribeWith(new DisposableObserver<String>() {
+                                                    @Override
+                                                    public void onNext(String s) {
+                                                        if(s.equals("true"))
+                                                            notifs.remove(model);
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Log.d("invitation", e.getMessage()+ " invitation");
+                                                    }
+
+                                                    @Override
+                                                    public void onComplete() {
+
+                                                    }
+                                                });
                                     }
 
                                     @Override
@@ -130,7 +149,6 @@ public class NotificationFragment extends Fragment {
 
                                     @Override
                                     public void onComplete() {
-
                                     }
                                 });
 

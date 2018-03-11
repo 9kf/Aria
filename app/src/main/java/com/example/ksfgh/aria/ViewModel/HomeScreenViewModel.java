@@ -163,6 +163,7 @@ public class HomeScreenViewModel {
 
                 case R.id.llFindFriends:
                     toolbarTitle.set("Find Friends");
+                    EventBus.getDefault().post(Singleton.getInstance().findFriendsFragment, "switchFragment");
                     break;
 
                 case R.id.llSettings:

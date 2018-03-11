@@ -7,9 +7,11 @@ import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
+import com.example.ksfgh.aria.Model.UserFacebookFriends;
 import com.example.ksfgh.aria.Model.UserModel;
 import com.example.ksfgh.aria.View.activities.HomeScreen;
 import com.example.ksfgh.aria.View.fragments.FeedFragment;
+import com.example.ksfgh.aria.View.fragments.FindFriendsFragment;
 import com.example.ksfgh.aria.View.fragments.HomeFragment;
 import com.example.ksfgh.aria.View.fragments.MyBandsFragment;
 import com.example.ksfgh.aria.View.fragments.NotificationFragment;
@@ -54,6 +56,7 @@ public class Singleton {
     public static UserFragment userFragment = new UserFragment();
     public static TopChartsFragment topChartsFragment = new TopChartsFragment();
     public static NotificationFragment notificationFragment = new NotificationFragment();
+    public static FindFriendsFragment findFriendsFragment = new FindFriendsFragment();
 
     //static classes
     public Utils utilities = new Utils();
