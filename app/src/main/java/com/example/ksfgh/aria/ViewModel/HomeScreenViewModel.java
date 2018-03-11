@@ -110,6 +110,7 @@ public class HomeScreenViewModel {
     public void onDrawerItemClick(View view){
 
         if(view == null){
+            toolbarTitle.set("User Profile");
             currentView.setBackgroundColor(Color.parseColor("#232323"));
             currentView = null;
         }
@@ -152,6 +153,7 @@ public class HomeScreenViewModel {
 
                 case R.id.llNotifications:
                     toolbarTitle.set("Notifications");
+                    EventBus.getDefault().post(Singleton.getInstance().notificationFragment, "switchFragment");
                     break;
 
                 case R.id.llMyBands:

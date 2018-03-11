@@ -7,21 +7,29 @@ import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ksfgh.aria.Adapters.UserFollowedBandsAdapter;
 import com.example.ksfgh.aria.Adapters.UserPlaylistsAdapter;
 import com.example.ksfgh.aria.Model.AlbumModel;
+import com.example.ksfgh.aria.Model.BandMemberModel;
 import com.example.ksfgh.aria.Model.BandModel;
 import com.example.ksfgh.aria.Model.CustomModelForBandPage;
 import com.example.ksfgh.aria.Model.EventModel;
@@ -37,6 +45,7 @@ import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.activities.BandActivity;
 import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 import com.example.ksfgh.aria.View.fragments.UserFragment;
+import com.example.ksfgh.aria.databinding.AddUserToBandBinding;
 import com.example.ksfgh.aria.databinding.CreatePlaylistBinding;
 
 import org.simple.eventbus.EventBus;
@@ -44,6 +53,7 @@ import org.simple.eventbus.Subscriber;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -67,6 +77,7 @@ public class UserViewModel {
     public ObservableArrayList<CustomModelForBandPage> userFollowedBands;
     public Uri selectedImage = null;
     public ObservableField<String> bandImage;
+    private ArrayList<String> bandRoles;
 
     public UserViewModel(UserFragment fragment) {
         EventBus.getDefault().register(this);
@@ -76,6 +87,8 @@ public class UserViewModel {
         userFollowedBands = new ObservableArrayList<>();
         bandImage = new ObservableField<>();
         bandImage.set(Singleton.getInstance().utilities.getURLForResource(R.drawable.click_for_image));
+        bandRoles = new ArrayList<>();
+        Collections.addAll(bandRoles, Singleton.homeScreen.getResources().getStringArray(R.array.roles));
         getUserPlaylists();
         getUserFollowedBands();
     }
@@ -274,9 +287,16 @@ public class UserViewModel {
         Singleton.homeScreen.startActivity(intent);
     }
 
+    int band = 0, role = 0;
     public void optionsClicked(View view){
         PopupMenu popupMenu = new PopupMenu(Singleton.homeScreen, view);
-        popupMenu.getMenuInflater().inflate(R.menu.user_popup_menu, popupMenu.getMenu());
+        if(user.get().userId.equals(Singleton.homeScreen.user.getId())){
+            popupMenu.getMenuInflater().inflate(R.menu.user_popup_menu, popupMenu.getMenu());
+        }
+        else {
+            popupMenu.getMenuInflater().inflate(R.menu.user_popup_menu2, popupMenu.getMenu());
+        }
+
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -287,12 +307,134 @@ public class UserViewModel {
                     case R.id.itmAddUserPlaylist:
                         addUserPlaylist();
                         break;
+                    case R.id.itmAddUserToBand:
+                        AddUserToBandBinding binding = DataBindingUtil.inflate(Singleton.homeScreen.getLayoutInflater(),R.layout.dialog_add_user_to_band, null,false);
+                        binding.setViewmodel(UserViewModel.this);
+
+                        ArrayList<String> bandNames = new ArrayList<>();
+                        ArrayList<BandModel> userBands = new ArrayList<>();
+
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen, R.style.BlackAlertDialog);
+                        alertDialogBuilder
+                                .setView(binding.getRoot())
+                                .setCancelable(false)
+                                .setPositiveButton("Invite", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Disposable disposable1 = RetrofitClient.getClient().inviteUser(String.valueOf(userBands.get(band).bandId), user.get().userId, bandRoles.get(role), Singleton.homeScreen.user.getId())
+                                                .subscribeOn(Schedulers.newThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribeWith(new DisposableObserver<String>() {
+                                                    @Override
+                                                    public void onNext(String aBoolean) {
+                                                        Toast.makeText(Singleton.homeScreen, "Invitation sent", Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        Toast.makeText(Singleton.homeScreen, "Invitation failed", Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                    @Override
+                                                    public void onComplete() {
+
+                                                    }
+                                                });
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+
+                        AlertDialog dialog = alertDialogBuilder.create();
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+                        binding.spnrBand.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                band = i;
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
+
+                        binding.spnrBandRole.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                role = i;
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
+
+                        Observable<BandModel[]> observable1 = RetrofitClient.getClient().getbands();
+                        Observable<MemberModel[]> observable3 = RetrofitClient.getClient().getBandMembers();
+                        Observable<ArrayList<BandModel>> observable = Observable.zip(observable1, observable3, new BiFunction<BandModel[], MemberModel[], ArrayList<BandModel>>() {
+                            @Override
+                            public ArrayList<BandModel> apply(BandModel[] bandModels, MemberModel[] memberModels) throws Exception {
+                                ArrayList<BandModel> bands = new ArrayList<>();
+                                for(MemberModel member:memberModels){
+                                    if(Singleton.homeScreen.user.user_id.equals(member.userId)){
+                                        for(BandModel band:bandModels){
+                                            if(band.bandId == member.bandId){
+                                                bands.add(band);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                return bands;
+                            }
+                        });
+
+                        Disposable disposable = observable
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(new DisposableObserver<ArrayList<BandModel>>() {
+                                    @Override
+                                    public void onNext(ArrayList<BandModel> bandModels) {
+                                        for(BandModel band:bandModels){
+                                            bandNames.add(band.bandName);
+                                            userBands.add(band);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                        binding.spnrBand.setAdapter(new ArrayAdapter<String>(Singleton.homeScreen, R.layout.spinner_item, bandNames));
+                                        binding.spnrBandRole.setAdapter(new ArrayAdapter<String>(Singleton.homeScreen, R.layout.spinner_item, bandRoles));
+                                        dialog.show();
+                                    }
+                                });
+                        break;
                 }
 
                 return true;
             }
         });
+
         popupMenu.show();
+    }
+
+    private void addUserToBand() {
+
+
+
     }
 
     public void pickPhoto(int identifier){

@@ -1,13 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.ksfgh.aria.View.fragments.NotificationFragment">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <data class="NotificationBinding">
+        <variable
+            name="frag"
+            type="com.example.ksfgh.aria.View.fragments.NotificationFragment"/>
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/toolbarColor"
+        tools:context="com.example.ksfgh.aria.View.fragments.NotificationFragment">
 
-</FrameLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvUserNotifs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"/>
+
+    </RelativeLayout>
+</layout>

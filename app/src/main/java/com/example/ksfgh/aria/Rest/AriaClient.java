@@ -10,6 +10,7 @@ import com.example.ksfgh.aria.Model.CustomSearchModel;
 import com.example.ksfgh.aria.Model.EventModel;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.MemberModel;
+import com.example.ksfgh.aria.Model.NotificationModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.Model.PlistModel;
 import com.example.ksfgh.aria.Model.PreferenceModel;
@@ -183,5 +184,28 @@ public interface AriaClient {
 
     @GET("searchFunction")
     Observable<CustomSearchModel> searchResults(@Query("term") String text);
+
+    @POST("inviteUser")
+    @FormUrlEncoded
+    Observable<String> inviteUser(@Field("band_id") String bandId,
+                                   @Field("user_id") String userId,
+                                   @Field("band_role") String bandRole,
+                                   @Field("invitor_id") String invitorId);
+
+    @POST("visitCount")
+    @FormUrlEncoded
+    Observable<Boolean> visitPage(@Field("band_id") String bandId);
+
+    @GET("getUserNotification")
+    Observable<NotificationModel[]> getUserNotifications(@Query("user_id") String userId);
+
+    @POST("declineInvitation")
+    Observable<String> declineInvitation(@Body NotificationModel notificationModel);
+
+    @POST("addmember")
+    @FormUrlEncoded
+    Observable<ResponseBody> addBandMember(@Field("add-band-member-id") String userId,
+                                           @Field("add-band-member-band-id") int bandId,
+                                           @Field("add-band-member-role") String bandRole);
 
 }

@@ -157,6 +157,30 @@ public class BandActivityViewModel implements Player.EventListener {
         getIsFollowing();
         if(Singleton.getInstance().userPlaylists.size() == 0)
             getUserPlaylist();
+
+        visitPage();
+    }
+
+    private void visitPage() {
+        Disposable disposable = RetrofitClient.getClient().visitPage(String.valueOf(Singleton.getInstance().currentBand.band.bandId))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void getIsFollowing() {
