@@ -27,15 +27,16 @@
                 android:text="Here are some playlists by Aria"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:fontFamily="@font/bebasnue"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp"
+                android:visibility="gone"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none">
+                android:scrollbars="none"
+                android:visibility="gone">
             </android.support.v7.widget.RecyclerView>
 
             <TextView
@@ -45,7 +46,6 @@
                 android:text="This week's top bands"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:fontFamily="@font/bebasnue"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"/>
 
@@ -63,7 +63,6 @@
                 android:text="Find out what suits you"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:fontFamily="@font/bebasnue"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>

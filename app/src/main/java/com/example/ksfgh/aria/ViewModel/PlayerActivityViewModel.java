@@ -104,6 +104,12 @@ public class PlayerActivityViewModel {
                             currentTime.set(Singleton.getInstance().utilities.timeToString((int) Singleton.homeScreen.exoPlayer.getCurrentPosition()));
                         }
                     })
+                    .doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+
+                        }
+                    })
                     .subscribe();
 
             playerActivity.addDisposables(disposable);

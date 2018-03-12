@@ -28,6 +28,8 @@ import com.example.ksfgh.aria.View.activities.PlaylistActivity;
 import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -92,6 +94,12 @@ public class HomeViewModel {
                         for(BandModel band: bandModels){
                             bands.add(band);
                         }
+                        Collections.sort(bands, new Comparator<BandModel>() {
+                            @Override
+                            public int compare(BandModel bandModel, BandModel t1) {
+                                return Double.compare(t1.weeklyScore, bandModel.weeklyScore);
+                            }
+                        });
                     }
 
                     @Override

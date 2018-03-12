@@ -30,6 +30,7 @@ import com.example.ksfgh.aria.Model.CustomSongModelForPlaylist;
 import com.example.ksfgh.aria.Model.FacebookUserModel;
 import com.example.ksfgh.aria.Model.PlaylistModel;
 import com.example.ksfgh.aria.R;
+import com.example.ksfgh.aria.Rest.RetrofitClient;
 import com.example.ksfgh.aria.Singleton;
 import com.example.ksfgh.aria.View.fragments.SearchDialogFragment;
 import com.example.ksfgh.aria.ViewModel.HomeScreenViewModel;
@@ -65,9 +66,15 @@ import org.simple.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import nl.psdcompany.duonavigationdrawer.views.DuoDrawerLayout;
 import nl.psdcompany.duonavigationdrawer.widgets.DuoDrawerToggle;
 
@@ -400,6 +407,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             isPlaying = false;
             viewModel.isPlayerPlaying.set(false);
             Singleton.getInstance().isPlayerPlaying = false;
+            if(disposable != null)
+                disposable.dispose();
         }
         else {
             exoPlayer.setPlayWhenReady(play);
@@ -407,6 +416,27 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             Singleton.getInstance().isPlayerPlaying = true;
             viewModel.isPlayerPlaying.set(true);
             Singleton.getInstance().playedPlist = plist;
+
+            if(disposable.isDisposed()){
+                disposable = Observable.interval(1, TimeUnit.SECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .take((Singleton.homeScreen.exoPlayer.getDuration() / 1000))
+                        .map(x -> 1+x)
+                        .doOnNext(new Consumer<Long>() {
+                            @Override
+                            public void accept(Long aLong) throws Exception {
+                                Log.d("songsplayed", aLong.toString() + " secs");
+                                timePlayed += aLong.intValue();
+                            }
+                        })
+                        .doOnError(new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                            }
+                        })
+                        .subscribe();
+            }
         }
 
         if(!Singleton.getInstance().videoPlayed){
@@ -467,9 +497,71 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
         Log.d("exooplayer", "timeline changed");
     }
 
+    Disposable disposable;
+    boolean firstTrackChangeCatch = false;
+    int timePlayed = 0;
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
         Log.d("exooplayer", "tracks changed");
+
+        if(disposable != null){
+            if(!disposable.isDisposed())
+                disposable.dispose();
+
+            int category = 0;
+            if(timePlayed < 20)
+                category = 3;
+            else if(timePlayed > 40 && timePlayed < 80){
+                category = 2;
+            }
+            else if(timePlayed == (exoPlayer.getDuration()/1000))
+                category = 1;
+
+            timePlayed = 0;
+
+            Disposable disposable = RetrofitClient.getClient().songPlayed(user.user_id, String.valueOf(Singleton.getInstance().song.getSong().songId-1), String.valueOf(category))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<String>() {
+                        @Override
+                        public void onNext(String s) {
+                            Log.d("", "success " + s);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("", "failed " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+
+        if(firstTrackChangeCatch){
+            disposable = Observable.interval(1, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .take((Singleton.homeScreen.exoPlayer.getDuration() / 1000))
+                    .map(x -> 1+x)
+                    .doOnNext(new Consumer<Long>() {
+                        @Override
+                        public void accept(Long aLong) throws Exception {
+                            Log.d("songsplayed", aLong.toString() + " secs");
+                            timePlayed += aLong.intValue();
+                        }
+                    })
+                    .doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+
+                        }
+                    })
+                    .subscribe();
+        }
+
+        firstTrackChangeCatch = true;
     }
 
     @Override
@@ -488,6 +580,9 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                 Singleton.getInstance().song = songList.get(0);
                 Singleton.getInstance().isPlayerPlaying = false;
                 viewModel.isPlayerPlaying.set(false);
+
+                if(disposable != null)
+                    disposable.dispose();
             }
         }
         else if(playbackState == Player.STATE_READY){
@@ -517,6 +612,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
     @Override
     public void onPositionDiscontinuity(int reason) {
         Log.d("exooplayer", "position disconuity: " + String.valueOf(reason));
+
         if(reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION){
             if(windowIndex+1 < songList.size()){
                 windowIndex = windowIndex +1;
@@ -542,6 +638,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                 EventBus.getDefault().post("", "isThereANext");
                 viewModel.persistentBarSong.set(songList.get(windowIndex));
             }
+
         }
 
         EventBus.getDefault().post("", "highlightPlayedSong");

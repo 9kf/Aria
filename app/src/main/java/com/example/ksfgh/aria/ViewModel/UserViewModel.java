@@ -431,12 +431,6 @@ public class UserViewModel {
         popupMenu.show();
     }
 
-    private void addUserToBand() {
-
-
-
-    }
-
     public void pickPhoto(int identifier){
 
         Singleton.getInstance().CHANGE_OR_ADD = identifier;

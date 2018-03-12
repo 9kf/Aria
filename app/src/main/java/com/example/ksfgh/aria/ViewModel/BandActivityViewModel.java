@@ -165,20 +165,39 @@ public class BandActivityViewModel implements Player.EventListener {
         Disposable disposable = RetrofitClient.getClient().visitPage(String.valueOf(Singleton.getInstance().currentBand.band.bandId))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<Boolean>() {
+                .subscribeWith(new DisposableObserver<String>() {
                     @Override
-                    public void onNext(Boolean aBoolean) {
-
+                    public void onNext(String aBoolean) {
+                        Log.d("visit", "success");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d("visit", "error kay" + e.getMessage());
                     }
 
                     @Override
                     public void onComplete() {
 
+                        Disposable disposable1 = RetrofitClient.getClient().scoringFunc()
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(new DisposableObserver<ResponseBody>() {
+                                    @Override
+                                    public void onNext(ResponseBody responseBody) {
+                                        Log.d("scoring", "success");
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.d("scoring", "failed kay" + e.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+
+                                    }
+                                });
                     }
                 });
     }
@@ -597,7 +616,25 @@ public class BandActivityViewModel implements Player.EventListener {
 
                         @Override
                         public void onComplete() {
+                            Disposable disposable1 = RetrofitClient.getClient().scoringFunc()
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeWith(new DisposableObserver<ResponseBody>() {
+                                        @Override
+                                        public void onNext(ResponseBody responseBody) {
+                                            Log.d("scoring", "success");
+                                        }
 
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.d("scoring", "failed kay" + e.getMessage());
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
                         }
                     });
         }
@@ -653,7 +690,25 @@ public class BandActivityViewModel implements Player.EventListener {
 
                         @Override
                         public void onComplete() {
+                            Disposable disposable1 = RetrofitClient.getClient().scoringFunc()
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeWith(new DisposableObserver<ResponseBody>() {
+                                        @Override
+                                        public void onNext(ResponseBody responseBody) {
+                                            Log.d("scoring", "success");
+                                        }
 
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.d("scoring", "failed kay" + e.getMessage());
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
                         }
                     });
         }

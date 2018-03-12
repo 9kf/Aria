@@ -95,6 +95,7 @@
                     android:layout_toRightOf="@id/ivPic"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="16dp"
+                    android:padding="0dp"
                     android:text="@{viewmodel.isFollowing ? @string/unFollow:@string/follow}"
                     android:background="@{viewmodel.isFollowing ? @drawable/following_background:@drawable/shape_sqaure_with_border}"
                     android:textColor="@{viewmodel.isFollowing ? @color/white:@color/highLightColor}"
@@ -295,7 +296,8 @@
                         android:text="@{viewmodel.isAlbumLiked ? @string/unLike:@string/like}"
                         android:background="@{viewmodel.isAlbumLiked ? @drawable/following_background:@drawable/shape_sqaure_with_border}"
                         android:textColor="@{viewmodel.isAlbumLiked ? @color/white:@color/highLightColor}"
-                        android:onClick="@{()->viewmodel.likeAlbum()}"/>
+                        android:onClick="@{()->viewmodel.likeAlbum()}"
+                        android:padding="0dp"/>
 
                 </LinearLayout>
 

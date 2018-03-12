@@ -194,7 +194,7 @@ public interface AriaClient {
 
     @POST("visitCount")
     @FormUrlEncoded
-    Observable<Boolean> visitPage(@Field("band_id") String bandId);
+    Observable<String> visitPage(@Field("band_id") String bandId);
 
     @GET("getUserNotification")
     Observable<NotificationModel[]> getUserNotifications(@Query("user_id") String userId);
@@ -207,5 +207,13 @@ public interface AriaClient {
     Observable<ResponseBody> addBandMember(@Field("add-band-member-id") String userId,
                                            @Field("add-band-member-band-id") int bandId,
                                            @Field("add-band-member-role") String bandRole);
+    @GET("scoringfunc")
+    Observable<ResponseBody> scoringFunc();
+
+    @POST("songPlayed")
+    @FormUrlEncoded
+    Observable<String> songPlayed(@Field("user_id") String userId,
+                                  @Field("song_id") String songId,
+                                  @Field("category") String category);
 
 }
