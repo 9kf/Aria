@@ -133,6 +133,7 @@
                 android:textSize="14sp"
                 android:textStyle="normal"
                 android:text="Edit Band Details"
+                android:visibility="gone"
                 android:background="@android:color/transparent"/>
 
             <Button
@@ -142,6 +143,7 @@
                 android:textSize="14sp"
                 android:textStyle="normal"
                 android:text="Edit Band Members"
+                android:visibility="gone"
                 android:background="@android:color/transparent"/>
 
         </LinearLayout>

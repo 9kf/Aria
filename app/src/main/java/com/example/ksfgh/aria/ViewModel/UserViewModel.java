@@ -301,9 +301,9 @@ public class UserViewModel {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
-                    case R.id.itmEditProfile:
-                        Log.d("popup", "edit shit");
-                        break;
+//                    case R.id.itmEditProfile:
+//                        Log.d("popup", "edit shit");
+//                        break;
                     case R.id.itmAddUserPlaylist:
                         addUserPlaylist();
                         break;

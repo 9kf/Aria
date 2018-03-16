@@ -129,7 +129,7 @@
                 android:src="@drawable/exo_controls_shuffle"
                 android:layout_marginRight="20dp"
                 android:tint="@{viewmodel.isShuffled ? @color/highLightColor : @color/white}"
-                android:onClick="@{()->viewmodel.shufflePlayer()}"/>
+                />
 
             <ImageView
                 android:layout_width="40dp"

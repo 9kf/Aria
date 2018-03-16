@@ -139,7 +139,7 @@
                     android:layout_height="120dp"
                     android:layout_centerHorizontal="true"
                     android:scaleType="fitCenter"
-                    bind:imgUrl="@{viewmodel.bandImage}"
+                    bind:url="@{viewmodel.bandImage}"
                     android:onClick="@{()->viewmodel.pickPhoto(0)}"/>
 
             </RelativeLayout>

@@ -60,7 +60,8 @@
             android:layout_alignParentRight="true"
             android:tint="@color/white"
             android:layout_centerVertical="true"
-            android:onClick="@{(v) -> viewmodel.onOptionsClick(v, model)}"/>
+            android:onClick="@{(v) -> viewmodel.onOptionsClick(v, model)}"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

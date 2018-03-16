@@ -109,7 +109,7 @@ public class NotificationFragment extends Fragment {
     }
 
     public void acceptInvitation(NotificationModel model){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen, R.style.BlackAlertDialog);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen);
         alertDialogBuilder.setMessage("Are you sure you want to join the band?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -163,7 +163,7 @@ public class NotificationFragment extends Fragment {
     }
 
     public void declineInvitation(NotificationModel model){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen, R.style.BlackAlertDialog);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Singleton.homeScreen);
         alertDialogBuilder.setMessage("Are you sure you want to decline the invitation?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

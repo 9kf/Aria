@@ -344,9 +344,9 @@ public class PlaylistActivityViewModel{
                     case R.id.itmAddToPlaylist:
 
                         break;
-                    case R.id.itmAddToQueue:
-
-                        break;
+//                    case R.id.itmAddToQueue:
+//
+//                        break;
 
                 }
 

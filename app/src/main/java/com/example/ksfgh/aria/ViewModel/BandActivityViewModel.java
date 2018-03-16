@@ -87,12 +87,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -471,6 +473,27 @@ public class BandActivityViewModel implements Player.EventListener {
 
         EventBus.getDefault().post(selectedAlbumSongs, "addSongsInPlaylist");
         EventBus.getDefault().post(song, "skipSong2");
+//        Disposable disposable = Observable.interval(1, TimeUnit.SECONDS)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .take(5)
+//                .map(x -> 1+x)
+//                .doOnNext(new Consumer<Long>() {
+//                    @Override
+//                    public void accept(Long aLong) throws Exception {
+//
+//                        if(aLong.intValue() == 2){
+//                            EventBus.getDefault().post(song, "skipSong2");
+//                        }
+//                    }
+//                })
+//                .doOnError(new Consumer<Throwable>() {
+//                    @Override
+//                    public void accept(Throwable throwable) throws Exception {
+//
+//                    }
+//                })
+//                .subscribe();
+
     }
 
     @Subscriber(tag = "highlightPlayedSong")
@@ -583,9 +606,9 @@ public class BandActivityViewModel implements Player.EventListener {
                     case R.id.itmAddToPlaylist:
                         dialog.show();
                         break;
-                    case R.id.itmAddToQueue:
-
-                        break;
+//                    case R.id.itmAddToQueue:
+//
+//                        break;
 
                 }
 
@@ -607,11 +630,13 @@ public class BandActivityViewModel implements Player.EventListener {
                             isFollowing.set(false);
                             bandFollowers.set(responseBody);
                             Singleton.getInstance().currentBand.band.setNumFollowers(responseBody);
+                            Log.d("follow", "success");
                         }
 
                         @Override
                         public void onError(Throwable e) {
 
+                            Log.d("follow", "success" + e.getMessage());
                         }
 
                         @Override
@@ -648,11 +673,12 @@ public class BandActivityViewModel implements Player.EventListener {
                             isFollowing.set(true);
                             bandFollowers.set(responseBody);
                             Singleton.getInstance().currentBand.band.setNumFollowers(responseBody);
+                            Log.d("follow", "success");
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
+                            Log.d("follow", "success" + e.getMessage());
                         }
 
                         @Override
@@ -672,6 +698,7 @@ public class BandActivityViewModel implements Player.EventListener {
                     .subscribeWith(new DisposableObserver<ResponseBody>() {
                         @Override
                         public void onNext(ResponseBody integer) {
+                            Log.d("follow", "success");
                             isAlbumLiked.set(false);
                             for(PreferenceModel model:userPreferences){
                                 if(model.albumId != null){

@@ -850,7 +850,7 @@ public class MyBandsViewModel {
             albums.add(bandAlbums.getAlbumName());
         }
 
-        ArrayAdapter<String> albumAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item, albums);
+        ArrayAdapter<String> albumAdapter = new ArrayAdapter<String>(activity, R.layout.spinner_item, albums);
         binding.spnrAlbum.setAdapter(albumAdapter);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.BlackAlertDialog);

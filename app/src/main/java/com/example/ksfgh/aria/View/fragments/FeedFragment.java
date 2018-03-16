@@ -263,6 +263,7 @@ public class FeedFragment extends Fragment {
             });
 
             feedList.addAll(band.events);
+            Log.d("feed", feedList.size() + " size");
 //            feedList.addAll(band.albums);
 //            feedList.addAll(band.members);
 

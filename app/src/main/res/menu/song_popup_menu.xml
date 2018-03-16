@@ -4,8 +4,8 @@
         android:id="@+id/itmAddToPlaylist"
         android:title="Add to playlist" />
 
-    <item
-        android:id="@+id/itmAddToQueue"
-        android:title="Add to queue"/>
+    <!--<item-->
+        <!--android:id="@+id/itmAddToQueue"-->
+        <!--android:title="Add to queue"/>-->
 
 </menu>

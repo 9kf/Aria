@@ -219,8 +219,8 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             }
         }
 
-        dynamicConcatenatingMediaSource.releaseSource();
-        dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
+        //dynamicConcatenatingMediaSource.releaseSource();
+        DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
         songList.clear();
 
         for(CustomSongModelForPlaylist song: songs){
@@ -235,10 +235,57 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
             songList.add(song);
         }
 
+        for(CustomSongModelForPlaylist song:songList){
+            Log.d("skip", song.getSong().songAudio);
+        }
+
         exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, true);
         Singleton.getInstance().isPlayerPrepared = true;
 
     }
+
+//    @Subscriber(tag = "addSongsInPlaylist2")
+//    public void addSongsInPlaylist2(ArrayList<CustomSongModelForPlaylist> songs){
+//
+//        Log.d("playlist", "adding songs");
+//        boolean resetPosition = false;
+//        if(songList.size() != songs.size()){
+//            resetPosition = true;
+//        }
+//        else {
+//            for(int i = 0; i < songList.size(); i++){
+//                if(songList.get(i).getSong().songId != songs.get(i).getSong().songId){
+//                    resetPosition = true;
+//                    break;
+//                }
+//            }
+//        }
+//
+//
+//        //dynamicConcatenatingMediaSource.releaseSource();
+//        DynamicConcatenatingMediaSource dynamicConcatenatingMediaSource = new DynamicConcatenatingMediaSource();
+//        songList.clear();
+//
+//        for(CustomSongModelForPlaylist song: songs){
+//            dynamicConcatenatingMediaSource.addMediaSource(
+//                    Singleton.getInstance().utilities.createMediaSource(
+//                            Singleton.getInstance().utilities.buildAudioURL(Singleton.getInstance().BASE,song.getSong().songAudio).toString(),
+//                            dataSourceFactory,
+//                            extractorsFactory
+//                    )
+//            );
+//
+//            songList.add(song);
+//        }
+//
+//        for(CustomSongModelForPlaylist song:songList){
+//            Log.d("skip", song.getSong().songAudio);
+//        }
+//
+//        exoPlayer.prepare(dynamicConcatenatingMediaSource, resetPosition, true);
+//        Singleton.getInstance().isPlayerPrepared = true;
+//
+//    }
 
     public int windowIndex = -1;
     @Subscriber(tag = "skipSong")
@@ -509,12 +556,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                 disposable.dispose();
 
             int category = 0;
-            if(timePlayed < 20)
+            if(timePlayed < 40)
                 category = 3;
-            else if(timePlayed > 40 && timePlayed < 80){
+            else if(timePlayed > 40 && timePlayed < (exoPlayer.getDuration()/1000)){
                 category = 2;
             }
-            else if(timePlayed == (exoPlayer.getDuration()/1000))
+            else if(timePlayed >= (exoPlayer.getDuration()/1000))
                 category = 1;
 
             timePlayed = 0;
@@ -525,12 +572,12 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                     .subscribeWith(new DisposableObserver<String>() {
                         @Override
                         public void onNext(String s) {
-                            Log.d("", "success " + s);
+                            Log.d("songsho", "success " + s);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d("", "failed " + e.getMessage());
+                            Log.d("songsho", "failed " + e.getMessage());
                         }
 
                         @Override
@@ -549,7 +596,7 @@ public class HomeScreen extends AppCompatActivity implements Player.EventListene
                         @Override
                         public void accept(Long aLong) throws Exception {
                             Log.d("songsplayed", aLong.toString() + " secs");
-                            timePlayed += aLong.intValue();
+                            timePlayed = aLong.intValue();
                         }
                     })
                     .doOnError(new Consumer<Throwable>() {

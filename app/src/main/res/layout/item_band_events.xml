@@ -70,7 +70,8 @@
                     android:textSize="16sp"
                     android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="@{model.eventName}"/>
+                    android:text="@{model.eventName}"
+                    android:layout_marginBottom="8dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -79,7 +80,8 @@
                     android:textSize="14sp"
                     android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="@{model.eventVenue}"/>
+                    android:text="@{model.eventVenue}"
+                    android:layout_marginBottom="8dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -88,7 +90,8 @@
                     android:textSize="14sp"
                     android:maxLines="2"
                     android:ellipsize="end"
-                    android:text="@{model.eventLocation}"/>
+                    android:text="@{model.eventLocation}"
+                    android:layout_marginBottom="12dp"/>
 
             </LinearLayout>
 
